@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SarkariGuru.AI - Your AI-Powered Government Career Partner</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --accent-color: #2563eb;
+            --accent-glow: rgba(37, 99, 235, 0.08);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+        }
+
+        .logo-shield {
+            background-color: var(--accent-glow);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .badge-verified {
+            background: var(--success);
+            color: white;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+        }
+
+        .hero-title span {
+            color: var(--accent-color);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-tag {
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .card-icon {
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Exclusive Ownership Banner */
+        .owner-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .owner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 30px;
+            border: 1px solid var(--accent-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .owner-name {
+            font-size: 2.25rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        .owner-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 0;
+            text-align: center;
+            background-color: var(--card-bg);
+        }
+
+        .footer-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-copyright {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.25rem;
+            }
+            .owner-name {
+                font-size: 1.75rem;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo">
+                <div class="logo-shield">S</div>
+                SarkariGuru.AI
+            </a>
+            <span class="badge-verified">Verified Portal</span>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#ownership">About Founder</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <!-- Hero Section -->
+        <section class="hero">
+            <h1 class="hero-title">Your AI-Powered <span>Government Career</span> Partner</h1>
+            <p class="hero-subtitle">SarkariGuru.AI simplifies, translates, and organizes government career notifications, brochures, syllabi, and applications into an intelligent, secure, multi-lingual assistant experience.</p>
+            <button class="btn" onclick="alert('SarkariGuru-AI Android Application compiled successfully. Release build ready for deployment.')">
+                Download Android App (.APK)
+            </button>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="section-header">
+                <span class="section-tag">Powerful AI Core</span>
+                <h2 class="section-title">Engineered For Secure Success</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="card">
+                    <div class="card-icon">📄</div>
+                    <h3 class="card-title">AI Brochure Summarizer</h3>
+                    <p class="card-text">Instantly break down complex multi-page official government notifications into clear, actionable bullet points, job criteria, and dates.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">⚡</div>
+                    <h3 class="card-title">Syllabus Tracker</h3>
+                    <p class="card-text">Organize and monitor study goals across complex subject syllabi. Check off topics as you prepare for major national examinations.</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🛡️</div>
+                    <h3 class="card-title">Secure Candidate Portal</h3>
+                    <p class="card-text">Advanced local state and offline fail-safes protect user data while coordinating forms, details, and application wizards safely.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Exclusive Ownership Section -->
+        <section id="ownership" class="owner-section">
+            <div class="owner-badge">🛡️ EXCLUSIVE FOUNDER & OWNER</div>
+            <h2 class="owner-name">Trushank Waghmare</h2>
+            <p class="owner-desc">SarkariGuru.AI is proudly created, founded, and solely owned by <strong>Trushank Waghmare</strong>. All legal intellectual property, copyrights, web manifestations, and application releases are managed exclusively under the owner's legal identity.</p>
+            <div style="font-size: 0.9rem; color: var(--text-secondary); margin-top: 1rem;">
+                <strong>Owner Email:</strong> <span style="color: var(--accent-color);">trushankwaghmare@gmail.com</span>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-logo">
+                <div class="logo-shield" style="width: 28px; height: 28px; font-size: 0.9rem;">S</div>
+                SarkariGuru.AI
+            </div>
+            <p class="footer-text">Empowering million of aspirants with state-of-the-art career analysis tools.</p>
+            <p class="footer-copyright">
+                © 2026 Trushank Waghmare. All Rights Reserved.<br>
+                Terms of Service, deployment configurations, and all operational standards reflect the owner's identity strictly.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Array of stunning, professionally selected natural white daily themes
+        const dailyThemes = [
+            { bg: "#f8fafc", accent: "#2563eb", rgb: "37, 99, 235" }, // Clean Slate Blue
+            { bg: "#f0fdf4", accent: "#16a34a", rgb: "22, 163, 74" }, // Vibrant Emerald Green
+            { bg: "#f5f3ff", accent: "#7c3aed", rgb: "124, 58, 237" }, // Deep Amethyst Purple
+            { bg: "#fff7ed", accent: "#ea580c", rgb: "234, 88, 12" }, // Warm Solar Amber
+            { bg: "#f0f9ff", accent: "#0284c7", rgb: "2, 132, 199" }, // Breezy Sky Blue
+            { bg: "#fff1f2", accent: "#e11d48", rgb: "225, 29, 72" }, // Elegant Rose Pink
+            { bg: "#f0fdfa", accent: "#0d9488", rgb: "13, 148, 136" }, // Ocean Teal
+            { bg: "#fefaec", accent: "#ca8a04", rgb: "202, 138, 4" }  // Golden Sand
+        ];
+
+        function applyDailyTheme() {
+            try {
+                const today = new Date();
+                // Generate a deterministic index based on year, month, and day to shift exactly every 24 hours
+                const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+                const themeIndex = (today.getFullYear() + dayOfYear) % dailyThemes.length;
+                const activeTheme = dailyThemes[themeIndex];
+
+                // Dynamically modify :root CSS properties
+                document.documentElement.style.setProperty('--bg-color', activeTheme.bg);
+                document.documentElement.style.setProperty('--accent-color', activeTheme.accent);
+                document.documentElement.style.setProperty('--accent-glow', `rgba(${activeTheme.rgb}, 0.08)`);
+                
+                console.log(`[SarkariGuru.AI] Daily theme initialized. Theme ID: ${themeIndex}. Accent: ${activeTheme.accent}`);
+            } catch (error) {
+                console.error("Failed to apply dynamic daily theme:", error);
+            }
+        }
+
+        // Apply immediately upon parsing
+        applyDailyTheme();
+    </script>
+
+</body>
+</html>
