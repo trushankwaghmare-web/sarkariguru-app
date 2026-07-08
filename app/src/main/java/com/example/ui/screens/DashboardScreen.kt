@@ -113,6 +113,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.UserDocument
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.AdRequest
 import com.example.ui.theme.JobSector
 import com.example.ui.theme.SuccessGreen
 import androidx.compose.material3.NavigationBar
@@ -155,49 +160,58 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                 }
             },
             bottomBar = {
-                NavigationBar(
-                    containerColor = DailyTheme.CardBackground,
-                    tonalElevation = 8.dp
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
                 ) {
-                    NavigationBarItem(
-                        selected = selectedTab == DashboardViewModel.BottomTab.UPDATES,
-                        onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.UPDATES },
-                        icon = { Icon(Icons.Default.Search, contentDescription = "New Updates") },
-                        label = { Text("Updates", fontWeight = FontWeight.Bold) },
-                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = dailyAccent,
-                            selectedTextColor = dailyAccent,
-                            unselectedIconColor = DailyTheme.TextSecondary,
-                            unselectedTextColor = DailyTheme.TextSecondary,
-                            indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                    NavigationBar(
+                        containerColor = DailyTheme.CardBackground,
+                        tonalElevation = 8.dp
+                    ) {
+                        NavigationBarItem(
+                            selected = selectedTab == DashboardViewModel.BottomTab.UPDATES,
+                            onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.UPDATES },
+                            icon = { Icon(Icons.Default.Search, contentDescription = "New Updates") },
+                            label = { Text("Updates", fontWeight = FontWeight.Bold) },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = dailyAccent,
+                                selectedTextColor = dailyAccent,
+                                unselectedIconColor = DailyTheme.TextSecondary,
+                                unselectedTextColor = DailyTheme.TextSecondary,
+                                indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                            )
                         )
-                    )
-                    NavigationBarItem(
-                        selected = selectedTab == DashboardViewModel.BottomTab.HALL_TICKET,
-                        onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.HALL_TICKET },
-                        icon = { Icon(Icons.Default.CheckCircle, contentDescription = "Hall Ticket") },
-                        label = { Text("Hall Ticket", fontWeight = FontWeight.Bold) },
-                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = dailyAccent,
-                            selectedTextColor = dailyAccent,
-                            unselectedIconColor = DailyTheme.TextSecondary,
-                            unselectedTextColor = DailyTheme.TextSecondary,
-                            indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                        NavigationBarItem(
+                            selected = selectedTab == DashboardViewModel.BottomTab.HALL_TICKET,
+                            onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.HALL_TICKET },
+                            icon = { Icon(Icons.Default.CheckCircle, contentDescription = "Hall Ticket") },
+                            label = { Text("Hall Ticket", fontWeight = FontWeight.Bold) },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = dailyAccent,
+                                selectedTextColor = dailyAccent,
+                                unselectedIconColor = DailyTheme.TextSecondary,
+                                unselectedTextColor = DailyTheme.TextSecondary,
+                                indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                            )
                         )
-                    )
-                    NavigationBarItem(
-                        selected = selectedTab == DashboardViewModel.BottomTab.TRACKER,
-                        onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.TRACKER },
-                        icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Last Date") },
-                        label = { Text("Last Date", fontWeight = FontWeight.Bold) },
-                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
-                            selectedIconColor = dailyAccent,
-                            selectedTextColor = dailyAccent,
-                            unselectedIconColor = DailyTheme.TextSecondary,
-                            unselectedTextColor = DailyTheme.TextSecondary,
-                            indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                        NavigationBarItem(
+                            selected = selectedTab == DashboardViewModel.BottomTab.TRACKER,
+                            onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.TRACKER },
+                            icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Last Date") },
+                            label = { Text("Last Date", fontWeight = FontWeight.Bold) },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = dailyAccent,
+                                selectedTextColor = dailyAccent,
+                                unselectedIconColor = DailyTheme.TextSecondary,
+                                unselectedTextColor = DailyTheme.TextSecondary,
+                                indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                            )
                         )
-                    )
+                    }
+                    
+                    // Fixed Bottom Banner Ad
+                    AdMobBannerAdContainer()
                 }
             }
         ) { innerPadding ->
@@ -232,12 +246,21 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                     }
 
                     // Dialogs overlay
+                    viewModel.showAiApplyGuideJob.value?.let { job ->
+                        AiApplyGuideDialog(
+                            job = job,
+                            viewModel = viewModel,
+                            onDismiss = { viewModel.showAiApplyGuideJob.value = null }
+                        )
+                    }
+
                     if (viewModel.showSettingsDialog.value) {
                         SettingsDialog(
                             profile = profile,
+                            initialQualification = viewModel.formQualification.value,
                             onDismiss = { viewModel.showSettingsDialog.value = false },
-                            onSave = { name, phone, dob, qual ->
-                                viewModel.saveUserProfile(name, phone, dob, qual)
+                            onSave = { name, phone, dob, qual, cat ->
+                                viewModel.saveUserProfile(name, phone, dob, qual, cat)
                             },
                             onLogout = { viewModel.logout() }
                         )
@@ -1793,11 +1816,21 @@ fun JobItemCard(
     isTracker: Boolean = false
 ) {
     val isEligible = viewModel.checkJobEligibility(job)
+    val context = LocalContext.current
+    val activity = context as? android.app.Activity
     
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { viewModel.selectedJobDetails.value = job },
+            .clickable {
+                if (activity != null) {
+                    com.example.AdManager.showInterstitialAd(activity) {
+                        viewModel.selectedJobDetails.value = job
+                    }
+                } else {
+                    viewModel.selectedJobDetails.value = job
+                }
+            },
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
         border = BorderStroke(1.dp, DailyTheme.CardBorder)
@@ -1898,7 +1931,13 @@ fun JobItemCard(
                             .clip(RoundedCornerShape(8.dp))
                             .background(InfoLightBlue)
                             .clickable {
-                                viewModel.selectedJobDetails.value = job
+                                if (activity != null) {
+                                    com.example.AdManager.showInterstitialAd(activity) {
+                                        viewModel.selectedJobDetails.value = job
+                                    }
+                                } else {
+                                    viewModel.selectedJobDetails.value = job
+                                }
                             }
                             .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
@@ -1923,6 +1962,9 @@ fun JobDetailsDialog(
     viewModel: DashboardViewModel,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val activity = context as? android.app.Activity
+
     Dialog(onDismissRequest = onDismiss) {
         Card(
             shape = RoundedCornerShape(24.dp),
@@ -2001,8 +2043,15 @@ fun JobDetailsDialog(
                     // Left button: Apply (Manual Official Link)
                     OutlinedButton(
                         onClick = {
-                            viewModel.activeDialogMessage.value = "Secure link loaded: ${job.officialLink}. Best of luck with manual submission!"
-                            onDismiss()
+                            if (activity != null) {
+                                com.example.AdManager.showInterstitialAd(activity) {
+                                    viewModel.activeDialogMessage.value = "Secure link loaded: ${job.officialLink}. Best of luck with manual submission!"
+                                    onDismiss()
+                                }
+                            } else {
+                                viewModel.activeDialogMessage.value = "Secure link loaded: ${job.officialLink}. Best of luck with manual submission!"
+                                onDismiss()
+                            }
                         },
                         modifier = Modifier.weight(1f).height(48.dp),
                         border = BorderStroke(1.dp, InfoLightBlue),
@@ -2011,18 +2060,20 @@ fun JobDetailsDialog(
                         Text("Apply (Manual)", color = InfoLightBlue, fontWeight = FontWeight.Bold, fontSize = 11.sp)
                     }
 
-                    // Right button: Apply via AI
+                    // Right button: Apply via AI (Personalized Step-by-Step Guide)
                     Button(
                         onClick = {
-                            viewModel.activeApplyStep.value = 0
-                            viewModel.activeSector.value = when (job.sector) {
-                                "Army" -> JobSector.ARMY
-                                "Navy" -> JobSector.NAVY
-                                "Police" -> JobSector.POLICE
-                                else -> JobSector.CIVIL
+                            val action = {
+                                viewModel.generateApplyGuide(job)
+                                onDismiss()
                             }
-                            viewModel.activeDialogMessage.value = "AI has initialized credential matching, PDF conversion, signature cropping & pre-filled form!"
-                            onDismiss()
+                            if (activity != null) {
+                                com.example.AdManager.showInterstitialAd(activity) {
+                                    action()
+                                }
+                            } else {
+                                action()
+                            }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = SuccessGreen),
                         modifier = Modifier.weight(1.2f).height(48.dp),
@@ -2060,14 +2111,16 @@ fun DetailRow(icon: androidx.compose.ui.graphics.vector.ImageVector, label: Stri
 @Composable
 fun SettingsDialog(
     profile: com.example.data.UserProfile?,
+    initialQualification: String,
     onDismiss: () -> Unit,
-    onSave: (String, String, String, String) -> Unit,
+    onSave: (String, String, String, String, String) -> Unit,
     onLogout: () -> Unit
 ) {
     var name by remember { mutableStateOf(profile?.name ?: "") }
     var phone by remember { mutableStateOf(profile?.phone ?: "") }
     var dob by remember { mutableStateOf(profile?.dob ?: "") }
-    var qualification by remember { mutableStateOf("12th Pass") }
+    var qualification by remember { mutableStateOf(initialQualification) }
+    var category by remember { mutableStateOf(profile?.category ?: "General") }
 
     val qualifications = listOf("10th Pass", "12th Pass", "Graduate")
     val dailyAccent = DailyTheme.accentColor
@@ -2157,6 +2210,27 @@ fun SettingsDialog(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(q, color = if (isSel) Color.White else DailyTheme.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+
+                Text("Candidate Category:", color = DailyTheme.TextSecondary, fontSize = 12.sp)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("General", "OBC", "SC", "ST").forEach { cat ->
+                        val isSel = cat == category
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSel) dailyAccent else DailyTheme.Background)
+                                .clickable { category = cat }
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(cat, color = if (isSel) Color.White else DailyTheme.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -2255,7 +2329,7 @@ fun SettingsDialog(
 
                     Button(
                         onClick = {
-                            onSave(name, phone, dob, qualification)
+                            onSave(name, phone, dob, qualification, category)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
                         modifier = Modifier.weight(1.2f)
@@ -3072,6 +3146,369 @@ fun HallTicketTabContent(viewModel: DashboardViewModel) {
         }
 
         item { Spacer(modifier = Modifier.height(48.dp)) }
+    }
+}
+
+@Composable
+fun AdMobBannerAd(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val adView = remember {
+        AdView(context).apply {
+            setAdSize(AdSize.BANNER)
+            adUnitId = if (com.example.BuildConfig.DEBUG) {
+                "ca-app-pub-3940256099942544/6300978111"
+            } else {
+                "ca-app-pub-6300818578767625/2796454220"
+            }
+        }
+    }
+
+    DisposableEffect(adView) {
+        adView.loadAd(AdRequest.Builder().build())
+        onDispose {
+            adView.destroy()
+        }
+    }
+
+    AndroidView(
+        factory = { adView },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun AdMobBannerAdContainer(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(DailyTheme.CardBackground)
+            .padding(vertical = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AdMobBannerAd()
+    }
+}
+
+@Composable
+fun AiApplyGuideDialog(
+    job: JobNotification,
+    viewModel: DashboardViewModel,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val isGenerating = viewModel.isGeneratingApplyGuide.value
+    val guideText = viewModel.aiApplyGuideText.value
+    
+    // Track checklist item states
+    val checklistStates = remember { androidx.compose.runtime.mutableStateMapOf<String, Boolean>() }
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+            border = BorderStroke(1.dp, DailyTheme.CardBorder),
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(18.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(SuccessGreen.copy(alpha = 0.15f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Star,
+                                contentDescription = null,
+                                tint = SuccessGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                "AI Apply Assistant",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Black,
+                                color = DailyTheme.TextPrimary
+                            )
+                            Text(
+                                "पर्सनलाइज्ड स्टेप-बाय-स्टेप गाइड",
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = SuccessGreen
+                            )
+                        }
+                    }
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                    }
+                }
+
+                HorizontalDivider(color = DailyTheme.CardBorder, modifier = Modifier.padding(vertical = 12.dp))
+
+                if (isGenerating) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(color = SuccessGreen)
+                        Spacer(modifier = Modifier.height(18.dp))
+                        Text(
+                            "AI आपकी प्रोफाइल पढ़ रहा है...",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = DailyTheme.TextPrimary,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            "आपकी योग्यता, श्रेणी और जन्मतिथि के अनुसार इस जॉब के लिए स्टेप-बाय-स्टेप गाइड तैयार की जा रही है।",
+                            fontSize = 12.sp,
+                            color = DailyTheme.TextSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 24.dp)
+                        )
+                    }
+                } else {
+                    // Render Guide
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        // Job Badge Header Card
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = DailyTheme.Background),
+                            border = BorderStroke(1.dp, DailyTheme.CardBorder),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(DailyTheme.accentColor.copy(alpha = 0.12f), RoundedCornerShape(8.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        Icons.Default.Shield,
+                                        contentDescription = null,
+                                        tint = DailyTheme.accentColor,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        job.title,
+                                        fontWeight = FontWeight.Black,
+                                        fontSize = 14.sp,
+                                        color = DailyTheme.TextPrimary
+                                    )
+                                    Text(
+                                        "Official Site: ${job.officialLink}",
+                                        fontSize = 10.sp,
+                                        color = DailyTheme.TextSecondary
+                                    )
+                                }
+                            }
+                        }
+
+                        // Split guide into sections/lines and render beautifully
+                        val lines = guideText.split("\n")
+                        lines.forEach { line ->
+                            val trimmed = line.trim()
+                            when {
+                                trimmed.isEmpty() -> {
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                }
+                                trimmed.startsWith("**") && trimmed.endsWith("**") -> {
+                                    val headerText = trimmed.removeSurrounding("**")
+                                    Text(
+                                        text = headerText,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = SuccessGreen,
+                                        modifier = Modifier.padding(top = 10.dp)
+                                    )
+                                }
+                                trimmed.startsWith("SECTION") || trimmed.contains("पुष्टि") || trimmed.contains("गाइड") || trimmed.contains("दस्तावेज") || trimmed.contains("भुगतान") || trimmed.contains("चेकलिस्ट") -> {
+                                    if (trimmed.startsWith("**") || trimmed.startsWith("#")) {
+                                        val cleanText = trimmed.replace("*", "").replace("#", "").trim()
+                                        Text(
+                                            text = cleanText,
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.ExtraBold,
+                                            color = SuccessGreen,
+                                            modifier = Modifier.padding(top = 10.dp)
+                                        )
+                                    } else {
+                                        Text(
+                                            text = trimmed,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = DailyTheme.TextPrimary,
+                                            modifier = Modifier.padding(top = 6.dp)
+                                        )
+                                    }
+                                }
+                                trimmed.startsWith("- [ ]") || trimmed.startsWith("* [ ]") || trimmed.startsWith("[ ]") -> {
+                                    val itemText = trimmed
+                                        .replace("- [ ]", "")
+                                        .replace("* [ ]", "")
+                                        .replace("[ ]", "")
+                                        .trim()
+                                    val isChecked = checklistStates[itemText] ?: false
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { checklistStates[itemText] = !isChecked }
+                                            .padding(vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        androidx.compose.material3.Checkbox(
+                                            checked = isChecked,
+                                            onCheckedChange = { checklistStates[itemText] = it },
+                                            colors = androidx.compose.material3.CheckboxDefaults.colors(checkedColor = SuccessGreen)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = itemText,
+                                            fontSize = 12.sp,
+                                            color = DailyTheme.TextPrimary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                                trimmed.startsWith("*") || trimmed.startsWith("-") -> {
+                                    val bulletText = trimmed.substring(1).trim()
+                                    Row(
+                                        modifier = Modifier.padding(start = 8.dp).padding(vertical = 2.dp),
+                                        verticalAlignment = Alignment.Top
+                                    ) {
+                                        Text("• ", color = SuccessGreen, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text(
+                                            text = bulletText,
+                                            fontSize = 12.sp,
+                                            color = DailyTheme.TextPrimary,
+                                            lineHeight = 18.sp
+                                        )
+                                    }
+                                }
+                                else -> {
+                                    Text(
+                                        text = trimmed,
+                                        fontSize = 12.sp,
+                                        color = DailyTheme.TextSecondary,
+                                        lineHeight = 18.sp,
+                                        modifier = Modifier.padding(vertical = 2.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Checklist Complete State Banner
+                        if (checklistStates.isNotEmpty()) {
+                            val allChecked = checklistStates.values.all { it }
+                            if (allChecked) {
+                                Card(
+                                    colors = CardDefaults.cardColors(containerColor = SuccessGreen.copy(alpha = 0.12f)),
+                                    border = BorderStroke(1.dp, SuccessGreen.copy(alpha = 0.4f)),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(14.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = SuccessGreen,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Column {
+                                            Text(
+                                                "सभी आवश्यक जांच पूरी हो चुकी हैं!",
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = SuccessGreen
+                                            )
+                                            Text(
+                                                "अब आप आधिकारिक वेबसाइट पर जाकर फॉर्म सबमिट करने के लिए पूरी तरह तैयार हैं।",
+                                                fontSize = 11.sp,
+                                                color = DailyTheme.TextPrimary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
+                    HorizontalDivider(color = DailyTheme.CardBorder, modifier = Modifier.padding(vertical = 10.dp))
+
+                    // Dialog footer with Apply button
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.weight(1f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, DailyTheme.CardBorder)
+                        ) {
+                            Text("बंद करें (Close)", color = DailyTheme.TextSecondary, fontSize = 12.sp)
+                        }
+
+                        Button(
+                            onClick = {
+                                val intent = android.content.Intent(
+                                    android.content.Intent.ACTION_VIEW,
+                                    android.net.Uri.parse(job.officialLink)
+                                )
+                                context.startActivity(intent)
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SuccessGreen),
+                            modifier = Modifier.weight(1.5f).height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Shield, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("वेबसाइट पर जाएं", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

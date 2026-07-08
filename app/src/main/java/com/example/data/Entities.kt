@@ -14,6 +14,7 @@ data class UserProfile(
     val name: String,
     val phone: String,
     val dob: String,
+    val category: String = "General",
     val isRegistered: Boolean = true
 )
 

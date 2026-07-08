@@ -51,6 +51,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val formPhone = mutableStateOf("")
     val formDob = mutableStateOf("")
     val formQualification = mutableStateOf("12th Pass") // For eligibility filtering
+    val formCategory = mutableStateOf("General") // Candidate category (General, OBC, SC, ST)
     val form10thRoll = mutableStateOf("")
     val form10thMarks = mutableStateOf("")
     val form10thYear = mutableStateOf("")
@@ -93,6 +94,9 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // Job Details View state
     var selectedJobDetails = mutableStateOf<JobNotification?>(null)
     var activeApplyingJob = mutableStateOf<JobNotification?>(null)
+    var showAiApplyGuideJob = mutableStateOf<JobNotification?>(null)
+    var aiApplyGuideText = mutableStateOf("")
+    var isGeneratingApplyGuide = mutableStateOf(false)
 
     // 100,000x Stress Testing and Self-Healing Engine States
     var isStressTesting = mutableStateOf(false)
@@ -137,6 +141,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     formName.value = it.name
                     formPhone.value = it.phone
                     formDob.value = it.dob
+                    formCategory.value = it.category
                 }
             }
         }
@@ -348,17 +353,44 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     // Save profile to database
-    fun saveUserProfile(name: String, phone: String, dob: String, qualification: String) {
+    fun saveUserProfile(name: String, phone: String, dob: String, qualification: String, category: String) {
         viewModelScope.launch {
-            val profile = UserProfile(name = name, phone = phone, dob = dob)
+            val profile = UserProfile(name = name, phone = phone, dob = dob, category = category)
             repository.saveProfile(profile)
             _userProfile.value = profile
             formName.value = name
             formPhone.value = phone
             formDob.value = dob
             formQualification.value = qualification
+            formCategory.value = category
             showSettingsDialog.value = false
             isUserLoggedIn.value = true
+        }
+    }
+
+    fun generateApplyGuide(job: JobNotification) {
+        showAiApplyGuideJob.value = job
+        isGeneratingApplyGuide.value = true
+        aiApplyGuideText.value = ""
+        viewModelScope.launch {
+            try {
+                val result = GeminiClient.generateHindiApplyGuide(
+                    jobTitle = job.title,
+                    jobOfficialLink = job.officialLink,
+                    eligibility = job.eligibility,
+                    fees = job.fees,
+                    userName = if (formName.value.isEmpty()) "Candidate" else formName.value,
+                    userDob = if (formDob.value.isEmpty()) "15/07/2002" else formDob.value,
+                    userQualification = formQualification.value,
+                    userCategory = formCategory.value
+                )
+                aiApplyGuideText.value = result
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error generating guide", e)
+                aiApplyGuideText.value = "त्रुटि: गाइड जनरेट करने में विफलता हुई।"
+            } finally {
+                isGeneratingApplyGuide.value = false
+            }
         }
     }
 

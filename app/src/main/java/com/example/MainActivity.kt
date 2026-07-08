@@ -13,6 +13,10 @@ import com.example.ui.theme.MyApplicationTheme
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    
+    // Initialize Google AdMob SDK properly on startup
+    AdManager.initialize(this)
+    
     enableEdgeToEdge()
     setContent {
       // Initialize our state-bearing viewmodel securely

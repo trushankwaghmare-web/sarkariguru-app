@@ -243,6 +243,133 @@ object GeminiClient {
         }
     }
 
+    suspend fun generateHindiApplyGuide(
+        jobTitle: String,
+        jobOfficialLink: String,
+        eligibility: String,
+        fees: String,
+        userName: String,
+        userDob: String,
+        userQualification: String,
+        userCategory: String
+    ): String = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            Log.w(TAG, "Gemini API Key is not set, using mock Hindi apply guide")
+            return@withContext getMockHindiApplyGuide(jobTitle, jobOfficialLink, eligibility, fees, userName, userDob, userQualification, userCategory)
+        }
+
+        val prompt = """
+            You are an expert AI application assistant for SarkariGuru.AI.
+            Generate a highly detailed, step-by-step application guide in simple Hindi language for applying to the following government job:
+            Job Title: "$jobTitle"
+            Official Application Link: "$jobOfficialLink"
+            Job Eligibility: "$eligibility"
+            Job Fees: "$fees"
+
+            The candidate applying has the following profile details:
+            Name (Naam): "$userName"
+            Date of Birth (DOB): "$userDob"
+            Qualification: "$userQualification"
+            Category: "$userCategory"
+
+            Your guide MUST be in simple, friendly, easy-to-understand Hindi (Devanagari script) and structured EXACTLY using these sections separated by empty lines:
+
+            SECTION 1: CANDIDATE PROFILE READ CONFIRMATION (उम्मीदवार प्रोफ़ाइल पुष्टि)
+            Confirm you have read their saved details (Naam, DOB, Qualification, Category). Give a warm 2-3 sentence greeting in Hindi.
+
+            SECTION 2: STEP-BY-STEP OFFICIAL WEBSITE GUIDE (स्टेप-बाय-स्टेप आवेदन गाइड)
+            Give 4 to 6 clear, sequential, numbered steps to apply on the official website ($jobOfficialLink).
+            At EACH step, clearly instruct the user what they need to enter, explicitly substituting the candidate's actual saved details in the instruction. For example:
+            - "कदम 1: सबसे पहले अधिकारिक वेबसाइट ($jobOfficialLink) खोलें और 'New Registration' पर क्लिक करें।"
+            - "कदम 2: अब फॉर्म में अपना नाम '$userName' दर्ज करें। ध्यान रहे कि वर्तनी बिल्कुल आपके दस्तावेजों जैसी होनी चाहिए।"
+            - "कदम 3: अपनी जन्मतिथि (DOB) '$userDob' भरें।"
+            - "कदम 4: श्रेणी (Category) विकल्प में से '$userCategory' चुनें।"
+            - "कदम 5: अपनी शैक्षणिक योग्यता '$userQualification' सिलेक्ट करें।"
+
+            SECTION 3: SCANNED DOCUMENTS CHECKLIST (आवश्यक दस्तावेज जो स्कैन करके अपलोड करने हैं)
+            Provide a detailed bulleted list in Hindi of documents they must scan and upload, including specific ones based on their eligibility and category (e.g. 10th marksheet for "$userQualification", Category Certificate for "$userCategory" if SC/ST/OBC, passport photo, signature, etc.).
+
+            SECTION 4: FEE PAYMENT METHOD (आवेदन शुल्क भुगतान निर्देश)
+            Explain how to pay the fee. Explicitly state the fee amount from "$fees" that applies to their category "$userCategory", and explain simple online payment options (UPI, Netbanking, Debit Card).
+
+            SECTION 5: FINAL CHECKLIST BEFORE SUBMISSION (जमा करने से पहले अंतिम चेकलिस्ट)
+            Provide a bulleted list of things they must verify before clicking the 'Submit' button.
+
+            Keep the tone encouraging, and use simple language. Keep formatting clean.
+        """.trimIndent()
+
+        try {
+            val responseText = makeApiCall(prompt, apiKey)
+            if (responseText != null) {
+                responseText.trim()
+            } else {
+                getMockHindiApplyGuide(jobTitle, jobOfficialLink, eligibility, fees, userName, userDob, userQualification, userCategory)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in generating apply guide: ${e.message}", e)
+            getMockHindiApplyGuide(jobTitle, jobOfficialLink, eligibility, fees, userName, userDob, userQualification, userCategory)
+        }
+    }
+
+    private fun getMockHindiApplyGuide(
+        jobTitle: String,
+        jobOfficialLink: String,
+        eligibility: String,
+        fees: String,
+        userName: String,
+        userDob: String,
+        userQualification: String,
+        userCategory: String
+    ): String {
+        return """
+**उम्मीदवार प्रोफ़ाइल पुष्टि (Candidate Profile Read Confirmation)**
+नमस्ते **$userName**, हमने आपकी प्रोफ़ाइल डिटेल्स सफलतापूर्वक पढ़ ली हैं:
+* **नाम**: $userName
+* **जन्मतिथि (DOB)**: $userDob
+* **योग्यता**: $userQualification
+* **श्रेणी (Category)**: $userCategory
+
+---
+
+**स्टेप-बाय-स्टेप अधिकारिक वेबसाइट गाइड (Step-by-Step Guide for Official Website)**
+अधिकारिक वेबसाइट पर आवेदन करने के लिए इन सरल चरणों का पालन करें:
+* **कदम 1:** सबसे पहले अधिकारिक लिंक ($jobOfficialLink) पर जाएं।
+* **कदम 2:** होमपेज पर 'Apply Online' या 'New Registration' लिंक खोजें और उसपर क्लिक करें।
+* **कदम 3:** पंजीकरण फॉर्म में अपना नाम **"$userName"** और अपनी जन्मतिथि **"$userDob"** बिल्कुल सही दर्ज करें।
+* **कदम 4:** श्रेणी (Category) सेक्शन में जाकर **"$userCategory"** का चयन करें।
+* **कदम 5:** शैक्षणिक योग्यता सेक्शन में **"$userQualification"** का चयन करें और यदि पूछा जाए तो अपने 10वीं/12वीं के रोल नंबर और अंक भरें।
+* **कदम 6:** फॉर्म को सेव करें और आगे बढ़ें।
+
+---
+
+**आवश्यक दस्तावेज जो स्कैन करके अपलोड करने हैं (Scanned Documents List)**
+कृपया सुनिश्चित करें कि निम्नलिखित दस्तावेज आपके पास स्कैन किए हुए तैयार हैं:
+* 📸 **पासपोर्ट साइज फोटो**: (जेपीईजी फॉर्मेट, साइज 20KB - 50KB के बीच)
+* ✍️ **हस्ताक्षर (Signature)**: (साइज 10KB - 20KB के बीच, काले पेन से हस्ताक्षर करें)
+* 📜 **$userQualification अंक पत्र (Marksheet)**: मूल दस्तावेज़ को साफ-साफ स्कैन करें।
+* 🆔 **आधार कार्ड (Aadhaar Card)**: पहचान और पते के प्रमाण के रूप में।
+${if (userCategory != "General") "* 📑 **जाति प्रमाण पत्र (Category Certificate)**: चूंकि आपकी श्रेणी **$userCategory** है, आपको आयु सीमा में छूट या शुल्क लाभ के लिए जाति प्रमाण पत्र अपलोड करना होगा।" else ""}
+
+---
+
+**आवेदन शुल्क भुगतान निर्देश (Fee Payment Instructions)**
+* आपकी श्रेणी **"$userCategory"** के अनुसार, शुल्क विवरण इस प्रकार है: **$fees**।
+* शुल्क का भुगतान ऑनलाइन माध्यम जैसे **UPI (GPay/PhonePe), डेबिट कार्ड, या नेट बैंकिंग** के जरिए सुरक्षित रूप से कर सकते हैं।
+* भुगतान सफल होने के बाद स्क्रीनशॉट लें या रसीद डाउनलोड करना न भूलें।
+
+---
+
+**जमा करने से पहले अंतिम चेकलिस्ट (Final Submission Checklist)**
+अंतिम सबमिट बटन दबाने से पहले इन बातों की जांच अवश्य करें:
+* [ ] क्या आपका नाम **"$userName"** और जन्मतिथि **"$userDob"** आपकी मार्कशीट से मेल खाते हैं?
+* [ ] क्या आपकी श्रेणी **"$userCategory"** सही चुनी गई है?
+* [ ] क्या फोटो और हस्ताक्षर स्पष्ट रूप से दिखाई दे रहे हैं?
+* [ ] क्या आपने सही शैक्षणिक विवरण दर्ज किया है?
+* [ ] क्या आपने भरी हुई जानकारी का प्रीव्यू चेक कर लिया है?
+        """.trimIndent()
+    }
+
     private fun getMockOcrResult(docType: String): OcrResult {
         return when (docType) {
             "10TH_MARKSHEET" -> OcrResult(
