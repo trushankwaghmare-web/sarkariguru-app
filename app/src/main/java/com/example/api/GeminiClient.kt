@@ -395,4 +395,79 @@ ${if (userCategory != "General") "* 📑 **जाति प्रमाण प�
             )
         }
     }
+
+    suspend fun chatWithSarkariGuru(
+        userMessage: String,
+        userName: String,
+        userDob: String,
+        userQualification: String,
+        userCategory: String,
+        isKidMode: Boolean,
+        chatHistory: List<Pair<String, String>>
+    ): String = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            Log.w(TAG, "Gemini API Key is not set, using mock chat response")
+            return@withContext getMockChatResponse(userMessage, userName, isKidMode)
+        }
+
+        val contextPrompt = if (isKidMode) {
+            "You are a friendly, sweet, and adorable AI voice assistant named SarkariGuru.AI for kids and students. Speak in extremely simple Hindi, using cute words and emojis. The candidate's name is '$userName', DOB is '$userDob', qualification is '$userQualification', category is '$userCategory'."
+        } else {
+            "You are SarkariGuru.AI, a highly helpful, intelligent AI assistant for government jobs. Speak in friendly, clear Hindi (Devanagari script). The candidate's name is '$userName', DOB is '$userDob', qualification is '$userQualification', category is '$userCategory'."
+        }
+
+        val historyText = chatHistory.joinToString("\n") { (u, a) -> "User: $u\nSarkariGuru: $a" }
+
+        val prompt = """
+            $contextPrompt
+            
+            Previous Conversation:
+            $historyText
+            
+            User's new message: "$userMessage"
+            
+            Provide a short, delightful, and natural reply in Hindi (1 to 3 sentences maximum, so it's easy to read and read aloud via text-to-speech). Use emojis! Focus on helping them understand jobs or encouraging them. Keep it simple.
+        """.trimIndent()
+
+        try {
+            val responseText = makeApiCall(prompt, apiKey)
+            responseText?.trim() ?: getMockChatResponse(userMessage, userName, isKidMode)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in chatbot conversation: ${e.message}", e)
+            getMockChatResponse(userMessage, userName, isKidMode)
+        }
+    }
+
+    private fun getMockChatResponse(userMessage: String, userName: String, isKidMode: Boolean): String {
+        val msg = userMessage.lowercase()
+        return if (isKidMode) {
+            when {
+                msg.contains("hello") || msg.contains("हाय") || msg.contains("नमस्ते") -> {
+                    "नमस्ते $userName बेटा! 🌸 आप कैसे हो? आज हम कौन सी प्यारी सरकारी नौकरी के बारे में जानेंगे? 🎖️✨"
+                }
+                msg.contains("job") || msg.contains("नौकरी") -> {
+                    "बेटा, आपके लिए देश की सेवा करने के कई सुनहरे मौके हैं! जैसे भारतीय सेना में अफ़सर बनना या पुलिस में देश की रक्षा करना! 👮‍♂️🎖️"
+                }
+                msg.contains("qualification") || msg.contains("पढ़ाई") -> {
+                    "आप मन लगाकर पढ़ाई करो बेटा! 10वीं या 12वीं पास करते ही आप बहुत सी सेना और पुलिस की नौकरियों के लिए फॉर्म भर सकते हो! 📚✏️"
+                }
+                else -> {
+                    "अरे वाह! कितनी प्यारी बात कही आपने! 😍 सरकारी गुरु हमेशा आपके साथ है। कुछ और पूछना है बेटा? 💫"
+                }
+            }
+        } else {
+            when {
+                msg.contains("hello") || msg.contains("नमस्ते") || msg.contains("hi") -> {
+                    "नमस्कार $userName जी! SarkariGuru.AI में आपका स्वागत है। आज मैं आपकी सरकारी नौकरी की तैयारी और आवेदन में क्या सहायता कर सकता हूँ? 👮‍♂️"
+                }
+                msg.contains("job") || msg.contains("नौकरी") || msg.contains("vacancy") -> {
+                    "आपके प्रोफाइल के आधार पर अभी कई लाइव वैकेंसियां उपलब्ध हैं! जैसे सेना रैली, नेवी टेक्निकल और दिल्ली पुलिस कांस्टेबल। क्या आप इनके बारे में विस्तार से जानना चाहते हैं? 📄"
+                }
+                else -> {
+                    "बहुत बढ़िया सवाल! सरकारी गुरु एआई हमेशा आपकी मदद के लिए तैयार है। कृपया सरकारी नौकरी से जुड़ा अपना कोई भी सवाल पूछें। 🎯"
+                }
+            }
+        }
+    }
 }

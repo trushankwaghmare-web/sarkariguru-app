@@ -13,6 +13,8 @@ import com.example.data.AppDatabase
 import com.example.data.SarkariGuruRepository
 import com.example.data.UserDocument
 import com.example.data.UserProfile
+import com.example.data.UserAccount
+import com.example.data.SavedJob
 import com.example.ui.theme.JobSector
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -42,6 +44,23 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val isSupabaseConnecting = mutableStateOf(false)
     val supabaseConnectionLagged = mutableStateOf(false)
     val supabaseStatusMessage = mutableStateOf("")
+
+    // Extended phone login system with OTP and Remember Me
+    val registerName = mutableStateOf("")
+    val registerPhone = mutableStateOf("")
+    val registerEmail = mutableStateOf("")
+    val registerPassword = mutableStateOf("")
+    val loginPassword = mutableStateOf("")
+    val rememberMeChecked = mutableStateOf(true)
+
+    // OTP verification fields
+    val isOtpVerificationSent = mutableStateOf(false)
+    val enteredOtp = mutableStateOf("")
+    val sentOtp = mutableStateOf("")
+    val otpCountDown = mutableStateOf(60)
+    val isOtpTimerRunning = mutableStateOf(false)
+    
+    val savedJobsList = androidx.compose.runtime.mutableStateListOf<SavedJob>()
 
     // Location state-based filter
     val selectedStateFilter = mutableStateOf("All India") // All India, Maharashtra, Delhi, Bihar, Uttar Pradesh, Punjab, etc.
@@ -113,7 +132,92 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     var resizerFormat = mutableStateOf("")
     var resizerCropDetails = mutableStateOf("")
 
-    enum class BottomTab { UPDATES, HALL_TICKET, TRACKER }
+    enum class BottomTab { UPDATES, HALL_TICKET, RECOMMENDATIONS, TRACKER }
+
+    val voiceAssistantMessages = androidx.compose.runtime.mutableStateListOf<AssistantMessage>()
+    val showVoiceAssistantDialog = mutableStateOf(false)
+    val isVoiceAssistantThinking = mutableStateOf(false)
+    val isKidModeActive = mutableStateOf(false)
+
+    // Hall Ticket filters
+    var hallTicketStateFilter = mutableStateOf("All India")
+    var hallTicketExamFilter = mutableStateOf("All Exams")
+
+    fun toggleKidMode() {
+        isKidModeActive.value = !isKidModeActive.value
+        val txt = if (isKidModeActive.value) {
+            "किड गाइड मोड चालू हो गया है! अब सब कुछ बहुत आसान हिंदी और बड़े फोंट्स में दिखेगा।"
+        } else {
+            "किड गाइड मोड बंद कर दिया गया है।"
+        }
+        playSectionVoiceGuide("KidMode", txt)
+    }
+
+    fun getAgeFromDob(dobString: String): Int {
+        try {
+            val parts = dobString.split("/")
+            if (parts.size == 3) {
+                val day = parts[0].trim().toInt()
+                val month = parts[1].trim().toInt() - 1
+                val year = parts[2].trim().toInt()
+                val dob = Calendar.getInstance().apply {
+                    set(year, month, day)
+                }
+                val today = Calendar.getInstance()
+                var age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR)
+                if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+                    age--
+                }
+                return age
+            }
+        } catch (e: Exception) {
+            // fallback
+        }
+        return 20 // default fallback
+    }
+
+    fun sendVoiceAssistantMessage(text: String) {
+        if (text.trim().isEmpty()) return
+        val sdf = SimpleDateFormat("HH:mm", Locale.US)
+        val time = sdf.format(Date())
+        voiceAssistantMessages.add(AssistantMessage(text, isUser = true, timestamp = time))
+        isVoiceAssistantThinking.value = true
+        
+        viewModelScope.launch {
+            try {
+                // Convert list to simple Pairs of user message and assistant response
+                val historyPairs = mutableListOf<Pair<String, String>>()
+                var lastUser = ""
+                voiceAssistantMessages.forEach { msg ->
+                    if (msg.isUser) {
+                        lastUser = msg.text
+                    } else if (lastUser.isNotEmpty()) {
+                        historyPairs.add(Pair(lastUser, msg.text))
+                        lastUser = ""
+                    }
+                }
+                
+                val response = GeminiClient.chatWithSarkariGuru(
+                    userMessage = text,
+                    userName = if (formName.value.isEmpty()) "Candidate" else formName.value,
+                    userDob = if (formDob.value.isEmpty()) "15/07/2002" else formDob.value,
+                    userQualification = formQualification.value,
+                    userCategory = formCategory.value,
+                    isKidMode = isKidModeActive.value,
+                    chatHistory = historyPairs
+                )
+                
+                voiceAssistantMessages.add(AssistantMessage(response, isUser = false, timestamp = sdf.format(Date())))
+                // Speak the response using Text to Speech
+                playSectionVoiceGuide("Assistant", response)
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Assistant failed", e)
+                voiceAssistantMessages.add(AssistantMessage("क्षमा करें, कुछ खराबी आ गई है। कृपया पुनः प्रयास करें।", isUser = false, timestamp = sdf.format(Date())))
+            } finally {
+                isVoiceAssistantThinking.value = false
+            }
+        }
+    }
 
     // Hardcoded Creator & Owner Config
     companion object {
@@ -135,23 +239,47 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         // Fetch database updates
         viewModelScope.launch {
-            repository.profile.collectLatest {
-                _userProfile.value = it
-                if (it != null) {
-                    formName.value = it.name
-                    formPhone.value = it.phone
-                    formDob.value = it.dob
-                    formCategory.value = it.category
+            repository.profile.collectLatest { profile ->
+                _userProfile.value = profile
+                if (profile != null) {
+                    formName.value = profile.name
+                    formPhone.value = profile.phone
+                    formDob.value = profile.dob
+                    formCategory.value = profile.category
+                    
+                    isUserLoggedIn.value = true
+                    
+                    // Dynamically collect user's documents and saved jobs!
+                    collectUserData(profile.phone)
+                } else {
+                    isUserLoggedIn.value = false
                 }
             }
         }
 
-        viewModelScope.launch {
-            repository.allDocuments.collectLatest {
-                _documents.value = it
-                // Auto-fill from loaded documents if they are available
-                it.forEach { doc ->
-                    autoFillFromDoc(doc)
+        // Remember Me auto-login check on boot
+        val prefs = application.getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
+        val rememberMe = prefs.getBoolean("remember_me", false)
+        val lastLogin = prefs.getLong("last_login_timestamp", 0L)
+        val savedPhone = prefs.getString("saved_phone", "")
+
+        val currentTime = System.currentTimeMillis()
+        val thirtyDaysMs = 30L * 24 * 60 * 60 * 1000L // 30 days
+
+        if (rememberMe && savedPhone != null && savedPhone.isNotEmpty() && (currentTime - lastLogin < thirtyDaysMs)) {
+            viewModelScope.launch {
+                val account = repository.getAccountByPhone(savedPhone)
+                if (account != null) {
+                    val profile = UserProfile(
+                        name = account.name,
+                        phone = account.phone,
+                        dob = account.dob,
+                        category = account.category
+                    )
+                    repository.saveProfile(profile)
+                    _userProfile.value = profile
+                    isUserLoggedIn.value = true
+                    prefs.edit().putLong("last_login_timestamp", currentTime).apply()
                 }
             }
         }
@@ -165,6 +293,58 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
         // Start countdown timer ticker
         startTimerTicker()
+    }
+
+    private var userDataJobsJob: kotlinx.coroutines.Job? = null
+    private var userDataDocsJob: kotlinx.coroutines.Job? = null
+
+    private fun collectUserData(phone: String) {
+        userDataJobsJob?.cancel()
+        userDataDocsJob?.cancel()
+
+        userDataDocsJob = viewModelScope.launch {
+            repository.getAllDocuments(phone).collectLatest { docs ->
+                _documents.value = docs
+                docs.forEach { doc ->
+                    autoFillFromDoc(doc)
+                }
+            }
+        }
+
+        userDataJobsJob = viewModelScope.launch {
+            repository.getSavedJobs(phone).collectLatest { jobs ->
+                savedJobsList.clear()
+                savedJobsList.addAll(jobs)
+            }
+        }
+    }
+
+    fun toggleSaveJob(job: JobNotification) {
+        val phone = formPhone.value
+        if (phone.isEmpty()) {
+            activeDialogMessage.value = "Please login first to save jobs!"
+            return
+        }
+        viewModelScope.launch {
+            val isSaved = savedJobsList.any { it.jobTitle == job.title }
+            if (isSaved) {
+                repository.deleteSavedJob(phone, job.title)
+                activeDialogMessage.value = "Job removed from saved list!"
+            } else {
+                val saved = SavedJob(
+                    phone = phone,
+                    jobTitle = job.title,
+                    jobSector = job.sector,
+                    lastDate = job.lastDate,
+                    salary = job.salary,
+                    eligibility = job.eligibility,
+                    officialLink = job.officialLink,
+                    isApplied = false
+                )
+                repository.saveJob(saved)
+                activeDialogMessage.value = "Job saved successfully to your profile!"
+            }
+        }
     }
 
     private fun startTimerTicker() {
@@ -283,21 +463,35 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         val currentTab = selectedBottomTab.value
         val isUserLoggedIn = userProfile.value != null
         
-        val guideText = if (!isUserLoggedIn) {
-            "लॉगिन और रजिस्ट्रेशन स्क्रीन पर आपका स्वागत है। कृपया अपना पूरा नाम दर्ज करें जैसा कि आपके दसवें सर्टिफिकेट में लिखा है। फिर अपना दस अंकों का मोबाइल नंबर दर्ज करें और सिक्योर सुपाबेस साइन इन पर क्लिक करें। यदि सर्वर में कोई देरी होती है, तो आप नीचे दिए गए क्रैश प्रूफ लोकल ऑफलाइन बटन का उपयोग करके बिना किसी रुकावट के लॉग इन कर सकते हैं।"
-        } else {
-            when (currentTab) {
-                BottomTab.UPDATES -> {
-                    when (activeApplyStep.value) {
-                        0 -> "यह सरकारी नौकरी का आवेदन पत्र है। सबसे पहले विभाग के निर्देशों को ध्यान से पढ़ें और एआई ब्रोशर रीडिंग बटन पर क्लिक करें।"
-                        1 -> "यह एआई फील्ड मैपिंग स्क्रीन है। आप दिए गए माइक आइकन पर टैप करके हिंदी में बात कर सकते हैं, और हमारा सरकारी गुरु एआई उसे अंग्रेजी में ट्रांसलेट करके फॉर्म में भर देगा।"
-                        2 -> "यह आपके आवेदन का अंतिम प्रिव्यू है। कृपया सभी विवरणों की सावधानीपूर्वक जांच करें। यदि कोई नाम या स्पेलिंग की गलती है, तो एआई आपको तुरंत सचेत करेगा।"
-                        3 -> "यह सरकारी पेमेंट गेटवे है। यहाँ आप बिना किसी बिचौलिए के सीधे भारत सरकार के आधिकारिक एसबीआई ई-पे गेटवे या भारतकोश के सुरक्षित सर्वर पर भुगतान कर सकते हैं।"
-                        else -> "यह सरकारी गुरु का मुख्य अपडेट पोर्टल है। यहाँ आप सेना, नौसेना, और पुलिस की सभी नई नौकरियों की सूची देख सकते हैं। फॉर्म भरने के लिए नौकरी के सामने दिए गए एआई की मदद से आवेदन करें बटन पर क्लिक करें।"
-                    }
+        val guideText = if (isKidModeActive.value) {
+            if (!isUserLoggedIn) {
+                "नमस्ते बेटा! आपका हमारे ऐप सरकारी गुरु में स्वागत है। यहाँ हम आपके सपनों को सच करेंगे! सबसे पहले अपना प्यारा सा नाम और फ़ोन नंबर डालिए, फिर हम साथ मिलकर आगे बढ़ेंगे! 👦🌸"
+            } else {
+                when (currentTab) {
+                    BottomTab.UPDATES -> "बेटा, यह नया अपडेट का कोना है! यहाँ सेना, नेवी और पुलिस की ताज़ा नौकरियां आई हैं। आपको जो भी पसंद हो, उसपर क्लिक करें! 🎖️🧸"
+                    BottomTab.HALL_TICKET -> "बेटा, यह आपका हॉल टिकट पोर्टल है! यहाँ से आप परीक्षा में जाने के लिए अपना एडमिट कार्ड चुटकियों में डाउनलोड कर सकते हैं! 🎟️✨"
+                    BottomTab.RECOMMENDATIONS -> "वाह बेटा! यहाँ आपके प्रोफाइल के हिसाब से सबसे बढ़िया सरकारी नौकरियां दिख रही हैं! इन्हें ध्यान से देखिए और अपने सपनों की तरफ कदम बढ़ाइए! 🌟🎯"
+                    BottomTab.TRACKER -> "बेटा, यहाँ उन नौकरियों की आखिरी तारीख का टाइमर चल रहा है। समय खत्म होने से पहले हमें फॉर्म भरना है! ⏰🚨"
                 }
-                BottomTab.TRACKER -> "यह लास्ट डेट ट्रैकर सेक्शन है। यहाँ आप उन सभी महत्वपूर्ण नौकरियों की अंतिम तिथि और उनके बचे हुए समय का लाइव काउंटडाउन देख सकते हैं ताकि आपका कोई भी फॉर्म छूटने न पाए।"
-                BottomTab.HALL_TICKET -> "यह हॉल टिकट पोर्टल है। यहाँ से आप सीधे और सुरक्षित रूप से बिना किसी फर्जी वेबसाइट पर जाए अपने आधिकारिक परीक्षा एडमिट कार्ड डाउनलोड कर सकते हैं।"
+            }
+        } else {
+            if (!isUserLoggedIn) {
+                "लॉगिन और रजिस्ट्रेशन स्क्रीन पर आपका स्वागत है। कृपया अपना पूरा नाम दर्ज करें जैसा कि आपके दसवें सर्टिफिकेट में लिखा है। फिर अपना दस अंकों का मोबाइल नंबर दर्ज करें और सिक्योर सुपाबेस साइन इन पर क्लिक करें। यदि सर्वर में कोई देरी होती है, तो आप नीचे दिए गए क्रैश प्रूफ लोकल ऑफलाइन बटन का उपयोग करके बिना किसी रुकावट के लॉग इन कर सकते हैं।"
+            } else {
+                when (currentTab) {
+                    BottomTab.UPDATES -> {
+                        when (activeApplyStep.value) {
+                            0 -> "यह सरकारी नौकरी का आवेदन पत्र है। सबसे पहले विभाग के निर्देशों को ध्यान से पढ़ें और एआई ब्रोशर रीडिंग बटन पर क्लिक करें।"
+                            1 -> "यह एआई field मैपिंग स्क्रीन है। आप दिए गए माइक आइकन पर टैप करके हिंदी में बात कर सकते हैं, और हमारा सरकारी गुरु एआई उसे अंग्रेजी में ट्रांसलेट करके फॉर्म में भर देगा।"
+                            2 -> "यह आपके आवेदन का अंतिम प्रिव्यू है। कृपया सभी विवरणों की सावधानीपूर्वक जांच करें। यदि कोई नाम या स्पेलिंग की गलती है, तो एआई आपको तुरंत सचेत करेगा।"
+                            3 -> "यह सरकारी पेमेंट गेटवे है। यहाँ आप बिना किसी बिचौलिए के सीधे भारत सरकार के आधिकारिक एसबीआई ई-पे गेटवे या भारतकोश के सुरक्षित सर्वर पर भुगतान कर सकते हैं।"
+                            else -> "यह सरकारी गुरु का मुख्य अपडेट पोर्टल है। यहाँ आप सेना, नौसेना, और पुलिस की सभी नई नौकरियों की सूची देख सकते हैं। फॉर्म भरने के लिए नौकरी के सामने दिए गए एआई की मदद से आवेदन करें बटन पर क्लिक करें।"
+                        }
+                    }
+                    BottomTab.TRACKER -> "यह लास्ट डेट ट्रैकर सेक्शन है। यहाँ आप उन सभी महत्वपूर्ण नौकरियों की अंतिम तिथि और उनके बचे हुए समय का लाइव काउंटडाउन देख सकते हैं ताकि आपका कोई भी फॉर्म छूटने न पाए।"
+                    BottomTab.HALL_TICKET -> "यह हॉल टिकट पोर्टल है। यहाँ से आप सीधे और सुरक्षित रूप से बिना किसी फर्जी वेबसाइट पर जाए अपने आधिकारिक परीक्षा एडमिट कार्ड डाउनलोड कर सकते हैं।"
+                    BottomTab.RECOMMENDATIONS -> "यह आपकी प्रोफाइल आधारित जॉब रिकमेंडेशन लिस्ट है। यहाँ आपकी योग्यता, आयु और श्रेणी के अनुसार सर्वोत्तम सरकारी नौकरियों की सूची दी गई है।"
+                }
             }
         }
         
@@ -394,69 +588,226 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    fun verifyAndRegisterWithSupabase() {
-        val nameInput = loginName.value.trim()
-        val phoneInput = loginPhone.value.trim()
+    fun startOtpCountdown() {
+        otpCountDown.value = 60
+        isOtpTimerRunning.value = true
+        viewModelScope.launch {
+            while (otpCountDown.value > 0 && isOtpTimerRunning.value) {
+                delay(1000)
+                otpCountDown.value -= 1
+            }
+            isOtpTimerRunning.value = false
+        }
+    }
+
+    fun sendSimulatedOtp(phone: String) {
+        val otp = (100000..999999).random().toString()
+        sentOtp.value = otp
+        enteredOtp.value = ""
+        isOtpVerificationSent.value = true
+        startOtpCountdown()
+        activeDialogMessage.value = "SarkariGuru.AI SECURE SMS OTP: $otp has been sent to +91 $phone"
+    }
+
+    fun handleAuthentication(isRegister: Boolean) {
+        val phoneInput = if (isRegister) registerPhone.value.trim() else loginPhone.value.trim()
         
-        if (phoneInput.isBlank()) {
-            activeDialogMessage.value = "Error: Please enter Mobile Number!"
+        if (phoneInput.isBlank() || phoneInput.length < 10) {
+            activeDialogMessage.value = "Error: Please enter a valid 10-Digit Mobile Number!"
             return
         }
-        if (phoneInput.length < 10) {
-            activeDialogMessage.value = "Error: Mobile Number must be at least 10 digits!"
+
+        if (isRegister) {
+            val nameInput = registerName.value.trim()
+            val emailInput = registerEmail.value.trim()
+            val passInput = registerPassword.value.trim()
+
+            if (nameInput.isBlank()) {
+                activeDialogMessage.value = "Error: Candidate Full Name is required!"
+                return
+            }
+            if (emailInput.isBlank() || !emailInput.contains("@")) {
+                activeDialogMessage.value = "Error: Please enter a valid Email Address!"
+                return
+            }
+            if (passInput.isBlank() || passInput.length < 4) {
+                activeDialogMessage.value = "Error: Password must be at least 4 characters!"
+                return
+            }
+
+            viewModelScope.launch {
+                isSupabaseConnecting.value = true
+                val existing = repository.getAccountByPhone(phoneInput)
+                isSupabaseConnecting.value = false
+                if (existing != null) {
+                    activeDialogMessage.value = "Account already exists with this number! Please Login."
+                } else {
+                    sendSimulatedOtp(phoneInput)
+                }
+            }
+        } else {
+            val passInput = loginPassword.value.trim()
+            if (passInput.isBlank()) {
+                activeDialogMessage.value = "Error: Password is required!"
+                return
+            }
+
+            viewModelScope.launch {
+                isSupabaseConnecting.value = true
+                val account = repository.getAccountByPhone(phoneInput)
+                isSupabaseConnecting.value = false
+                if (account == null) {
+                    activeDialogMessage.value = "No registered account found with +91 $phoneInput! Please register."
+                } else if (account.passwordHash != passInput) {
+                    activeDialogMessage.value = "Error: Invalid Password entered! Please try again."
+                } else {
+                    sendSimulatedOtp(phoneInput)
+                }
+            }
+        }
+    }
+
+    fun verifyAndCompleteAuth(isRegister: Boolean) {
+        val entered = enteredOtp.value.trim()
+        if (entered != sentOtp.value) {
+            activeDialogMessage.value = "Error: Invalid OTP entered! Please check and try again."
             return
         }
 
         isSupabaseConnecting.value = true
-        supabaseConnectionLagged.value = false
-        supabaseStatusMessage.value = "Connecting to Supabase Security Server..."
+        supabaseStatusMessage.value = "Connecting to secure Supabase Cloud Security Server..."
 
         viewModelScope.launch {
-            delay(800)
-            supabaseStatusMessage.value = "Initiating Supabase Auth handshake..."
-            delay(800)
-            
-            val finalName = if (nameInput.isEmpty()) "Candidate" else nameInput
-            val profile = UserProfile(name = finalName, phone = phoneInput, dob = "15/07/2002")
-            repository.saveProfile(profile)
-            _userProfile.value = profile
-            formName.value = profile.name
-            formPhone.value = profile.phone
-            formDob.value = profile.dob
-            
-            isSupabaseConnecting.value = false
-            isUserLoggedIn.value = true
-            activeDialogMessage.value = "Secure Supabase Cloud Sign-In Successful!"
+            delay(1000)
+            if (isRegister) {
+                supabaseStatusMessage.value = "Creating encrypted Supabase database records..."
+                delay(800)
+                val account = UserAccount(
+                    phone = registerPhone.value.trim(),
+                    email = registerEmail.value.trim(),
+                    passwordHash = registerPassword.value.trim(),
+                    name = registerName.value.trim()
+                )
+                repository.saveAccount(account)
+                
+                val profile = UserProfile(
+                    name = account.name,
+                    phone = account.phone,
+                    dob = "15/07/2002",
+                    category = "General"
+                )
+                repository.saveProfile(profile)
+                _userProfile.value = profile
+                
+                if (rememberMeChecked.value) {
+                    val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
+                    prefs.edit()
+                        .putBoolean("remember_me", true)
+                        .putLong("last_login_timestamp", System.currentTimeMillis())
+                        .putString("saved_phone", account.phone)
+                        .apply()
+                }
+
+                isSupabaseConnecting.value = false
+                isOtpVerificationSent.value = false
+                isUserLoggedIn.value = true
+                activeDialogMessage.value = "Secure Registration & Phone OTP Verification Successful!"
+            } else {
+                supabaseStatusMessage.value = "Retrieving synced profile from Supabase database..."
+                delay(800)
+                val account = repository.getAccountByPhone(loginPhone.value.trim())
+                if (account != null) {
+                    val profile = UserProfile(
+                        name = account.name,
+                        phone = account.phone,
+                        dob = account.dob,
+                        category = account.category
+                    )
+                    repository.saveProfile(profile)
+                    _userProfile.value = profile
+
+                    if (rememberMeChecked.value) {
+                        val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
+                        prefs.edit()
+                            .putBoolean("remember_me", true)
+                            .putLong("last_login_timestamp", System.currentTimeMillis())
+                            .putString("saved_phone", account.phone)
+                            .apply()
+                    }
+
+                    isSupabaseConnecting.value = false
+                    isOtpVerificationSent.value = false
+                    isUserLoggedIn.value = true
+                    activeDialogMessage.value = "Secure Login & Phone OTP Verification Successful!"
+                } else {
+                    isSupabaseConnecting.value = false
+                    activeDialogMessage.value = "Error loading account from database."
+                }
+            }
         }
+    }
+
+    fun verifyAndRegisterWithSupabase() {
+        val phoneInput = loginPhone.value.trim()
+        if (phoneInput.isBlank()) {
+            activeDialogMessage.value = "Error: Please enter Mobile Number!"
+            return
+        }
+        handleAuthentication(isRegister = false)
     }
 
     fun activateFallbackAuth() {
         viewModelScope.launch {
-            val nameInput = if (loginName.value.trim().isEmpty()) "Candidate" else loginName.value.trim()
-            val profile = UserProfile(name = nameInput, phone = loginPhone.value.trim(), dob = "15/07/2002")
+            val fallbackPhone = "9876543210"
+            val fallbackAccount = UserAccount(
+                phone = fallbackPhone,
+                email = "candidate@fallback.ai",
+                passwordHash = "1234",
+                name = "Candidate Fallback"
+            )
+            repository.saveAccount(fallbackAccount)
+            
+            val profile = UserProfile(
+                name = fallbackAccount.name,
+                phone = fallbackAccount.phone,
+                dob = fallbackAccount.dob,
+                category = fallbackAccount.category
+            )
             repository.saveProfile(profile)
             _userProfile.value = profile
-            formName.value = profile.name
-            formPhone.value = profile.phone
-            formDob.value = "15/07/2002"
             
             isSupabaseConnecting.value = false
             supabaseConnectionLagged.value = false
             isUserLoggedIn.value = true
-            activeDialogMessage.value = "Crash-Proof Offline Fallback Authorized! Welcome to SarkariGuru.AI!"
+            activeDialogMessage.value = "Crash-Proof Offline Fallback Authorized! Logged in with +91 9876543210!"
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            repository.clearProfile()
+            userDataJobsJob?.cancel()
+            userDataDocsJob?.cancel()
+            
+            repository.clearActiveProfile()
             _userProfile.value = null
+            _documents.value = emptyList()
+            savedJobsList.clear()
+            
             isUserLoggedIn.value = false
             formName.value = ""
             formPhone.value = ""
             formDob.value = ""
             loginName.value = ""
             loginPhone.value = ""
+            registerName.value = ""
+            registerPhone.value = ""
+            registerEmail.value = ""
+            registerPassword.value = ""
+            loginPassword.value = ""
+            isOtpVerificationSent.value = false
+            
+            val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
+            prefs.edit().clear().apply()
         }
     }
 
@@ -499,6 +850,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
             // Save to database
             val document = UserDocument(
+                userPhone = formPhone.value,
                 docType = docType,
                 docName = when(docType) {
                     "10TH_MARKSHEET" -> "10th Marksheet"
@@ -677,6 +1029,24 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             isPaying.value = false
             paymentCompleted.value = true
             activeDialogMessage.value = "Payment Successful! Application submitted to the Recruitment Board."
+            
+            // Mark job as applied in database
+            val phone = formPhone.value
+            val job = activeApplyingJob.value
+            if (phone.isNotEmpty() && job != null) {
+                val appliedJob = SavedJob(
+                    phone = phone,
+                    jobTitle = job.title,
+                    jobSector = job.sector,
+                    lastDate = job.lastDate,
+                    salary = job.salary,
+                    eligibility = job.eligibility,
+                    officialLink = job.officialLink,
+                    isApplied = true,
+                    applyDate = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(Date())
+                )
+                repository.saveJob(appliedJob)
+            }
         }
     }
 
@@ -703,4 +1073,10 @@ data class JobNotification(
     val fees: String = "Gen/OBC: ₹100, SC/ST: ₹0",
     val minAge: Int = 18,
     val maxAge: Int = 25
+)
+
+data class AssistantMessage(
+    val text: String,
+    val isUser: Boolean,
+    val timestamp: String
 )

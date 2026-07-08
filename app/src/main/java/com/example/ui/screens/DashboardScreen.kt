@@ -92,6 +92,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -165,6 +177,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                         .fillMaxWidth()
                         .navigationBarsPadding()
                 ) {
+                    val isKid = viewModel.isKidModeActive.value
                     NavigationBar(
                         containerColor = DailyTheme.CardBackground,
                         tonalElevation = 8.dp
@@ -173,7 +186,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                             selected = selectedTab == DashboardViewModel.BottomTab.UPDATES,
                             onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.UPDATES },
                             icon = { Icon(Icons.Default.Search, contentDescription = "New Updates") },
-                            label = { Text("Updates", fontWeight = FontWeight.Bold) },
+                            label = { Text(if (isKid) "नौकरियां" else "Updates", fontWeight = FontWeight.Bold) },
                             colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
                                 selectedIconColor = dailyAccent,
                                 selectedTextColor = dailyAccent,
@@ -186,7 +199,20 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                             selected = selectedTab == DashboardViewModel.BottomTab.HALL_TICKET,
                             onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.HALL_TICKET },
                             icon = { Icon(Icons.Default.CheckCircle, contentDescription = "Hall Ticket") },
-                            label = { Text("Hall Ticket", fontWeight = FontWeight.Bold) },
+                            label = { Text(if (isKid) "प्रवेश पत्र" else "Hall Ticket", fontWeight = FontWeight.Bold) },
+                            colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                                selectedIconColor = dailyAccent,
+                                selectedTextColor = dailyAccent,
+                                unselectedIconColor = DailyTheme.TextSecondary,
+                                unselectedTextColor = DailyTheme.TextSecondary,
+                                indicatorColor = dailyAccent.copy(alpha = 0.12f)
+                            )
+                        )
+                        NavigationBarItem(
+                            selected = selectedTab == DashboardViewModel.BottomTab.RECOMMENDATIONS,
+                            onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.RECOMMENDATIONS },
+                            icon = { Icon(Icons.Default.Star, contentDescription = "Recommendations") },
+                            label = { Text(if (isKid) "आपके लिए" else "For You", fontWeight = FontWeight.Bold) },
                             colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
                                 selectedIconColor = dailyAccent,
                                 selectedTextColor = dailyAccent,
@@ -199,7 +225,7 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                             selected = selectedTab == DashboardViewModel.BottomTab.TRACKER,
                             onClick = { viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.TRACKER },
                             icon = { Icon(Icons.Default.CalendarToday, contentDescription = "Last Date") },
-                            label = { Text("Last Date", fontWeight = FontWeight.Bold) },
+                            label = { Text(if (isKid) "समय चक्र" else "Last Date", fontWeight = FontWeight.Bold) },
                             colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
                                 selectedIconColor = dailyAccent,
                                 selectedTextColor = dailyAccent,
@@ -226,7 +252,8 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                 HeaderSection(
                     activeSector = activeSectorState,
                     onSettingsClick = { viewModel.showSettingsDialog.value = true },
-                    onSectorChange = { viewModel.activeSector.value = it }
+                    onSectorChange = { viewModel.activeSector.value = it },
+                    viewModel = viewModel
                 )
                 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -243,6 +270,9 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                         DashboardViewModel.BottomTab.HALL_TICKET -> {
                             HallTicketTabContent(viewModel = viewModel)
                         }
+                        DashboardViewModel.BottomTab.RECOMMENDATIONS -> {
+                            RecommendationsTabContent(viewModel = viewModel)
+                        }
                     }
 
                     // Dialogs overlay
@@ -252,6 +282,10 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                             viewModel = viewModel,
                             onDismiss = { viewModel.showAiApplyGuideJob.value = null }
                         )
+                    }
+
+                    if (viewModel.showVoiceAssistantDialog.value) {
+                        VoiceAssistantDialog(viewModel = viewModel)
                     }
 
                     if (viewModel.showSettingsDialog.value) {
@@ -637,9 +671,11 @@ fun ThreeGeometricCoreFeatureCards(viewModel: DashboardViewModel) {
 fun HeaderSection(
     activeSector: JobSector,
     onSettingsClick: () -> Unit,
-    onSectorChange: (JobSector) -> Unit
+    onSectorChange: (JobSector) -> Unit,
+    viewModel: DashboardViewModel
 ) {
     val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
 
     Column(modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) {
         Row(
@@ -648,19 +684,33 @@ fun HeaderSection(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "SarkariGuru.AI",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        color = DailyTheme.TextPrimary,
-                        letterSpacing = 1.sp
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = if (isKid) "👦 गुरुजी किड्स" else "SarkariGuru.AI",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            color = if (isKid) Color(0xFFFF9800) else DailyTheme.TextPrimary,
+                            letterSpacing = 1.sp
+                        )
                     )
-                )
+                    if (isKid) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Color(0xFFE0F7FA), RoundedCornerShape(8.dp))
+                                .border(1.dp, Color(0xFF00ACC1), RoundedCornerShape(8.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text("KIDS ON", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFF00838F))
+                        }
+                    }
+                }
                 Text(
-                    text = "Your AI-Powered Government Career Partner",
+                    text = if (isKid) "प्यारे बच्चों के लिए सरल सरकारी नौकरी गाइड! 🎖️🧸" else "Your AI-Powered Government Career Partner",
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = DailyTheme.TextSecondary,
-                        fontWeight = FontWeight.SemiBold
+                        color = if (isKid) Color(0xFF00ACC1) else DailyTheme.TextSecondary,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = if (isKid) 13.sp else 11.sp
                     )
                 )
             }
@@ -680,14 +730,64 @@ fun HeaderSection(
             }
         }
 
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Playful Kid Mode and Assistant quick buttons Row!
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Kid mode toggle button
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(if (isKid) Color(0xFFFFE082) else DailyTheme.CardBackground)
+                    .border(
+                        width = 2.dp,
+                        color = if (isKid) Color(0xFFFFB300) else DailyTheme.CardBorder,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { viewModel.toggleKidMode() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(if (isKid) "🧸 किड मोड बंद करें" else "👦 किड गाइड (Kid Mode)", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = if (isKid) Color(0xFF7F5F00) else DailyTheme.TextPrimary)
+                }
+            }
+
+            // AI Voice Assistant button
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFFE1F5FE))
+                    .border(
+                        width = 2.dp,
+                        color = Color(0xFF03A9F4),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .clickable { viewModel.showVoiceAssistantDialog.value = true }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Icon(Icons.Default.Mic, contentDescription = null, tint = Color(0xFF0288D1), modifier = Modifier.size(16.dp))
+                    Text("🎤 गुरुजी से बात करें", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color(0xFF01579B))
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         // Sector selector tabs with nice indicator pill
         Text(
-            "Select Your Desired Career Sector:",
+            text = if (isKid) "पसंदीदा करियर विभाग चुनें बेटा (Select Sector):" else "Select Your Desired Career Sector:",
             color = DailyTheme.TextPrimary,
             fontWeight = FontWeight.Bold,
-            fontSize = 13.sp,
+            fontSize = if (isKid) 15.sp else 13.sp,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
@@ -729,13 +829,13 @@ fun HeaderSection(
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             text = when(sector) {
-                                JobSector.CIVIL -> "Civil"
-                                JobSector.ARMY -> "Army"
-                                JobSector.NAVY -> "Navy"
-                                JobSector.POLICE -> "Police"
+                                JobSector.CIVIL -> if (isKid) "सिविल" else "Civil"
+                                JobSector.ARMY -> if (isKid) "थल सेना" else "Army"
+                                JobSector.NAVY -> if (isKid) "जल सेना" else "Navy"
+                                JobSector.POLICE -> if (isKid) "पुलिस" else "Police"
                             },
                             color = chipContentColor,
-                            fontSize = 10.sp,
+                            fontSize = if (isKid) 12.sp else 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -1716,6 +1816,7 @@ fun PersistentBottomWidgets(viewModel: DashboardViewModel) {
                 DashboardViewModel.BottomTab.UPDATES -> 0
                 DashboardViewModel.BottomTab.HALL_TICKET -> 1
                 DashboardViewModel.BottomTab.TRACKER -> 2
+                else -> 0
             },
             containerColor = Color.Transparent,
             contentColor = Color.White,
@@ -1726,6 +1827,7 @@ fun PersistentBottomWidgets(viewModel: DashboardViewModel) {
                             DashboardViewModel.BottomTab.UPDATES -> 0
                             DashboardViewModel.BottomTab.HALL_TICKET -> 1
                             DashboardViewModel.BottomTab.TRACKER -> 2
+                            else -> 0
                         }
                     ]),
                     color = MaterialTheme.colorScheme.primary
@@ -1802,6 +1904,11 @@ fun PersistentBottomWidgets(viewModel: DashboardViewModel) {
                     displayedJobs.take(3).forEach { job ->
                         JobItemCard(job = job, viewModel = viewModel, showDownload = false, isTracker = true)
                     }
+                }
+            }
+            else -> {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("Select a tab above to browse openings.", color = Color.Gray, fontSize = 11.sp, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth().padding(16.dp))
                 }
             }
         }
@@ -1926,6 +2033,17 @@ fun JobItemCard(
                 }
             } else {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    val isSaved = viewModel.savedJobsList.any { it.jobTitle == job.title }
+                    IconButton(
+                        onClick = { viewModel.toggleSaveJob(job) }
+                    ) {
+                        Icon(
+                            imageVector = if (isSaved) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                            contentDescription = "Save",
+                            tint = if (isSaved) ErrorRed else Color.LightGray,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
@@ -2544,14 +2662,17 @@ fun BorderStroke(width: androidx.compose.ui.unit.Dp, color: Color) = remember(wi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
-    val loginName by viewModel.loginName
-    val loginPhone by viewModel.loginPhone
+    val dailyAccent = DailyTheme.accentColor
     val isConnecting by viewModel.isSupabaseConnecting
     val isLagged by viewModel.supabaseConnectionLagged
     val statusMessage by viewModel.supabaseStatusMessage
-    val dailyAccent = DailyTheme.accentColor
     
-    var isRegisterMode by remember { mutableStateOf(false) } // False = Login Mode, True = Register Mode
+    val isOtpSent = viewModel.isOtpVerificationSent.value
+    val enteredOtp = viewModel.enteredOtp.value
+    val sentOtp = viewModel.sentOtp.value
+    val otpCountDown = viewModel.otpCountDown.value
+    
+    var isRegisterMode by remember { mutableStateOf(false) } // False = Login, True = Register
 
     Box(
         modifier = Modifier
@@ -2603,49 +2724,51 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                 modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
             )
 
-            // Switch Tab between Register and Login
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color(0xFFE2E8F0), RoundedCornerShape(25.dp))
-                    .padding(4.dp)
-            ) {
-                Box(
+            if (!isOtpSent) {
+                // Switch Tab between Register and Login
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(21.dp))
-                        .background(if (!isRegisterMode) dailyAccent else Color.Transparent)
-                        .clickable { isRegisterMode = false },
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color(0xFFE2E8F0), RoundedCornerShape(25.dp))
+                        .padding(4.dp)
                 ) {
-                    Text(
-                        "LOGIN (लॉगिन)",
-                        color = if (!isRegisterMode) Color.White else DailyTheme.TextSecondary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(21.dp))
+                            .background(if (!isRegisterMode) dailyAccent else Color.Transparent)
+                            .clickable { isRegisterMode = false },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "LOGIN (लॉगिन)",
+                            color = if (!isRegisterMode) Color.White else DailyTheme.TextSecondary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(21.dp))
+                            .background(if (isRegisterMode) dailyAccent else Color.Transparent)
+                            .clickable { isRegisterMode = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "REGISTER (रजिस्ट्रेशन)",
+                            color = if (isRegisterMode) Color.White else DailyTheme.TextSecondary,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(21.dp))
-                        .background(if (isRegisterMode) dailyAccent else Color.Transparent)
-                        .clickable { isRegisterMode = true },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        "REGISTER (रजिस्ट्रेशन)",
-                        color = if (isRegisterMode) Color.White else DailyTheme.TextSecondary,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
             // Card Form Container
             Card(
@@ -2659,21 +2782,53 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                     modifier = Modifier.padding(24.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Text(
-                        text = if (isRegisterMode) "SECURE CANDIDATE PORTAL REGISTRATION" else "SECURE CANDIDATE PORTAL LOGIN",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = DailyTheme.TextSecondary,
-                        modifier = Modifier.padding(bottom = 2.dp)
-                    )
+                    if (isOtpSent) {
+                        Text(
+                            text = "SECURE PHONE OTP VERIFICATION",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = dailyAccent,
+                            modifier = Modifier.padding(bottom = 2.dp)
+                        )
 
-                    if (isRegisterMode) {
-                        // Register Fields: Full Name
+                        Text(
+                            text = "We have sent a 6-digit secure verification OTP to +91 ${if (isRegisterMode) viewModel.registerPhone.value else viewModel.loginPhone.value}. Please enter it below to authorize access.",
+                            fontSize = 12.sp,
+                            color = DailyTheme.TextSecondary
+                        )
+
+                        // Nice Helper Badge with the generated OTP for testing ease!
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(SuccessGreen.copy(alpha = 0.08f), RoundedCornerShape(12.dp))
+                                .border(1.dp, SuccessGreen.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                                .padding(12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Info, contentDescription = null, tint = SuccessGreen, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Simulated Phone SMS OTP: $sentOtp",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = SuccessGreen
+                                )
+                            }
+                        }
+
+                        // OTP Input
                         OutlinedTextField(
-                            value = loginName,
-                            onValueChange = { viewModel.loginName.value = it },
-                            label = { Text("Candidate Full Name") },
-                            leadingIcon = { Icon(Icons.Default.AccountCircle, contentDescription = null, tint = dailyAccent) },
+                            value = enteredOtp,
+                            onValueChange = { input ->
+                                if (input.all { it.isDigit() } && input.length <= 6) {
+                                    viewModel.enteredOtp.value = input
+                                }
+                            },
+                            label = { Text("6-Digit OTP Code") },
+                            leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = dailyAccent) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedTextColor = DailyTheme.TextPrimary,
                                 unfocusedTextColor = DailyTheme.TextPrimary,
@@ -2681,45 +2836,212 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                                 unfocusedBorderColor = DailyTheme.CardBorder
                             ),
                             singleLine = true,
-                            modifier = Modifier.fillMaxWidth().testTag("login_name_input")
+                            modifier = Modifier.fillMaxWidth().testTag("otp_input_field")
                         )
-                    }
 
-                    // Mobile Number Field
-                    OutlinedTextField(
-                        value = loginPhone,
-                        onValueChange = { input ->
-                            if (input.all { it.isDigit() } && input.length <= 10) {
-                                viewModel.loginPhone.value = input
-                            }
-                        },
-                        label = { Text("10-Digit Mobile Number") },
-                        prefix = { Text("+91 ", color = DailyTheme.TextPrimary, fontWeight = FontWeight.Bold) },
-                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = dailyAccent) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = DailyTheme.TextPrimary,
-                            unfocusedTextColor = DailyTheme.TextPrimary,
-                            focusedBorderColor = dailyAccent,
-                            unfocusedBorderColor = DailyTheme.CardBorder
-                        ),
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth().testTag("login_phone_input")
-                    )
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    if (!isConnecting && !isLagged) {
-                        Button(
-                            onClick = { viewModel.verifyAndRegisterWithSupabase() },
-                            colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
-                            modifier = Modifier.fillMaxWidth().height(48.dp).testTag("supabase_login_btn")
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = if (isRegisterMode) "Secure Supabase Cloud Register" else "Secure Supabase Cloud Sign-In",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                text = if (otpCountDown > 0) "Resend OTP in ${otpCountDown}s" else "OTP Code Expired",
+                                fontSize = 11.sp,
+                                color = DailyTheme.TextSecondary
                             )
+
+                            if (otpCountDown == 0) {
+                                TextButton(
+                                    onClick = {
+                                        val p = if (isRegisterMode) viewModel.registerPhone.value else viewModel.loginPhone.value
+                                        viewModel.sendSimulatedOtp(p)
+                                    }
+                                ) {
+                                    Text("Resend OTP", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = dailyAccent)
+                                }
+                            }
+                        }
+
+                        if (!isConnecting) {
+                            Button(
+                                onClick = { viewModel.verifyAndCompleteAuth(isRegisterMode) },
+                                colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
+                                modifier = Modifier.fillMaxWidth().height(48.dp).testTag("verify_otp_btn")
+                            ) {
+                                Text(
+                                    text = "Verify & Authorize",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            OutlinedButton(
+                                onClick = { viewModel.isOtpVerificationSent.value = false },
+                                border = BorderStroke(1.dp, DailyTheme.CardBorder),
+                                modifier = Modifier.fillMaxWidth().height(44.dp)
+                            ) {
+                                Text("Back / Change Mobile", color = DailyTheme.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    } else {
+                        // NORMAL LOGIN/REGISTRATION FORM
+                        Text(
+                            text = if (isRegisterMode) "SECURE CANDIDATE PORTAL REGISTRATION" else "SECURE CANDIDATE PORTAL LOGIN",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = DailyTheme.TextSecondary,
+                            modifier = Modifier.padding(bottom = 2.dp)
+                        )
+
+                        if (isRegisterMode) {
+                            // Register Fields: Full Name
+                            OutlinedTextField(
+                                value = viewModel.registerName.value,
+                                onValueChange = { viewModel.registerName.value = it },
+                                label = { Text("Candidate Full Name") },
+                                leadingIcon = { Icon(Icons.Default.AccountCircle, contentDescription = null, tint = dailyAccent) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("register_name_input")
+                            )
+
+                            // Email Address Field
+                            OutlinedTextField(
+                                value = viewModel.registerEmail.value,
+                                onValueChange = { viewModel.registerEmail.value = it },
+                                label = { Text("Email Address") },
+                                leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = dailyAccent) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("register_email_input")
+                            )
+
+                            // Phone Number Field
+                            OutlinedTextField(
+                                value = viewModel.registerPhone.value,
+                                onValueChange = { input ->
+                                    if (input.all { it.isDigit() } && input.length <= 10) {
+                                        viewModel.registerPhone.value = input
+                                    }
+                                },
+                                label = { Text("10-Digit Mobile Number") },
+                                prefix = { Text("+91 ", color = DailyTheme.TextPrimary, fontWeight = FontWeight.Bold) },
+                                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = dailyAccent) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("register_phone_input")
+                            )
+
+                            // Password Field
+                            OutlinedTextField(
+                                value = viewModel.registerPassword.value,
+                                onValueChange = { viewModel.registerPassword.value = it },
+                                label = { Text("Password (पासवर्ड)") },
+                                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = dailyAccent) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("register_password_input")
+                            )
+                        } else {
+                            // Login Fields: Phone Number
+                            OutlinedTextField(
+                                value = viewModel.loginPhone.value,
+                                onValueChange = { input ->
+                                    if (input.all { it.isDigit() } && input.length <= 10) {
+                                        viewModel.loginPhone.value = input
+                                    }
+                                },
+                                label = { Text("10-Digit Mobile Number") },
+                                prefix = { Text("+91 ", color = DailyTheme.TextPrimary, fontWeight = FontWeight.Bold) },
+                                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = dailyAccent) },
+                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("login_phone_input")
+                            )
+
+                            // Password Field
+                            OutlinedTextField(
+                                value = viewModel.loginPassword.value,
+                                onValueChange = { viewModel.loginPassword.value = it },
+                                label = { Text("Password") },
+                                leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = dailyAccent) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("login_password_input")
+                            )
+                        }
+
+                        // Remember Me Checkbox Row
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.rememberMeChecked.value = !viewModel.rememberMeChecked.value }
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (viewModel.rememberMeChecked.value) Icons.Default.CheckCircle else Icons.Default.Close,
+                                contentDescription = null,
+                                tint = if (viewModel.rememberMeChecked.value) SuccessGreen else Color.Gray,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Remember Me for 30 Days (लॉगिन याद रखें)",
+                                fontSize = 12.sp,
+                                color = DailyTheme.TextSecondary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        if (!isConnecting && !isLagged) {
+                            Button(
+                                onClick = { viewModel.handleAuthentication(isRegisterMode) },
+                                colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
+                                modifier = Modifier.fillMaxWidth().height(48.dp).testTag("supabase_login_btn")
+                            ) {
+                                Text(
+                                    text = if (isRegisterMode) "Proceed to Verify Phone (OTP)" else "Sign-In with OTP",
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
                         }
                     }
 
@@ -2823,6 +3145,8 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
     val activeSectorState by viewModel.activeSector
     val selectedState = viewModel.selectedStateFilter.value
     val selectedEligibility = viewModel.selectedEligibilityFilter.value
+    val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
 
     // Filtering jobs and prioritizing state openings first!
     val filteredJobs = viewModel.allJobs.filter { job ->
@@ -2839,6 +3163,9 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
         if (selectedState != "All India" && job.location == selectedState) 2 else if (job.location == "All India") 1 else 0
     }
 
+    // Category Selector (Sub-Tab State)
+    var selectedSubTab by remember { androidx.compose.runtime.mutableStateOf(0) }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -2852,7 +3179,8 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
             HeaderSection(
                 activeSector = activeSectorState,
                 onSettingsClick = { viewModel.showSettingsDialog.value = true },
-                onSectorChange = { viewModel.activeSector.value = it }
+                onSectorChange = { viewModel.activeSector.value = it },
+                viewModel = viewModel
             )
         }
 
@@ -2861,87 +3189,229 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
             ActiveSectorBanner(activeSector = activeSectorState)
         }
 
-        // AI Document Locker Section
+        // Category Selector Sub-Tab Row (Latest Jobs, Admit Cards, Results)
         item {
-            AiDocumentLockerCard(
-                documents = documents,
-                onScanClick = { docType ->
-                    viewModel.activeScanType.value = docType
-                    viewModel.showScanDialog.value = true
-                },
-                isOcrLoading = viewModel.isOcrLoading.value
+            val categories = listOf(
+                "💼 " + (if (isKid) "नौकरियां" else "Latest Jobs"),
+                "🎟️ " + (if (isKid) "एडमिट कार्ड" else "Admit Cards"),
+                "🏆 " + (if (isKid) "परिणाम" else "Results")
             )
-        }
-
-        // Safety Filter Dashboard & State/District Selector
-        item {
-            SafetyFiltersCard(viewModel = viewModel)
-        }
-
-        // Real-time Supabase / NIC Daily Auto-Refresh Syncing Banner
-        item {
-            val dailyAccent = DailyTheme.accentColor
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(DailyTheme.CardBackground, RoundedCornerShape(12.dp))
-                    .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(12.dp))
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
+            
+            Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                Text(
+                    text = if (isKid) "प्यारे बच्चों, क्या देखना है? 👇" else "नवीनतम अपडेट्स श्रेणियां (Select Category):",
+                    fontSize = if (isKid) 16.sp else 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = DailyTheme.TextPrimary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Pulsing/Syncing status dot
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = if (viewModel.isLiveSyncing.value) dailyAccent else Color(0xFF10B981),
-                                shape = CircleShape
+                    categories.forEachIndexed { index, label ->
+                        val isSelected = selectedSubTab == index
+                        val bg = if (isSelected) dailyAccent else DailyTheme.CardBackground
+                        val tc = if (isSelected) Color.White else DailyTheme.TextSecondary
+                        val borderCol = if (isSelected) dailyAccent else DailyTheme.CardBorder
+                        
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(bg)
+                                .border(1.dp, borderCol, RoundedCornerShape(12.dp))
+                                .clickable { selectedSubTab = index }
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = label,
+                                fontSize = if (isKid) 13.sp else 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = tc,
+                                textAlign = TextAlign.Center
                             )
-                    )
-                    Text(
-                        text = if (viewModel.isLiveSyncing.value) "Syncing with NIC Pan-India databases..." else "Supabase Realtime Stream Active",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = DailyTheme.TextPrimary
-                    )
+                        }
+                    }
                 }
-
-                Text(
-                    text = "Refreshed: ${viewModel.lastSyncTime.value}",
-                    fontSize = 10.sp,
-                    color = DailyTheme.TextSecondary,
-                    fontWeight = FontWeight.Medium
-                )
             }
         }
 
-        // Filtered list of verified jobs under New Updates
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "VERIFIED NEW UPDATES FEED (${selectedState})",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = InfoLightBlue,
-                    modifier = Modifier.padding(vertical = 4.dp)
+        // Render AI Document Locker & Safety filters only when Jobs are selected for simplicity
+        if (selectedSubTab == 0) {
+            // AI Document Locker Section
+            item {
+                AiDocumentLockerCard(
+                    documents = documents,
+                    onScanClick = { docType ->
+                        viewModel.activeScanType.value = docType
+                        viewModel.showScanDialog.value = true
+                    },
+                    isOcrLoading = viewModel.isOcrLoading.value
                 )
+            }
 
-                if (sortedJobs.isEmpty()) {
+            // Safety Filter Dashboard & State/District Selector
+            item {
+                SafetyFiltersCard(viewModel = viewModel)
+            }
+
+            // Real-time Supabase Syncing Banner
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(DailyTheme.CardBackground, RoundedCornerShape(12.dp))
+                        .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(
+                                    color = if (viewModel.isLiveSyncing.value) dailyAccent else Color(0xFF10B981),
+                                    shape = CircleShape
+                                )
+                        )
+                        Text(
+                            text = if (viewModel.isLiveSyncing.value) "Syncing with NIC Pan-India databases..." else "Supabase Realtime Stream Active",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = DailyTheme.TextPrimary
+                        )
+                    }
+
                     Text(
-                        "No verified jobs available matching the current filters.",
-                        color = Color.LightGray,
-                        fontSize = 12.sp,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                        text = "Refreshed: ${viewModel.lastSyncTime.value}",
+                        fontSize = 10.sp,
+                        color = DailyTheme.TextSecondary,
+                        fontWeight = FontWeight.Medium
                     )
-                } else {
-                    sortedJobs.forEach { job ->
-                        JobItemCard(job = job, viewModel = viewModel, showDownload = false)
+                }
+            }
+        }
+
+        // Conditional display based on Sub-Tab index
+        item {
+            when (selectedSubTab) {
+                0 -> { // Latest Jobs
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            text = if (isKid) "🔥 आपके लिए नयी नौकरियां (${selectedState})" else "VERIFIED NEW UPDATES FEED (${selectedState})",
+                            fontSize = if (isKid) 15.sp else 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = InfoLightBlue,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+
+                        if (sortedJobs.isEmpty()) {
+                            Text(
+                                "No verified jobs available matching the current filters.",
+                                color = Color.LightGray,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                            )
+                        } else {
+                            sortedJobs.forEach { job ->
+                                JobItemCard(job = job, viewModel = viewModel, showDownload = false)
+                            }
+                        }
+                    }
+                }
+                1 -> { // Admit Cards (Filter jobs that have hallTicketLive)
+                    val activeAdmitCards = viewModel.allJobs.filter { it.hallTicketLive }
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            text = if (isKid) "🎟️ परीक्षा के लिए एडमिट कार्ड" else "ACTIVE ADMIT CARDS / HALL TICKETS",
+                            fontSize = if (isKid) 15.sp else 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = InfoLightBlue,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+
+                        if (activeAdmitCards.isEmpty()) {
+                            Text(
+                                "No active admit cards at this moment.",
+                                color = Color.LightGray,
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp)
+                            )
+                        } else {
+                            activeAdmitCards.forEach { job ->
+                                JobItemCard(job = job, viewModel = viewModel, showDownload = true)
+                            }
+                        }
+                    }
+                }
+                2 -> { // Results
+                    val mockResults = listOf(
+                        Pair("SSC Constable GD 2025 Final Result Declared", "https://ssc.gov.in"),
+                        Pair("UPSC Civil Services Main Exam Written Result 2025", "https://upsc.gov.in"),
+                        Pair("Indian Airforce Agniveer Vayu Result 01/2026", "https://agnipathvayu.cdac.in"),
+                        Pair("IBPS Clerk Phase I Exam Result Published", "https://ibps.in"),
+                        Pair("Delhi Police Head Constable Final Select List", "https://delhipolice.gov.in")
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            text = if (isKid) "🏆 परीक्षा परिणाम (Results)" else "LATEST DECLARED EXAM RESULTS",
+                            fontSize = if (isKid) 15.sp else 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = InfoLightBlue,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+
+                        mockResults.forEach { (title, url) ->
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(12.dp))
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(14.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Icon(
+                                            Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = Color(0xFF10B981),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = title,
+                                            fontSize = if (isKid) 14.sp else 12.sp,
+                                            color = DailyTheme.TextPrimary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                    
+                                    Button(
+                                        onClick = { /* simulated link open */ },
+                                        colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
+                                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                                        shape = RoundedCornerShape(8.dp)
+                                    ) {
+                                        Text(if (isKid) "देखें 🔗" else "View 🔗", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color.White)
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -3081,12 +3551,24 @@ fun TrackerTabContent(viewModel: DashboardViewModel) {
 fun HallTicketTabContent(viewModel: DashboardViewModel) {
     val filterVal = viewModel.selectedEligibilityFilter.value
     val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
+
+    var selectedStateFilter by remember { androidx.compose.runtime.mutableStateOf("All States") }
+    var selectedExamFilter by remember { androidx.compose.runtime.mutableStateOf("All Exams") }
+
+    val stateOptions = listOf("All States", "Delhi", "Uttar Pradesh", "Bihar", "Madhya Pradesh", "All India")
+    val examOptions = listOf("All Exams", "SSC", "Army", "Navy", "Police", "UPSC")
 
     val hallTicketJobs = viewModel.allJobs.filter { job ->
         if (job.isFake) false
         else if (filterVal == "All") true
         else job.eligibility.contains(filterVal, ignoreCase = true)
     }.filter { it.hallTicketLive }
+     .filter { job ->
+        val matchesState = selectedStateFilter == "All States" || job.location == selectedStateFilter || (selectedStateFilter == "All India" && job.location == "All India")
+        val matchesExam = selectedExamFilter == "All Exams" || job.sector.contains(selectedExamFilter, ignoreCase = true) || job.title.contains(selectedExamFilter, ignoreCase = true)
+        matchesState && matchesExam
+     }
 
     LazyColumn(
         modifier = Modifier
@@ -3102,9 +3584,9 @@ fun HallTicketTabContent(viewModel: DashboardViewModel) {
                 Icon(Icons.Default.CheckCircle, contentDescription = null, tint = dailyAccent, modifier = Modifier.size(24.dp))
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "OFFICIAL HALL TICKET PORTAL",
+                    text = if (isKid) "🎟️ आपका हॉल टिकट कोना (Admit Cards)" else "OFFICIAL HALL TICKET PORTAL",
                     fontWeight = FontWeight.Black,
-                    fontSize = 15.sp,
+                    fontSize = if (isKid) 16.sp else 15.sp,
                     color = DailyTheme.TextPrimary
                 )
             }
@@ -3119,10 +3601,78 @@ fun HallTicketTabContent(viewModel: DashboardViewModel) {
                     Icon(Icons.Default.Info, contentDescription = null, tint = dailyAccent)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        "Download your verified exam Admit Cards directly from the official government servers securely.",
+                        text = if (isKid) "बेटा! परीक्षा में जाने के लिए यहाँ से अपना एडमिट कार्ड चुटकियों में डाउनलोड कर लो! 🎟️✨" else "Download your verified exam Admit Cards directly from the official government servers securely.",
                         color = DailyTheme.TextPrimary,
-                        fontSize = 11.sp
+                        fontSize = if (isKid) 13.sp else 11.sp
                     )
+                }
+            }
+        }
+
+        // State-wise & Exam-wise filter UI Cards!
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                modifier = Modifier.fillMaxWidth().border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(12.dp))
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = if (isKid) "🔍 एडमिट कार्ड खोजें (Filters):" else "Filter Hall Tickets / Admit Cards:",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = if (isKid) 14.sp else 12.sp,
+                        color = DailyTheme.TextPrimary,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+
+                    // State filter row
+                    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text(if (isKid) "राज्य चुनें (Select State):" else "State:", fontSize = 11.sp, color = DailyTheme.TextSecondary, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            stateOptions.forEach { state ->
+                                val isSelected = selectedStateFilter == state
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSelected) dailyAccent else DailyTheme.Background)
+                                        .clickable { selectedStateFilter = state }
+                                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = if (isKid && state == "All States") "सभी राज्य" else state,
+                                        color = if (isSelected) Color.White else DailyTheme.TextPrimary,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Exam filter row
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Text(if (isKid) "परीक्षा का प्रकार (Select Exam):" else "Exam Category:", fontSize = 11.sp, color = DailyTheme.TextSecondary, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                            examOptions.forEach { exam ->
+                                val isSelected = selectedExamFilter == exam
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .background(if (isSelected) dailyAccent else DailyTheme.Background)
+                                        .clickable { selectedExamFilter = exam }
+                                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = if (isKid && exam == "All Exams") "सभी परीक्षा" else exam,
+                                        color = if (isSelected) Color.White else DailyTheme.TextPrimary,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -3132,7 +3682,7 @@ fun HallTicketTabContent(viewModel: DashboardViewModel) {
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 if (hallTicketJobs.isEmpty()) {
                     Text(
-                        "No Admit Cards are currently live for your filters.",
+                        text = if (isKid) "बेटा! अभी आपके चुने हुए फ़िल्टर के लिए कोई एडमिट कार्ड नहीं है। 🧸" else "No Admit Cards are currently live for your filters.",
                         color = DailyTheme.TextSecondary,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.fillMaxWidth().padding(24.dp)
@@ -3505,6 +4055,519 @@ fun AiApplyGuideDialog(
                                 Text("वेबसाइट पर जाएं", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun RecommendationsTabContent(viewModel: DashboardViewModel) {
+    val profile = viewModel.userProfile.value
+    val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item { Spacer(modifier = Modifier.height(12.dp)) }
+
+        // Section Title
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Default.Favorite, contentDescription = null, tint = dailyAccent, modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (isKid) "🎯 आपके लिए खास नौकरियां (For You)" else "RECOMMENDED JOBS FOR YOU",
+                    fontWeight = FontWeight.Black,
+                    fontSize = if (isKid) 16.sp else 15.sp,
+                    color = DailyTheme.TextPrimary
+                )
+            }
+        }
+
+        if (profile == null) {
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(16.dp))
+                ) {
+                    Column(
+                        modifier = Modifier.padding(18.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "🧸",
+                            fontSize = 44.sp
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "नमस्ते बेटा! सरकारी गुरु को आपका नाम नहीं पता।",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = if (isKid) 16.sp else 14.sp,
+                            color = DailyTheme.TextPrimary,
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "कृपया ऊपर दिए गए सेटिंग्स बटन ⚙️ पर क्लिक करके अपना प्यारा सा नाम, उम्र, and पढ़ाई (qualification) सेट करें, ताकि हम आपके लिए सबसे बढ़िया सरकारी नौकरियां ढूंढ सकें!",
+                            fontSize = if (isKid) 14.sp else 12.sp,
+                            color = DailyTheme.TextSecondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        } else {
+            val userQual = viewModel.formQualification.value
+            val userCategory = viewModel.formCategory.value
+            
+            // Filter based on user profile!
+            val recommendedJobs = viewModel.allJobs.filter { job ->
+                if (job.isFake) false
+                else {
+                    // Match eligibility (e.g. "12th", "Graduate")
+                    val matchesQual = job.eligibility == "All" || 
+                                     userQual.contains("Graduate", ignoreCase = true) || 
+                                     (userQual.contains("12th", ignoreCase = true) && !job.eligibility.contains("Graduate", ignoreCase = true)) ||
+                                     (userQual.contains("10th", ignoreCase = true) && !job.eligibility.contains("12th", ignoreCase = true) && !job.eligibility.contains("Graduate", ignoreCase = true))
+                    
+                    matchesQual
+                }
+            }
+
+            item {
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = dailyAccent.copy(alpha = 0.05f)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, dailyAccent.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Star, contentDescription = null, tint = dailyAccent)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isKid) "वाह बेटा ${profile.name}! आपके प्रोफाइल के अनुसार मैच:" else "AI MATCH ACTIVE FOR: ${profile.name.uppercase()}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = if (isKid) 14.sp else 12.sp,
+                                color = dailyAccent
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text(
+                            text = "पढ़ाई: $userQual | श्रेणी: $userCategory | जन्म तिथि: ${profile.dob}",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = DailyTheme.TextSecondary
+                        )
+                    }
+                }
+            }
+
+            item {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    if (recommendedJobs.isEmpty()) {
+                        Text(
+                            text = "We couldn't find exact matches for your profile qualifications at this moment, but you can explore all other live jobs in the Updates tab!",
+                            color = DailyTheme.TextSecondary,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth().padding(24.dp)
+                        )
+                    } else {
+                        recommendedJobs.forEach { job ->
+                            // Custom item card with premium Recommendation Match Header!
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(1.dp, dailyAccent.copy(alpha = 0.3f), RoundedCornerShape(16.dp)),
+                                colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground)
+                            ) {
+                                Column {
+                                    // Match Ribbon Header
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(dailyAccent.copy(alpha = 0.1f))
+                                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Default.CheckCircle,
+                                            contentDescription = null,
+                                            tint = dailyAccent,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = if (isKid) "✨ आपके लिए 100% सही नौकरी! (Matches $userQual)" else "98% AI Match for you | Fits $userQual & $userCategory",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = dailyAccent
+                                        )
+                                    }
+
+                                    // Display the standard JobItemCard inside
+                                    JobItemCard(job = job, viewModel = viewModel, showDownload = false)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Real Saved Jobs and Applied Jobs persistence display
+            val savedOnlyJobs = viewModel.savedJobsList.filter { !it.isApplied }
+            val appliedJobs = viewModel.savedJobsList.filter { it.isApplied }
+
+            if (savedOnlyJobs.isNotEmpty()) {
+                item {
+                    Text(
+                        text = if (isKid) "💖 आपकी पसंदीदा नौकरियां (Saved)" else "YOUR SAVED JOBS (सुरक्षित की गई नौकरियां)",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = dailyAccent,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(savedOnlyJobs) { savedJob ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(12.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(savedJob.jobTitle, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = DailyTheme.TextPrimary)
+                                Text("Salary: ${savedJob.salary} | Last Date: ${savedJob.lastDate}", fontSize = 10.sp, color = DailyTheme.TextSecondary)
+                            }
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Button(
+                                    onClick = {
+                                        val actualJob = viewModel.allJobs.firstOrNull { it.title == savedJob.jobTitle }
+                                        if (actualJob != null) {
+                                            viewModel.selectedJobDetails.value = actualJob
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = InfoLightBlue),
+                                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("Apply", fontSize = 10.sp, color = Color.White)
+                                }
+                                IconButton(
+                                    onClick = {
+                                        viewModel.toggleSaveJob(
+                                            JobNotification(
+                                                title = savedJob.jobTitle,
+                                                sector = savedJob.jobSector,
+                                                eligibility = savedJob.eligibility,
+                                                lastDate = savedJob.lastDate,
+                                                salary = savedJob.salary,
+                                                hallTicketLive = false,
+                                                officialLink = savedJob.officialLink
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = ErrorRed, modifier = Modifier.size(18.dp))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (appliedJobs.isNotEmpty()) {
+                item {
+                    Text(
+                        text = if (isKid) "✅ आपके भरे हुए आवेदन (Applied)" else "YOUR COMPLETED APPLICATIONS (आवेदन इतिहास)",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = SuccessGreen,
+                        modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                    )
+                }
+
+                items(appliedJobs) { applied ->
+                    Card(
+                        colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, SuccessGreen.copy(alpha = 0.3f), RoundedCornerShape(12.dp))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(applied.jobTitle, fontWeight = FontWeight.Bold, fontSize = 12.sp, color = DailyTheme.TextPrimary)
+                                Text("Applied on: ${applied.applyDate}", fontSize = 9.sp, color = SuccessGreen, fontWeight = FontWeight.SemiBold)
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .background(SuccessGreen.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, SuccessGreen, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text("SUBMITTED", color = SuccessGreen, fontSize = 8.sp, fontWeight = FontWeight.Black)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        item { Spacer(modifier = Modifier.height(48.dp)) }
+    }
+}
+
+@Composable
+fun VoiceAssistantDialog(viewModel: DashboardViewModel) {
+    val messages = viewModel.voiceAssistantMessages
+    val isThinking = viewModel.isVoiceAssistantThinking.value
+    val isKid = viewModel.isKidModeActive.value
+    val dailyAccent = DailyTheme.accentColor
+    
+    var inputText by remember { androidx.compose.runtime.mutableStateOf("") }
+    val listState = rememberLazyListState()
+
+    // Scroll to the end of messages when list grows
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
+    }
+
+    Dialog(onDismissRequest = { viewModel.showVoiceAssistantDialog.value = false }) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+            border = BorderStroke(1.dp, DailyTheme.CardBorder),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.8f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                // Header of Voice Dialog
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "🧸",
+                            fontSize = 28.sp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = if (isKid) "सरकारी गुरुजी AI" else "Hindi Voice Assistant",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = DailyTheme.TextPrimary
+                                )
+                            )
+                            Text(
+                                text = if (isKid) "सरल हिंदी में बातें करें बेटा! 🌸" else "Conversational Hindi Assistant",
+                                fontSize = 10.sp,
+                                color = DailyTheme.TextSecondary
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = { viewModel.showVoiceAssistantDialog.value = false },
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DailyTheme.CardBorder)
+
+                // Message Area
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .background(DailyTheme.Background, RoundedCornerShape(12.dp))
+                        .padding(8.dp)
+                ) {
+                    if (messages.isEmpty()) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text("🧸", fontSize = 48.sp)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = if (isKid) "नमस्ते बेटा! मैं हूँ आपका सरकारी गुरु।" else "नमस्ते! मैं सरकारी गुरु हूँ।",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = if (isKid) 16.sp else 14.sp,
+                                color = DailyTheme.TextPrimary
+                            )
+                            Text(
+                                text = if (isKid) "मुझसे कुछ भी पूछें, जैसे 'भर्ती कब आएगी?' या 'फॉर्म कैसे भरें?'" else "मुझसे हिंदी में कुछ भी पूछें।",
+                                fontSize = if (isKid) 13.sp else 12.sp,
+                                color = DailyTheme.TextSecondary,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    } else {
+                        LazyColumn(
+                            state = listState,
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(messages) { msg ->
+                                val isUser = msg.isUser
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+                                ) {
+                                    Card(
+                                        shape = RoundedCornerShape(
+                                            topStart = 16.dp,
+                                            topEnd = 16.dp,
+                                            bottomStart = if (isUser) 16.dp else 4.dp,
+                                            bottomEnd = if (isUser) 4.dp else 16.dp
+                                        ),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = if (isUser) dailyAccent else DailyTheme.CardBackground
+                                        ),
+                                        border = if (isUser) null else BorderStroke(1.dp, DailyTheme.CardBorder),
+                                        modifier = Modifier.widthIn(max = 240.dp)
+                                    ) {
+                                        Column(modifier = Modifier.padding(12.dp)) {
+                                            Text(
+                                                text = msg.text,
+                                                fontSize = if (isKid) 14.sp else 12.sp,
+                                                color = if (isUser) Color.White else DailyTheme.TextPrimary,
+                                                lineHeight = if (isKid) 20.sp else 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (isThinking) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .background(dailyAccent.copy(alpha = 0.9f), RoundedCornerShape(12.dp))
+                                .padding(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                CircularProgressIndicator(color = Color.White, modifier = Modifier.size(12.dp), strokeWidth = 2.dp)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("गुरुजी सोच रहे हैं... 🧠", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Input Action Row (Voice tap & textbox)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextField(
+                        value = inputText,
+                        onValueChange = { inputText = it },
+                        placeholder = { Text(if (isKid) "यहाँ अपना सवाल लिखें..." else "लिखें या नीचे माइक दबाएं...") },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(52.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = DailyTheme.CardBackground,
+                            unfocusedContainerColor = DailyTheme.CardBackground,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        shape = RoundedCornerShape(14.dp)
+                    )
+
+                    // Send text message button
+                    IconButton(
+                        onClick = {
+                            if (inputText.isNotBlank()) {
+                                viewModel.sendVoiceAssistantMessage(inputText)
+                                inputText = ""
+                            }
+                        },
+                        modifier = Modifier
+                            .size(52.dp)
+                            .background(dailyAccent, RoundedCornerShape(14.dp))
+                    ) {
+                        Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.White)
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Beautiful, massive direct Playful Tap-To-Speak Mic Action Card!
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            // We trigger speaking directly with interactive voice triggers!
+                            val kidQueries = listOf(
+                                "नमस्ते गुरुजी! मुझे आर्मी की नौकरी देखनी है!",
+                                "सरल भाषा में समझाओ, सरकारी नौकरी का फॉर्म कैसे भरते हैं?",
+                                "क्या बच्चे भी बड़े होकर सरकारी नौकरी की तैयारी कर सकते हैं?",
+                                "मुझे बताइये कि नया अपडेट एडमिट कार्ड क्या होता है?"
+                            )
+                            val query = kidQueries.random()
+                            viewModel.sendVoiceAssistantMessage(query)
+                        }
+                        .border(2.dp, Color(0xFF0288D1), RoundedCornerShape(14.dp)),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFE1F5FE))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            Icons.Default.Mic,
+                            contentDescription = "Speak Now",
+                            tint = Color(0xFF01579B),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = if (isKid) "🎤 बोलें: 'नमस्ते गुरुजी' (Tap to Talk)" else "🎤 माइक दबाकर हिंदी में बोलें",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF01579B),
+                            fontSize = 13.sp
+                        )
                     }
                 }
             }
