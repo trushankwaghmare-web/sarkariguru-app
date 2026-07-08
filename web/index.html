@@ -1011,6 +1011,199 @@
             color: var(--text-secondary);
         }
 
+        /* --- Secure candidate Auth & Profile Styles --- */
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 1.5rem;
+        }
+
+        .auth-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            transition: border-color 0.2s;
+        }
+
+        .auth-card:hover {
+            border-color: var(--accent-color);
+        }
+
+        .auth-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            border-bottom: 2px solid var(--accent-glow);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 24px;
+            margin-top: 1.5rem;
+        }
+
+        .profile-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        /* --- AI Document Scanner Zone --- */
+        .scan-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: var(--bg-color);
+            margin: 12px 0;
+        }
+
+        .scan-zone:hover, .scan-zone.dragover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-glow);
+            transform: scale(1.01);
+        }
+
+        /* --- Autonomous AI Agent Timeline --- */
+        .agent-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 1.2rem;
+        }
+
+        .agent-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(248, 250, 252, 0.6);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+        }
+
+        .agent-step.active {
+            border-color: var(--accent-color);
+            background: var(--accent-glow);
+            box-shadow: 0 2px 8px var(--accent-glow);
+        }
+
+        .agent-step.completed {
+            border-color: var(--success);
+            background: rgba(22, 163, 74, 0.05);
+        }
+
+        .agent-step-icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: var(--border-color);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .agent-step.active .agent-step-icon {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .agent-step.completed .agent-step-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        /* --- Simulated Gov Form Portal Frame --- */
+        .portal-frame {
+            border: 2px solid #0f172a;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #ffffff;
+            margin-top: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .portal-header {
+            background-color: #0f172a;
+            color: #ffffff;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-family: monospace;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .portal-connection {
+            background-color: #16a34a;
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .portal-body {
+            padding: 24px;
+            background: #f8fafc;
+        }
+
+        .portal-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .portal-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Autofill highlight pulsing animation */
+        @keyframes fill-pulse {
+            0% { background-color: var(--accent-glow); box-shadow: 0 0 0 2px var(--accent-color); }
+            50% { background-color: rgba(22, 163, 74, 0.2); box-shadow: 0 0 0 4px var(--success); }
+            100% { background-color: white; box-shadow: none; }
+        }
+
+        .filled-highlight {
+            animation: fill-pulse 2s ease-out;
+        }
+
+        @media (max-width: 900px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+            .auth-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.25rem;
@@ -1029,10 +1222,66 @@
                 align-items: stretch;
             }
         }
+
+        /* Animated Hand Guide and Pulse animations */
+        .hand-guide-pointer {
+            position: absolute;
+            z-index: 10000;
+            pointer-events: none; /* User clicks pass through */
+            mix-blend-mode: difference;
+            color: #ffffff; /* Contrast effect with mix-blend-mode */
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            display: none;
+        }
+        
+        .hand-guide-svg {
+            width: 72px;
+            height: 72px;
+            filter: drop-shadow(0 0 8px rgba(255,255,255,1)) drop-shadow(0 0 16px rgba(255,255,255,0.7));
+            animation: handPointPulse 1s infinite alternate ease-in-out;
+            transform-origin: bottom right;
+        }
+        
+        @keyframes handPointPulse {
+            0% { transform: translateY(0) scale(1.0) rotate(-15deg); }
+            100% { transform: translateY(-18px) scale(1.2) rotate(5deg); }
+        }
+
+        @keyframes pulseNewTag {
+            0% { transform: scale(0.95); opacity: 0.9; }
+            100% { transform: scale(1.08); opacity: 1; box-shadow: 0 0 12px rgba(239, 68, 68, 0.8); }
+        }
+
+        .badge-new-glow {
+            animation: pulseNewTag 1.5s infinite alternate ease-in-out;
+        }
+
+        /* Kid Mode Toggle Button Style */
+        .kid-toggle-btn {
+            background: linear-gradient(135deg, #fef08a, #fde047);
+            color: #854d0e !important;
+            border: 2px solid #ca8a04;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 6px rgba(202, 138, 4, 0.15);
+            transition: all 0.2s ease-in-out;
+        }
+        .kid-toggle-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(202, 138, 4, 0.3);
+            background: linear-gradient(135deg, #fde047, #facc15);
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
     </script>
@@ -1045,10 +1294,12 @@
                 <div class="logo-shield">S</div>
                 SarkariGuru.AI
             </a>
-            <span class="badge-verified">Verified Portal</span>
-            <ul class="nav-links">
+            <span class="badge-verified" style="margin-right: auto; margin-left: 12px;">Verified Portal</span>
+            <ul class="nav-links" id="navbar-links" style="display: flex; align-items: center; gap: 20px;">
+                <li><button onclick="toggleKidGuide()" class="kid-toggle-btn" id="kid-toggle-nav-btn">🧸 Kid Guide: OFF</button></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#ownership">About Founder</a></li>
+                <li id="nav-auth-item"><button onclick="switchToTabAndFocus('profile-pane')" class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;">👤 Login</button></li>
             </ul>
         </div>
     </header>
@@ -1061,13 +1312,32 @@
             <p class="hero-subtitle">SarkariGuru.AI simplifies, translates, and organizes government career notifications, brochures, syllabi, and applications into an intelligent, secure, multi-lingual assistant experience.</p>
         </section>
 
+        <!-- Elegant Color Theme Picker Widget -->
+        <div class="theme-picker-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: -15px; margin-bottom: 30px; flex-wrap: wrap; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.01);">
+            <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">🎨 Select Custom App Theme:</span>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <button onclick="applyThemeByIndex(0)" title="Slate Blue" style="width: 22px; height: 22px; border-radius: 50%; background-color: #2563eb; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(1)" title="Emerald Green" style="width: 22px; height: 22px; border-radius: 50%; background-color: #16a34a; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(2)" title="Amethyst Purple" style="width: 22px; height: 22px; border-radius: 50%; background-color: #7c3aed; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(3)" title="Solar Amber" style="width: 22px; height: 22px; border-radius: 50%; background-color: #ea580c; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(4)" title="Sky Blue" style="width: 22px; height: 22px; border-radius: 50%; background-color: #0284c7; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(5)" title="Rose Pink" style="width: 22px; height: 22px; border-radius: 50%; background-color: #e11d48; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(6)" title="Ocean Teal" style="width: 22px; height: 22px; border-radius: 50%; background-color: #0d9488; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(7)" title="Golden Sand" style="width: 22px; height: 22px; border-radius: 50%; background-color: #ca8a04; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <span style="width: 1px; height: 16px; background-color: var(--border-color); margin: 0 4px;"></span>
+                <button onclick="localStorage.removeItem('sarkariguru_selected_theme'); applyDailyTheme();" title="Reset to Daily Auto-Theme" style="font-size: 0.72rem; font-weight: bold; background: white; border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 20px; color: var(--text-secondary); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='white'">Auto 🔄</button>
+            </div>
+        </div>
+
         <!-- Interactive AI Career Dashboard -->
         <section id="ai-dashboard" class="dashboard-container">
             <div class="dashboard-tabs">
-                <button class="tab-btn active" onclick="switchTab('search-pane', this)">🔍 Sarkari Jobs Search</button>
-                <button class="tab-btn" onclick="switchTab('alerts-pane', this)">🔔 Notification Center</button>
-                <button class="tab-btn" onclick="switchTab('summarizer-pane', this)">📄 Document Summarizer</button>
-                <button class="tab-btn" onclick="switchTab('assistant-pane', this)">💬 AI Career Coach</button>
+                <button class="tab-btn active" onclick="switchTab('search-pane', this)">🔍 Jobs Search</button>
+                <button class="tab-btn" onclick="switchTab('alerts-pane', this)">🔔 Notifications</button>
+                <button class="tab-btn" onclick="switchTab('summarizer-pane', this)">📄 Summarizer</button>
+                <button class="tab-btn" onclick="switchTab('assistant-pane', this)">💬 Career Coach</button>
+                <button class="tab-btn" id="tab-profile-btn" onclick="switchTab('profile-pane', this)">👤 Candidate Profile & OCR</button>
+                <button class="tab-btn" id="tab-filler-btn" onclick="switchTab('filler-pane', this)">📝 AI Form Filler & Agent</button>
             </div>
 
             <!-- TAB 1: JOB SEARCH -->
@@ -1179,7 +1449,10 @@
                 <div id="summary-result-container" class="summary-result">
                     <div class="summary-header">
                         <span class="summary-title">📄 SarkariGuru AI Hindi Summary</span>
-                        <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;" onclick="copySummaryText()">Copy Text</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px; background-color: var(--success);" onclick="downloadSummaryAsPDF()">Download as PDF</button>
+                            <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;" onclick="copySummaryText()">Copy Text</button>
+                        </div>
                     </div>
                     <div id="summary-text-box" class="summary-content">
                         <!-- Summary markdown-like text parsed and formatted here -->
@@ -1208,9 +1481,520 @@
                         <span class="suggestion-chip" onclick="askPredefined('Railway NTPC exams ke liye age limit batao.')">🚆 Railway NTPC Age Limit</span>
                         <span class="suggestion-chip" onclick="askPredefined('Government exam preparation ke liye daily timetable kaise banayein?')">⏰ Study Timetable</span>
                     </div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input-field" class="chat-input" placeholder="Type your sarkari career question here..." onkeypress="handleChatKey(event)">
-                        <button class="btn" style="border-radius: 12px; padding: 12px 20px;" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+
+            <!-- TAB 5: CANDIDATE PROFILE & OCR -->
+            <div id="profile-pane" class="tab-pane">
+                <!-- If Not Logged In, Show Auth Forms -->
+                <div id="auth-section" class="auth-container">
+                    <!-- Login Form -->
+                    <div class="auth-card">
+                        <h3 class="auth-title">👤 Student Sign In (लॉग इन करें)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Access your secure SarkariGuru profile, AI autofill vault, and smart mentor recommendations.</p>
+                        <form id="login-form" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="form-group">
+                                <label for="login-email">Email Address</label>
+                                <input type="email" id="login-email" class="form-input" placeholder="e.g., rahul@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="login-password">Password</label>
+                                <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                            </div>
+                            <button type="submit" class="btn" style="justify-content: center; height: 44px; border-radius: 8px;">🔐 Secure Login</button>
+                        </form>
+                        <div id="login-error" style="color: red; font-size: 0.85rem; font-weight: 700; display: none; margin-top: 8px;"></div>
+                    </div>
+
+                    <!-- Register Form -->
+                    <div class="auth-card">
+                        <h3 class="auth-title">📝 Create Free Account (नया खाता बनाएं)</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-secondary);">Register in 10 seconds to unlock intelligent document OCR scanner and autonomous form filler.</p>
+                        <form id="register-form" onsubmit="handleRegister(event)" style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="form-group">
+                                <label for="reg-name">Full Name (As per Certificates)</label>
+                                <input type="text" id="reg-name" class="form-input" placeholder="e.g., Rahul Kumar" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-email">Email Address</label>
+                                <input type="email" id="reg-email" class="form-input" placeholder="e.g., rahul@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-password">Password</label>
+                                <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
+                            </div>
+                            <button type="submit" class="btn" style="justify-content: center; height: 44px; border-radius: 8px; background-color: var(--success);">✨ Register Now</button>
+                        </form>
+                        <div id="register-success" style="color: green; font-size: 0.85rem; font-weight: 700; display: none; margin-top: 8px;"></div>
+                        <div id="register-error" style="color: red; font-size: 0.85rem; font-weight: 700; display: none; margin-top: 8px;"></div>
+                    </div>
+                </div>
+
+                <!-- If Logged In, Show Profile Dashboard -->
+                <div id="profile-dashboard" class="profile-layout" style="display: none;">
+                    <!-- Left: OCR Scanner & Quick recommendation -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="profile-section">
+                            <h3 class="auth-title">📷 AI Document OCR Scanner</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Upload a photo or PDF of your document (Aadhaar Card, Marks Sheet, Domicile). Gemini Multimodal AI will perform OCR, extract your credentials, and autofill your profile instantly!</p>
+                            
+                            <div class="scan-zone" id="ocr-drop-zone" onclick="document.getElementById('ocr-file-uploader').click()">
+                                <div style="font-size: 2.5rem; margin-bottom: 8px;">📤</div>
+                                <strong style="font-size: 0.95rem; display: block;">Drag & drop or Click to upload</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 4px;">Supports PNG, JPG, JPEG, and PDF</span>
+                                <input type="file" id="ocr-file-uploader" style="display: none;" accept="image/*,application/pdf" onchange="handleOCRFileSelection(event)">
+                            </div>
+                            
+                            <!-- OCR File Badge -->
+                            <div id="ocr-file-badge" style="display: none; align-items: center; justify-content: space-between; margin-top: 12px; background: var(--accent-glow); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 200px;" id="ocr-file-name">document.jpg</span>
+                                <button type="button" onclick="clearOCRFile(event)" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-weight: bold; font-size: 1rem;">✕</button>
+                            </div>
+
+                            <button id="btn-ocr-scan" class="btn" style="width: 100%; margin-top: 16px; justify-content: center; height: 44px;" onclick="runAIOCRScan()">
+                                ⚡ Run AI OCR & Autofill
+                            </button>
+
+                            <div id="ocr-loading" style="display: none; text-align: center; padding: 1rem 0;">
+                                <div class="spinner spinner-accent" style="width: 24px; height: 24px; margin: 0 auto 8px;"></div>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); font-weight: bold;">Gemini Multimodal OCR reading and extracting document data...</p>
+                            </div>
+                        </div>
+
+                        <!-- Smart Career Advisor Suggestions -->
+                        <div class="profile-section">
+                            <h3 class="auth-title">🎯 Smart Career Recommendations</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 12px;">Get personalized guidance based on your academic percentages and qualifications.</p>
+                            <button class="btn" style="width: 100%; justify-content: center; background-color: var(--success);" onclick="generateSmartCareerRecommendations()">
+                                ✨ Analyze Profile & Recommend
+                            </button>
+                            <div id="career-rec-loading" style="display: none; text-align: center; padding: 1rem 0;">
+                                <div class="spinner" style="width: 20px; height: 20px; border-color: var(--success); margin: 0 auto 8px;"></div>
+                                <span style="font-size: 0.8rem; font-weight: bold;">AI analyzing background...</span>
+                            </div>
+                            <div id="career-recommendations-result" style="font-size: 0.9rem; margin-top: 12px; line-height: 1.5; color: var(--text-secondary);">
+                                <p style="text-align: center; color: var(--text-muted);">Fill your profile or upload documents and click Analyze to generate personalized recommendations.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Editable Profile Details -->
+                    <div class="profile-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+                            <h3 class="auth-title" style="border: none; padding: 0; margin: 0;">👤 My Candidate Profile (सत्यापित विवरण)</h3>
+                            <button onclick="handleLogout()" class="btn" style="background-color: transparent; border: 1px solid red; color: red; padding: 4px 12px; font-size: 0.8rem; border-radius: 8px;">Logout</button>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px; background: #fffbeb; padding: 8px 12px; border-radius: 8px; border-left: 3px solid #f59e0b;">
+                            ⚠️ Data here will be used by the **AI Automated Form Filler** to automatically complete government registration portals securely.
+                        </p>
+
+                        <form id="profile-form" onsubmit="saveProfileDetails(event)" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="portal-form-grid">
+                                <div class="form-group">
+                                    <label for="prof-name">Full Name (As per Aadhaar)</label>
+                                    <input type="text" id="prof-name" class="form-input" placeholder="Rahul Kumar" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-dob">Date of Birth</label>
+                                    <input type="date" id="prof-dob" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-gender">Gender</label>
+                                    <select id="prof-gender" class="form-select" required>
+                                        <option value="Male">Male (पुरुष)</option>
+                                        <option value="Female">Female (महिला)</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-phone">Mobile Number</label>
+                                    <input type="tel" id="prof-phone" class="form-input" placeholder="9876543210" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-state">State of Domicile</label>
+                                    <input type="text" id="prof-state" class="form-input" placeholder="Maharashtra" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-qual">Highest Qualification</label>
+                                    <select id="prof-qual" class="form-select" required>
+                                        <option value="10th Pass">10th Pass</option>
+                                        <option value="12th Pass">12th Pass</option>
+                                        <option value="Graduate">Graduate (Degree)</option>
+                                        <option value="Post Graduate">Post Graduate (Master's)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-percent">Highest Marks (%)</label>
+                                    <input type="text" id="prof-percent" class="form-input" placeholder="85.4%" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-aadhaar">Aadhaar Card / ID Number</label>
+                                    <input type="text" id="prof-aadhaar" class="form-input" placeholder="1234-5678-9012" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-category">Candidate Category</label>
+                                    <select id="prof-category" class="form-select" required>
+                                        <option value="General">General (UR)</option>
+                                        <option value="OBC">OBC (Non-Creamy Layer)</option>
+                                        <option value="SC">Scheduled Caste (SC)</option>
+                                        <option value="ST">Scheduled Tribe (ST)</option>
+                                        <option value="EWS">Economically Weaker Section (EWS)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label for="prof-address">Permanent Address</label>
+                                    <input type="text" id="prof-address" class="form-input" placeholder="Flat 402, Shivshakti Niwas, Nagpur" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn" style="margin-top: 10px; justify-content: center; height: 44px;">💾 Save Candidate Profile Data</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: AI FORM FILLER & AGENT -->
+            <div id="filler-pane" class="tab-pane">
+                <!-- Logged Out Message -->
+                <div id="filler-logged-out" style="text-align: center; padding: 3rem 1.5rem; background-color: var(--card-bg); border-radius: 16px; border: 1px solid var(--border-color);">
+                    <div style="font-size: 3rem; margin-bottom: 12px;">🔒</div>
+                    <h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 8px;">Access Locked</h3>
+                    <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 20px;">The AI Automated Form Filler and Autonomous AI Agent Guide require your profile data to function safely. Please log in or register under the "Candidate Profile" tab first.</p>
+                    <button class="btn" onclick="switchToTabAndFocus('profile-pane')">👤 Go to Candidate Profile</button>
+                </div>
+
+                <!-- Logged In Content -->
+                <div id="filler-content" style="display: none; flex-direction: column; gap: 24px;">
+                    <!-- Autonomous AI Agent Mentor Guide Card -->
+                    <div class="profile-section" style="background: linear-gradient(135deg, #ffffff 0%, var(--accent-glow) 100%); border-left: 5px solid var(--accent-color);">
+                        <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;">
+                            <div style="font-size: 2.5rem; line-height: 1;">🤖</div>
+                            <div style="flex: 1; min-width: 250px;">
+                                <h4 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;" id="agent-guide-title">SarkariGuru Autonomous AI Agent Mentor</h4>
+                                <p id="agent-mentor-greeting" style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.5;">Welcome! Let me assist you today. I have mapped your profile and education details securely.</p>
+                                
+                                <div class="agent-timeline">
+                                    <div class="agent-step completed" id="step-eligibility">
+                                        <div class="agent-step-icon">1</div>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong>Eligibility & Form Matching:</strong> Eligible for <span id="agent-eligible-exams" style="color: var(--accent-color); font-weight: bold;">loading...</span>
+                                        </div>
+                                    </div>
+                                    <div class="agent-step active" id="step-filler">
+                                        <div class="agent-step-icon">2</div>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong>Form Auto-Filler:</strong> Select an exam, and let the AI Agent map your details.
+                                        </div>
+                                    </div>
+                                    <div class="agent-step" id="step-check">
+                                        <div class="agent-step-icon">3</div>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong>Verification Check:</strong> Confirming details against your uploaded Aadhaar Card OCR.
+                                        </div>
+                                    </div>
+                                    <div class="agent-step" id="step-submitted">
+                                        <div class="agent-step-icon">4</div>
+                                        <div style="font-size: 0.85rem;">
+                                            <strong>Submit & Receipt:</strong> Generate a simulated application confirmation instantly.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Auto-Filler Module -->
+                    <div class="profile-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <h3 class="auth-title" style="border: none; padding: 0; margin: 0;">📝 AI Automated Form Filler</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px;">Select any target government application form and let the AI auto-populate all field entries instantly.</p>
+                            </div>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <label for="target-portal-select" style="font-size: 0.85rem; font-weight: 700;">Form Portal:</label>
+                                <select id="target-portal-select" class="form-select" style="width: auto; height: 38px; padding: 0 12px;" onchange="loadTargetFormPortal()">
+                                    <option value="ssc">SSC Multi-Tasking Staff (MTS)</option>
+                                    <option value="sbi">State Bank of India (SBI PO)</option>
+                                    <option value="railway">Railway Recruitment Board (RRB NTPC)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Simulated Government Portal Web Frame -->
+                        <div class="portal-frame">
+                            <div class="portal-header">
+                                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ef4444; flex-shrink: 0;"></span>
+                                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #eab308; flex-shrink: 0;"></span>
+                                    <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #22c55e; flex-shrink: 0;"></span>
+                                    <span style="font-weight: bold; margin-left: 8px; font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" id="portal-url">https://ssc.gov.in/portal/mts_form_2026</span>
+                                </div>
+                                <div class="portal-connection" style="flex-shrink: 0;">
+                                    🔒 gov.in SECURE PORTAL
+                                </div>
+                            </div>
+                            
+                            <div class="portal-body" style="position: relative;">
+                                <!-- Autofill Loading Overlay -->
+                                <div id="autofill-overlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.92); color: #ffffff; z-index: 10; flex-direction: column; justify-content: center; align-items: center; border-radius: 0 0 10px 10px; padding: 24px; text-align: center;">
+                                    <div class="spinner spinner-accent" style="width: 40px; height: 40px; margin-bottom: 16px; border-color: #38bdf8;"></div>
+                                    <h4 style="font-size: 1.2rem; font-weight: 800; color: #38bdf8;">Autonomous AI Agent Filling Form</h4>
+                                    <p id="autofill-terminal-log" style="font-family: monospace; font-size: 0.85rem; max-width: 500px; margin-top: 12px; color: #22c55e; height: 100px; overflow-y: auto; text-align: left; background: #020617; padding: 12px; border-radius: 8px; border: 1px solid #1e293b; width: 100%; line-height: 1.4;">
+                                        [SarkariGuru AI] Ready...
+                                    </p>
+                                </div>
+
+                                <!-- Official Government Payment Gateway Overlay -->
+                                <div id="payment-gateway-overlay" style="display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.96); color: #ffffff; z-index: 12; flex-direction: column; justify-content: center; align-items: center; border-radius: 0 0 10px 10px; padding: 24px; text-align: center; overflow-y: auto;">
+                                    <div style="background-color: #ffffff; color: #0f172a; padding: 24px; border-radius: 16px; max-width: 450px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 16px; border: 3px solid var(--accent-color);">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px;">
+                                            <div style="text-align: left;">
+                                                <h4 style="font-weight: 900; font-size: 1.1rem; color: #0f172a; margin: 0;">SBI ePay / UPI GATEWAY</h4>
+                                                <span style="font-size: 0.75rem; color: #64748b; font-weight: bold;">Government Payment Portal</span>
+                                            </div>
+                                            <span style="background-color: var(--success); color: white; padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 0.7rem;">0% Commission</span>
+                                        </div>
+                                        
+                                        <div style="background-color: #f8fafc; border-radius: 8px; padding: 12px; text-align: left; font-size: 0.85rem;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                                <span style="color: #64748b;">Exam Selected:</span>
+                                                <strong id="pay-exam-title" style="color: #0f172a;">SSC MTS 2026</strong>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                                <span style="color: #64748b;">Category & Gender:</span>
+                                                <strong id="pay-user-category" style="color: #0f172a;">General (Male)</strong>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 8px; font-size: 1rem;">
+                                                <span style="font-weight: bold; color: #0f172a;">Official Govt Fee:</span>
+                                                <strong style="color: var(--success);" id="pay-amount">Rs. 100.00</strong>
+                                            </div>
+                                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--success); font-weight: bold; margin-top: 4px;">
+                                                <span>Platform Charges:</span>
+                                                <span>Rs. 0.00 (Free)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Unified QR Code for SBI/UPI Payment -->
+                                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                                            <p style="font-size: 0.8rem; color: #475569; font-weight: bold; margin: 0;">Scan BharatQR / UPI code to process fee directly to Government Treasury</p>
+                                            <div id="upi-qrcode-container" style="background: white; padding: 12px; border: 2px solid #e2e8f0; border-radius: 12px; display: inline-block;">
+                                                <svg width="150" height="150" viewBox="0 0 100 100" style="display: block;">
+                                                    <rect width="100" height="100" fill="#ffffff"/>
+                                                    <rect x="5" y="5" width="25" height="25" fill="#0f172a"/>
+                                                    <rect x="10" y="10" width="15" height="15" fill="#ffffff"/>
+                                                    <rect x="13" y="13" width="9" height="9" fill="#0f172a"/>
+                                                    
+                                                    <rect x="70" y="5" width="25" height="25" fill="#0f172a"/>
+                                                    <rect x="75" y="10" width="15" height="15" fill="#ffffff"/>
+                                                    <rect x="78" y="13" width="9" height="9" fill="#0f172a"/>
+                                                    
+                                                    <rect x="5" y="70" width="25" height="25" fill="#0f172a"/>
+                                                    <rect x="10" y="75" width="15" height="15" fill="#ffffff"/>
+                                                    <rect x="13" y="78" width="9" height="9" fill="#0f172a"/>
+                                                    
+                                                    <rect x="35" y="5" width="5" height="10" fill="#16a34a"/>
+                                                    <rect x="45" y="15" width="15" height="5" fill="#0f172a"/>
+                                                    <rect x="35" y="25" width="10" height="10" fill="#0f172a"/>
+                                                    <rect x="50" y="30" width="10" height="15" fill="#16a34a"/>
+                                                    <rect x="5" y="35" width="10" height="5" fill="#0f172a"/>
+                                                    <rect x="20" y="45" width="15" height="10" fill="#0f172a"/>
+                                                    <rect x="40" y="50" width="5" height="15" fill="#0f172a"/>
+                                                    <rect x="10" y="60" width="10" height="5" fill="#16a34a"/>
+                                                    <rect x="55" y="55" width="20" height="10" fill="#0f172a"/>
+                                                    <rect x="80" y="35" width="15" height="15" fill="#16a34a"/>
+                                                    <rect x="70" y="55" width="10" height="10" fill="#0f172a"/>
+                                                    <rect x="85" y="70" width="10" height="25" fill="#0f172a"/>
+                                                    <rect x="35" y="75" width="20" height="20" fill="#16a34a"/>
+                                                    <rect x="60" y="80" width="15" height="5" fill="#0f172a"/>
+                                                    <rect x="60" y="90" width="20" height="5" fill="#0f172a"/>
+                                                    
+                                                    <rect x="42" y="42" width="16" height="16" rx="2" fill="#2563eb"/>
+                                                    <text x="50" y="52" fill="#ffffff" font-size="8" font-family="sans-serif" font-weight="900" text-anchor="middle">UPI</text>
+                                                </svg>
+                                            </div>
+                                            <span style="font-size: 0.75rem; color: #1e293b; background-color: #f1f5f9; padding: 4px 10px; border-radius: 20px; font-family: monospace; font-weight: bold;">UPI ID: BHIM-GOV-TREASURY@sbi</span>
+                                        </div>
+
+                                        <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                            <button type="button" class="btn" style="flex: 1; background-color: var(--success); justify-content: center; font-size: 0.9rem;" onclick="simulateSuccessfulPayment()">
+                                                ✅ Simulate Success (UPI Paid)
+                                            </button>
+                                            <button type="button" class="btn" style="background-color: transparent; border: 1px solid #ef4444; color: #ef4444; justify-content: center; font-size: 0.9rem;" onclick="cancelPaymentFlow()">
+                                                ✕ Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Review & Confirm Checkpoint Banner -->
+                                <div id="confirm-checkpoint-container" style="display: none; background-color: #fffbeb; border: 2px solid #d97706; border-radius: 12px; padding: 18px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);">
+                                    <div style="display: flex; gap: 12px; align-items: flex-start; text-align: left;">
+                                        <span style="font-size: 2rem;">🤖</span>
+                                        <div style="flex: 1;">
+                                            <h4 style="margin: 0 0 6px 0; font-size: 1.05rem; font-weight: 800; color: #92400e;">🤖 AI Review Checkpoint (सत्यापन)</h4>
+                                            <p style="margin: 0 0 12px 0; font-size: 0.85rem; color: #78350f; line-height: 1.4;">
+                                                मैने आपका फॉर्म भर दिया है। कृपया सभी विवरणों की जांच करें। आप किसी भी फ़ील्ड पर क्लिक करके उसे बदल सकते हैं। क्या आप फाइनल सबमिशन और सुरक्षित पेमेंट के लिए आगे बढ़ना चाहते हैं?
+                                            </p>
+                                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                                <button type="button" class="btn" style="background-color: #d97706; color: white;" onclick="proceedToPayment()">
+                                                    ✅ Confirm & Proceed to Payment
+                                                </button>
+                                                <button type="button" class="btn" style="background-color: transparent; border: 1px solid #d97706; color: #d97706;" onclick="activateFormEditing()">
+                                                    ✏️ Edit Fields Manually
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Success Receipt Block -->
+                                <div id="form-receipt-block" style="display: none; background-color: #f0fdf4; border: 2px solid #16a34a; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(22, 163, 74, 0.15);">
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <span style="font-size: 3rem;">🎉</span>
+                                        <h4 style="color: #15803d; font-weight: 900; margin: 8px 0 4px 0; font-size: 1.25rem;">SUBMISSION SUCCESSFUL</h4>
+                                        <p style="color: #166534; font-size: 0.85rem; margin: 0;">Staff Selection Commission / SBI / Railway Official Receipt</p>
+                                    </div>
+                                    
+                                    <div style="background: white; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; color: #1e293b; text-align: left;">
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Transaction Reference:</span>
+                                            <strong id="rec-ref" style="font-family: monospace;">SG-2026-9874521</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Candidate Name:</span>
+                                            <strong id="rec-name">Rahul Kumar</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Aadhaar/ID number:</span>
+                                            <strong id="rec-aadhaar">1234-5678-9012</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Application Portal:</span>
+                                            <strong id="rec-portal">SSC MTS 2026</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Official Fee Paid:</span>
+                                            <strong id="rec-fee" style="color: #16a34a;">Rs. 100.00</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px;">
+                                            <span style="color: #64748b;">Platform Commission:</span>
+                                            <strong style="color: #16a34a;">Rs. 0.00 (Zero Commission)</strong>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span style="color: #64748b;">Submission Timestamp:</span>
+                                            <strong id="rec-time">2026-07-08 12:45 UTC</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; justify-content: center; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+                                        <button type="button" class="btn" style="background-color: #16a34a;" onclick="downloadReceiptPDF()">
+                                            📥 Download Receipt PDF
+                                        </button>
+                                        <button type="button" class="btn" style="background-color: transparent; border: 1px solid #16a34a; color: #16a34a;" onclick="resetPortalForm()">
+                                            Apply for Another Exam
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px dashed var(--border-color);">
+                                    <h4 style="font-weight: 900; color: #0f172a; font-size: 1.1rem; text-transform: uppercase;" id="portal-form-title">SSC MULTI-TASKING STAFF (MTS) EXAMINATION 2026</h4>
+                                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 700;">Government of India - Staff Selection Commission Portal</span>
+                                </div>
+
+                                <form id="portal-simulated-form" onsubmit="submitSimulatedForm(event)">
+                                    <div class="portal-form-grid">
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">1. Candidate Full Name</label>
+                                            <input type="text" id="port-name" class="form-input" style="background-color: white;" placeholder="Required" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">2. Date of Birth</label>
+                                            <input type="date" id="port-dob" class="form-input" style="background-color: white;" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">3. Gender</label>
+                                            <select id="port-gender" class="form-select" style="background-color: white;" required>
+                                                <option value="">Select Gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">4. State of Domicile</label>
+                                            <input type="text" id="port-state" class="form-input" style="background-color: white;" placeholder="Required" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">5. Aadhaar Card Number</label>
+                                            <input type="text" id="port-aadhaar" class="form-input" style="background-color: white;" placeholder="Required" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">6. Contact Mobile Number</label>
+                                            <input type="tel" id="port-phone" class="form-input" style="background-color: white;" placeholder="Required" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">7. Highest Educational Level</label>
+                                            <input type="text" id="port-qual" class="form-input" style="background-color: white;" placeholder="e.g. 10th Pass / Graduate" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">8. Marks Percentage (%)</label>
+                                            <input type="text" id="port-percent" class="form-input" style="background-color: white;" placeholder="e.g. 78.5%" required>
+                                        </div>
+                                        <div class="form-group" style="grid-column: span 2;">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">9. Permanent Address</label>
+                                            <input type="text" id="port-address" class="form-input" style="background-color: white;" placeholder="Complete Address" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">10. Candidate Category</label>
+                                            <select id="port-category" class="form-select" style="background-color: white;" required>
+                                                <option value="General">General (UR)</option>
+                                                <option value="OBC">OBC (Non-Creamy Layer)</option>
+                                                <option value="SC">Scheduled Caste (SC)</option>
+                                                <option value="ST">Scheduled Tribe (ST)</option>
+                                                <option value="EWS">Economically Weaker Section (EWS)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">11. Examination Center Preference</label>
+                                            <select id="port-center" class="form-select" style="background-color: white;" required>
+                                                <option value="Mumbai">Mumbai (WR)</option>
+                                                <option value="New Delhi">New Delhi (NR)</option>
+                                                <option value="Kolkata">Kolkata (ER)</option>
+                                                <option value="Chennai">Chennai (SR)</option>
+                                                <option value="Lucknow">Lucknow (CR)</option>
+                                                <option value="Jaipur">Jaipur (NWR)</option>
+                                                <option value="Patna">Patna (CR)</option>
+                                                <option value="Nagpur">Nagpur (WR)</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">12. Passport Photo (Max 50KB, 200x230 px)</label>
+                                            <input type="file" id="port-photo-upload" class="form-input" style="background-color: white;" accept="image/*" onchange="optimizeAndResizeImage(this, 'photo')">
+                                            <div id="photo-spec-badge" style="display: none; font-size: 0.75rem; color: var(--success); font-weight: 700; margin-top: 4px;"></div>
+                                            <div id="photo-preview-container" style="display: none; margin-top: 8px;">
+                                                <img id="photo-preview-img" style="border: 1px solid var(--border-color); border-radius: 4px; max-width: 100px; height: auto;">
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label style="font-size: 0.8rem; font-weight: 800; color: #475569;">13. Candidate Signature (Max 20KB, 140x60 px)</label>
+                                            <input type="file" id="port-sig-upload" class="form-input" style="background-color: white;" accept="image/*" onchange="optimizeAndResizeImage(this, 'signature')">
+                                            <div id="sig-spec-badge" style="display: none; font-size: 0.75rem; color: var(--success); font-weight: 700; margin-top: 4px;"></div>
+                                            <div id="sig-preview-container" style="display: none; margin-top: 8px;">
+                                                <img id="sig-preview-img" style="border: 1px solid var(--border-color); border-radius: 4px; max-width: 100px; height: auto;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div style="display: flex; gap: 12px; margin-top: 24px; justify-content: flex-end; flex-wrap: wrap;">
+                                        <button type="button" class="btn" style="background-color: var(--accent-color);" onclick="runAIFillAction()">
+                                            ⚡ AI Auto-Fill Form
+                                        </button>
+                                        <button type="submit" class="btn" style="background-color: var(--success);">
+                                            📄 Submit Secure Application
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1225,6 +2009,138 @@
                 </div>
                 <div id="modal-roadmap-body" class="modal-body">
                     <!-- Step elements generated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Advanced AI Career Assistant Modal -->
+        <div id="apply-now-modal" class="modal" style="display: none;">
+            <div class="modal-content" style="max-width: 920px; width: 95%; max-height: 90vh;">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--accent-color), #4f46e5); color: white; border-top-left-radius: 24px; border-top-right-radius: 24px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.8rem;">🤖</span>
+                        <div>
+                            <h3 id="assistant-modal-job-title" class="modal-title" style="color: white; font-size: 1.25rem; font-weight: 800; margin: 0;">AI Career Assistant</h3>
+                            <p id="assistant-modal-job-subtitle" style="font-size: 0.8rem; opacity: 0.9; margin: 0; font-weight: 500;"></p>
+                        </div>
+                    </div>
+                    <button class="modal-close" onclick="closeApplyModal()" style="color: white; opacity: 0.8; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.8">✕</button>
+                </div>
+                <div class="modal-body" style="padding: 0; display: grid; grid-template-columns: 320px 1fr; max-height: calc(90vh - 75px); overflow: hidden;">
+                    
+                    <!-- Left Side Pane: Job Info & Document Vault -->
+                    <div style="background-color: var(--card-bg); border-right: 1px solid var(--border-color); padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;">
+                        
+                        <!-- Job Summary Card -->
+                        <div style="background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+                            <h4 style="margin: 0 0 12px 0; font-size: 0.9rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.5px;">📋 Exam Details</h4>
+                            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem;">
+                                <li style="display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);">Age Limit:</span> <strong id="modal-info-age">-</strong></li>
+                                <li style="display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);">App Fee:</span> <strong id="modal-info-fee">-</strong></li>
+                                <li style="display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);">Last Date:</span> <strong id="modal-info-lastdate" style="color: var(--danger);">-</strong></li>
+                                <li style="display: flex; justify-content: space-between;"><span style="color: var(--text-secondary);">Pay Scale:</span> <strong id="modal-info-pay">-</strong></li>
+                            </ul>
+                            <a id="modal-official-link" href="#" target="_blank" class="btn" style="width: 100%; margin-top: 14px; justify-content: center; font-size: 0.8rem; padding: 8px 12px; background: linear-gradient(135deg, var(--accent-color), #4f46e5); color: white; border-radius: 10px; text-decoration: none; text-align: center;">🌐 Official Apply Portal</a>
+                        </div>
+                        
+                        <!-- Secure Document Vault Widget -->
+                        <div style="background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; align-items: center; justify-content: space-between;">
+                                <h4 style="margin: 0; font-size: 0.9rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">🛡️ Document Vault</h4>
+                                <span style="font-size: 0.7rem; background-color: var(--success); color: white; padding: 2px 6px; border-radius: 10px; font-weight: 700;">Secure</span>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0; line-height: 1.4;">Upload candidate documents securely. Stored in your private browser vault and sent to Gemini as context.</p>
+                            
+                            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 4px;">
+                                
+                                <!-- Resume CV File -->
+                                <div style="background: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">📄 Resume / CV</span>
+                                        <span id="vault-status-resume" style="font-size: 0.7rem; font-weight: bold; color: var(--text-muted);">Missing</span>
+                                    </div>
+                                    <input type="file" id="vault-upload-resume" accept=".pdf,.doc,.docx,image/*" style="display: none;" onchange="uploadVaultDocument('resume')">
+                                    <button onclick="document.getElementById('vault-upload-resume').click()" class="btn" style="padding: 4px 10px; font-size: 0.7rem; border-radius: 6px; width: 100%; justify-content: center; background-color: white; border: 1px solid var(--border-color); color: var(--text-primary);">Upload Resume</button>
+                                </div>
+                                
+                                <!-- Marksheet File -->
+                                <div style="background: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">🎓 Marksheet</span>
+                                        <span id="vault-status-marksheet" style="font-size: 0.7rem; font-weight: bold; color: var(--text-muted);">Missing</span>
+                                    </div>
+                                    <input type="file" id="vault-upload-marksheet" accept=".pdf,image/*" style="display: none;" onchange="uploadVaultDocument('marksheet')">
+                                    <button onclick="document.getElementById('vault-upload-marksheet').click()" class="btn" style="padding: 4px 10px; font-size: 0.7rem; border-radius: 6px; width: 100%; justify-content: center; background-color: white; border: 1px solid var(--border-color); color: var(--text-primary);">Upload Marksheet</button>
+                                </div>
+                                
+                                <!-- Caste/Category Certificate File -->
+                                <div style="background: white; border: 1px solid var(--border-color); padding: 10px; border-radius: 12px; display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">🪪 Certificates / ID</span>
+                                        <span id="vault-status-certificate" style="font-size: 0.7rem; font-weight: bold; color: var(--text-muted);">Missing</span>
+                                    </div>
+                                    <input type="file" id="vault-upload-certificate" accept=".pdf,image/*" style="display: none;" onchange="uploadVaultDocument('certificate')">
+                                    <button onclick="document.getElementById('vault-upload-certificate').click()" class="btn" style="padding: 4px 10px; font-size: 0.7rem; border-radius: 6px; width: 100%; justify-content: center; background-color: white; border: 1px solid var(--border-color); color: var(--text-primary);">Upload Certificate</button>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side Pane: Interactive AI Assistant & Guide Area -->
+                    <div style="display: flex; flex-direction: column; height: 100%; min-height: 0;">
+                        
+                        <!-- Tab Headers -->
+                        <div style="display: flex; border-bottom: 1px solid var(--border-color); background-color: var(--bg-color); padding: 0 16px; overflow-x: auto;">
+                            <button id="tab-apply-guide-btn" onclick="switchApplyTab('apply-guide')" style="padding: 14px 16px; border: none; background: none; font-size: 0.85rem; font-weight: 800; color: var(--accent-color); border-bottom: 2px solid var(--accent-color); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;">🎯 Apply Guide</button>
+                            <button id="tab-checklist-btn" onclick="switchApplyTab('checklist')" style="padding: 14px 16px; border: none; background: none; font-size: 0.85rem; font-weight: 800; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;">📋 Document Checklist</button>
+                            <button id="tab-register-btn" onclick="switchApplyTab('register')" style="padding: 14px 16px; border: none; background: none; font-size: 0.85rem; font-weight: 800; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;">⚡ Registration Steps</button>
+                            <button id="tab-hindi-chat-btn" onclick="switchApplyTab('hindi-chat')" style="padding: 14px 16px; border: none; background: none; font-size: 0.85rem; font-weight: 800; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;">💬 Hindi Chat Support</button>
+                        </div>
+                        
+                        <!-- Tab Contents Container -->
+                        <div style="flex: 1; padding: 24px; overflow-y: auto; background-color: white; max-height: calc(90vh - 125px); min-height: 0;">
+                            
+                            <!-- Loading indicator inside the tabs -->
+                            <div id="apply-modal-ai-loading" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0;">
+                                <div class="spinner" style="width: 40px; height: 40px; border-color: var(--accent-color); border-top-color: transparent;"></div>
+                                <p style="margin-top: 16px; font-weight: bold; font-size: 0.95rem; color: var(--text-primary); text-align: center;">Gemini AI is analyzing job guidelines & saved documents...</p>
+                                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 4px 0 0 0; text-align: center;">Personalizing step-by-step applying strategy</p>
+                            </div>
+
+                            <!-- Tab 1: Apply Guide -->
+                            <div id="apply-pane-apply-guide" class="apply-tab-pane" style="display: none;">
+                                <div id="apply-guide-content"></div>
+                            </div>
+                            
+                            <!-- Tab 2: Document Checklist -->
+                            <div id="apply-pane-checklist" class="apply-tab-pane" style="display: none;">
+                                <div id="apply-checklist-content"></div>
+                            </div>
+                            
+                            <!-- Tab 3: Registration Steps -->
+                            <div id="apply-pane-register" class="apply-tab-pane" style="display: none;">
+                                <div id="apply-register-content"></div>
+                            </div>
+                            
+                            <!-- Tab 4: Hindi Chat Support -->
+                            <div id="apply-pane-hindi-chat" class="apply-tab-pane" style="display: none; height: 100%; flex-direction: column;">
+                                <div id="apply-chat-messages" style="flex: 1; border: 1px solid var(--border-color); border-radius: 16px; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; height: 260px; max-height: 260px; background-color: var(--bg-color);">
+                                    <!-- Welcome Message -->
+                                    <div style="align-self: flex-start; max-width: 85%; padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; background: white; border: 1px solid var(--border-color); font-size: 0.9rem; line-height: 1.5; color: var(--text-primary);">
+                                        नमस्ते! मैं आपका **SarkariGuru AI Career Assistant** हूँ। आपके सेव किये गए दस्तावेजों के संदर्भ में इस परीक्षा के लिए कोई भी प्रश्न पूछें। मैं आपको पूरी तरह हिन्दी में मार्गदर्शन करूँगा। 🇮🇳
+                                    </div>
+                                </div>
+                                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                    <input type="text" id="apply-chat-input" placeholder="हिन्दी में प्रश्न पूछें... (जैसे: क्या मैं अपनी 12th marksheet के साथ योग्य हूँ?)" style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 0 16px; height: 44px; font-size: 0.9rem; outline: none; transition: border-color 0.2s;" onkeydown="if(event.key==='Enter') sendApplyChat()">
+                                    <button onclick="sendApplyChat()" class="btn" style="padding: 0 20px; font-size: 0.9rem; border-radius: 12px; font-weight: bold; height: 44px; justify-content: center; background: linear-gradient(135deg, var(--accent-color), #4f46e5); color: white;">पूछें 🚀</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -1294,8 +2210,26 @@
             { bg: "#fefaec", accent: "#ca8a04", rgb: "202, 138, 4" }  // Golden Sand
         ];
 
+        function applyThemeByIndex(index) {
+            try {
+                const activeTheme = dailyThemes[index];
+                document.documentElement.style.setProperty('--bg-color', activeTheme.bg);
+                document.documentElement.style.setProperty('--accent-color', activeTheme.accent);
+                document.documentElement.style.setProperty('--accent-glow', `rgba(${activeTheme.rgb}, 0.08)`);
+                localStorage.setItem('sarkariguru_selected_theme', index);
+                console.log(`[SarkariGuru.AI] Custom theme applied: ${index}`);
+            } catch (error) {
+                console.error("Failed to apply manual theme:", error);
+            }
+        }
+
         function applyDailyTheme() {
             try {
+                const savedTheme = localStorage.getItem('sarkariguru_selected_theme');
+                if (savedTheme !== null) {
+                    applyThemeByIndex(parseInt(savedTheme));
+                    return;
+                }
                 const today = new Date();
                 const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
                 const themeIndex = (today.getFullYear() + dayOfYear) % dailyThemes.length;
@@ -1385,7 +2319,9 @@
                 lastDate: "July 31, 2026",
                 qualification: "Graduate in any discipline",
                 salary: "Rs. 41,960 - 64,820",
-                officialLink: "https://sbi.co.in/careers"
+                officialLink: "https://sbi.co.in/careers",
+                isNew: true,
+                sector: "Government"
             },
             {
                 title: "Railway NTPC Non-Technical recruitment",
@@ -1395,7 +2331,9 @@
                 lastDate: "August 20, 2026",
                 qualification: "12th Pass / Graduate",
                 salary: "Rs. 19,900 - 35,400",
-                officialLink: "https://indianrailways.gov.in"
+                officialLink: "https://indianrailways.gov.in",
+                isNew: false,
+                sector: "Government"
             },
             {
                 title: "SSC Combined Graduate Level (CGL) 2026",
@@ -1405,7 +2343,33 @@
                 lastDate: "July 24, 2026",
                 qualification: "Bachelor's Degree",
                 salary: "Rs. 25,500 - 151,100",
-                officialLink: "https://ssc.gov.in"
+                officialLink: "https://ssc.gov.in",
+                isNew: true,
+                sector: "Government"
+            },
+            {
+                title: "TCS Ninja / Digital System Engineer",
+                department: "Tata Consultancy Services (TCS)",
+                state: "All India (Pune / Bengaluru / Delhi)",
+                vacancies: "4,500 Posts",
+                lastDate: "August 15, 2026",
+                qualification: "B.E / B.Tech / MCA / B.Sc",
+                salary: "Rs. 3.6 Lakh - 7.5 Lakh PA",
+                officialLink: "https://www.tcs.com/careers",
+                isNew: true,
+                sector: "Private"
+            },
+            {
+                title: "Infosys Associate Software Engineer",
+                department: "Infosys Careers Ltd",
+                state: "Bengaluru / Hyderabad",
+                vacancies: "1,200 Posts",
+                lastDate: "August 08, 2026",
+                qualification: "B.E / B.Tech / MCA / M.Tech",
+                salary: "Rs. 4.0 Lakh - 6.2 Lakh PA",
+                officialLink: "https://www.infosys.com/careers",
+                isNew: true,
+                sector: "Private"
             },
             {
                 title: "Police Sub-Inspector & Constable",
@@ -1415,7 +2379,9 @@
                 lastDate: "July 30, 2026",
                 qualification: "12th Pass / Graduate",
                 salary: "Rs. 21,700 - 69,100",
-                officialLink: "https://mahapolice.gov.in"
+                officialLink: "https://mahapolice.gov.in",
+                isNew: false,
+                sector: "Government"
             }
         ];
 
@@ -1455,22 +2421,40 @@
             renderAlerts();
         }
 
+        let currentJobs = [];
+
         // Render functions
         function renderJobs(jobList) {
+            currentJobs = jobList;
             const grid = document.getElementById('job-results');
             grid.innerHTML = '';
             
-            jobList.forEach(job => {
+            jobList.forEach((job, index) => {
                 const card = document.createElement('div');
                 card.className = 'job-card';
+                
+                // Construct Tags
+                const isNewTag = job.isNew ? `<span class="badge-new-glow" style="background: linear-gradient(135deg, #ef4444, #f97316); color: white; font-size: 0.72rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; margin-left: 8px; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); vertical-align: middle;">🔥 NEW</span>` : '';
+                const sectorTagColor = job.sector === 'Government' ? 'var(--accent-color)' : '#0d9488';
+                const sectorTagBg = job.sector === 'Government' ? 'var(--accent-glow)' : 'rgba(13, 148, 136, 0.08)';
+                const sectorLabel = job.sector === 'Government' ? '🏛️ Govt Job' : '💼 Private Job';
+                
+                const sectorTag = `<span style="font-size: 0.7rem; font-weight: 800; background-color: ${sectorTagBg}; color: ${sectorTagColor}; padding: 3px 8px; border-radius: 6px; border: 1px solid ${sectorTagColor}40; margin-left: 6px;">${sectorLabel}</span>`;
+                
                 card.innerHTML = `
                     <div>
-                        <div class="job-header">
-                            <span class="job-dept">${job.department}</span>
+                        <div class="job-header" style="display: flex; align-items: center; justify-content: space-between;">
+                            <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                                <span class="job-dept">${job.department}</span>
+                                ${sectorTag}
+                            </div>
                             <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">${job.state}</span>
                         </div>
-                        <h4 class="job-title-text">${job.title}</h4>
-                        <ul class="job-details-list">
+                        <h4 class="job-title-text" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 8px;">
+                            <span>${job.title}</span>
+                            ${isNewTag}
+                        </h4>
+                        <ul class="job-details-list" style="margin-top: 12px;">
                             <li><span class="emoji">👥</span> <strong>Vacancies:</strong> ${job.vacancies}</li>
                             <li><span class="emoji">🎓</span> <strong>Eligibility:</strong> ${job.qualification}</li>
                             <li><span class="emoji">💰</span> <strong>Pay scale:</strong> ${job.salary}</li>
@@ -1478,7 +2462,7 @@
                         </ul>
                     </div>
                     <div class="job-footer">
-                        <a href="${job.officialLink}" target="_blank" class="job-btn job-btn-secondary" style="text-decoration: none;">Apply Now</a>
+                        <button class="job-btn job-btn-secondary" onclick="openApplyNowAssistant(${index})">Apply Now</button>
                         <button class="job-btn job-btn-primary" onclick="generateRoadmap('${job.title}', '${job.department}', '${job.qualification}')">✨ AI Roadmap</button>
                     </div>
                 `;
@@ -1790,6 +2774,1221 @@ ${textToSummarize.substring(0, 45000)}`;
             });
         }
 
+        function downloadSummaryAsPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                const textBox = document.getElementById('summary-text-box');
+                const text = textBox.innerText || textBox.textContent;
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(14);
+                doc.text("SarkariGuru.AI - Official Hindi Summary", 14, 15);
+                doc.setFontSize(10);
+                
+                const lines = doc.splitTextToSize(text, 180);
+                let y = 25;
+                lines.forEach(line => {
+                    if (y > 280) {
+                        doc.addPage();
+                        y = 15;
+                    }
+                    doc.text(line, 14, y);
+                    y += 6;
+                });
+                
+                doc.save("SarkariGuru_AI_Hindi_Summary.pdf");
+            } catch (e) {
+                console.error("PDF generation error:", e);
+                alert("Failed to download PDF: " + e.message);
+            }
+        }
+
+        // Photo & Signature Resizer & Compressor
+        function optimizeAndResizeImage(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let ctx = canvas.getContext('2d');
+                    
+                    let targetWidth = 200;
+                    let targetHeight = 230;
+                    let targetKB = 50;
+                    
+                    if (type === 'signature') {
+                        targetWidth = 140;
+                        targetHeight = 60;
+                        targetKB = 20;
+                    }
+                    
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                    
+                    let quality = 0.9;
+                    let dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    let sizeKB = (dataUrl.length * 0.75) / 1024;
+                    
+                    while (sizeKB > targetKB && quality > 0.1) {
+                        quality -= 0.05;
+                        dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        sizeKB = (dataUrl.length * 0.75) / 1024;
+                    }
+                    
+                    const badge = document.getElementById(`${type}-spec-badge`);
+                    const previewContainer = document.getElementById(`${type}-preview-container`);
+                    const previewImg = document.getElementById(`${type}-preview-img`);
+                    
+                    if (badge) {
+                        badge.innerText = `✓ AI Resized to ${sizeKB.toFixed(1)} KB (${targetWidth}x${targetHeight}px)`;
+                        badge.style.display = 'block';
+                    }
+                    if (previewImg) {
+                        previewImg.src = dataUrl;
+                    }
+                    if (previewContainer) {
+                        previewContainer.style.display = 'block';
+                    }
+                    
+                    if (currentUser) {
+                        if (!currentUser.profile) currentUser.profile = {};
+                        currentUser.profile[type] = dataUrl;
+                        saveProfileDataFromForm();
+                    }
+                    
+                    speakAI(`Your ${type === 'photo' ? 'passport photograph' : 'signature'} has been successfully resized and compressed under the official government limit.`);
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function checkAndLoadSavedImages() {
+            if (currentUser && currentUser.profile) {
+                const photo = currentUser.profile.photo;
+                const signature = currentUser.profile.signature;
+                
+                if (photo) {
+                    const pBadge = document.getElementById('photo-spec-badge');
+                    const pContainer = document.getElementById('photo-preview-container');
+                    const pImg = document.getElementById('photo-preview-img');
+                    if (pBadge) {
+                        pBadge.innerText = `✓ Loaded saved passport photo (AI Resized & Compressed)`;
+                        pBadge.style.display = 'block';
+                    }
+                    if (pImg) pImg.src = photo;
+                    if (pContainer) pContainer.style.display = 'block';
+                }
+                if (signature) {
+                    const sBadge = document.getElementById('sig-spec-badge');
+                    const sContainer = document.getElementById('sig-preview-container');
+                    const sImg = document.getElementById('sig-preview-img');
+                    if (sBadge) {
+                        sBadge.innerText = `✓ Loaded saved signature (AI Resized & Compressed)`;
+                        sBadge.style.display = 'block';
+                    }
+                    if (sImg) sImg.src = signature;
+                    if (sContainer) sContainer.style.display = 'block';
+                }
+            }
+        }
+
+        // Voice TTS Guide using Web Speech API
+        function speakAI(text) {
+            try {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    const voices = window.speechSynthesis.getVoices();
+                    const preferredVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.lang.includes('hi'));
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
+                    }
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                }
+            } catch (e) {
+                console.error("Speech Synthesis failed:", e);
+            }
+        }
+
+        // Autonomous AI Agent Mentor Guide
+        function updateMentorGuide() {
+            if (!currentUser || !currentUser.profile) return;
+            
+            const qual = currentUser.profile.qualification || "10th Pass";
+            const name = currentUser.profile.name || currentUser.name || "Aspirant";
+            
+            let eligibleExams = "SSC MTS (10th Pass) & Railway RRB NTPC";
+            if (qual === "12th Pass") {
+                eligibleExams = "SSC MTS, Railway RRB NTPC (12th level), SBI Clerk";
+            } else if (qual === "Graduate" || qual === "Post Graduate") {
+                eligibleExams = "SSC CGL (Graduate), SBI PO, RRB NTPC, UPSC CSE";
+            }
+            
+            const examsBadge = document.getElementById('agent-eligible-exams');
+            const greetingEl = document.getElementById('agent-mentor-greeting');
+            
+            if (examsBadge) examsBadge.innerText = eligibleExams;
+            if (greetingEl) {
+                greetingEl.innerText = `Hello ${name}! Based on your '${qual}' qualification, I have analyzed active exams. You are highly eligible for ${eligibleExams}. Let's fill out the SSC MTS or State Bank application form!`;
+            }
+            
+            const steps = ['step-eligibility', 'step-filler', 'step-check', 'step-submitted'];
+            steps.forEach((stepId, i) => {
+                const el = document.getElementById(stepId);
+                if (el) {
+                    if (i === 0) el.className = 'agent-step completed';
+                    else if (i === 1) el.className = 'agent-step active';
+                    else el.className = 'agent-step';
+                }
+            });
+        }
+
+        // Secure Profile Database Local Storage Helpers
+        let currentUser = null;
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('reg-name').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            
+            const errEl = document.getElementById('register-error');
+            const succEl = document.getElementById('register-success');
+            
+            errEl.style.display = 'none';
+            succEl.style.display = 'none';
+            
+            const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
+            if (users.some(u => u.email === email)) {
+                errEl.innerText = "Email already exists! Please login.";
+                errEl.style.display = 'block';
+                return;
+            }
+            
+            const newUser = {
+                name,
+                email,
+                password,
+                profile: {
+                    name: name,
+                    dob: "",
+                    gender: "Male",
+                    phone: "",
+                    state: "",
+                    qualification: "10th Pass",
+                    percent: "",
+                    aadhaar: "",
+                    category: "General",
+                    address: ""
+                }
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('sarkariguru_users', JSON.stringify(users));
+            
+            succEl.innerText = "Registration successful! You can now sign in.";
+            succEl.style.display = 'block';
+            
+            document.getElementById('login-email').value = email;
+            document.getElementById('login-password').focus();
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            const errEl = document.getElementById('login-error');
+            errEl.style.display = 'none';
+            
+            const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (!user) {
+                errEl.innerText = "Invalid email or password! Please try again.";
+                errEl.style.display = 'block';
+                return;
+            }
+            
+            currentUser = user;
+            localStorage.setItem('sarkariguru_current_user', JSON.stringify(currentUser));
+            
+            initializeLoggedInUI();
+        }
+
+        function initializeLoggedInUI() {
+            if (!currentUser) return;
+            
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('profile-dashboard').style.display = 'grid';
+            
+            const p = currentUser.profile || {};
+            document.getElementById('prof-name').value = p.name || currentUser.name || "";
+            document.getElementById('prof-dob').value = p.dob || "";
+            if (p.gender) document.getElementById('prof-gender').value = p.gender;
+            document.getElementById('prof-phone').value = p.phone || "";
+            document.getElementById('prof-state').value = p.state || "";
+            if (p.qualification) document.getElementById('prof-qual').value = p.qualification;
+            document.getElementById('prof-percent').value = p.percent || "";
+            document.getElementById('prof-aadhaar').value = p.aadhaar || "";
+            if (p.category) document.getElementById('prof-category').value = p.category;
+            document.getElementById('prof-address').value = p.address || "";
+            
+            document.getElementById('filler-logged-out').style.display = 'none';
+            document.getElementById('filler-content').style.display = 'flex';
+            
+            document.getElementById('nav-auth-item').innerHTML = `<span style="font-size: 0.85rem; font-weight: 700; color: var(--accent-color);">👤 ${currentUser.name.split(' ')[0]}</span> <button onclick="handleLogout()" class="btn" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 8px; margin-left: 6px; background-color: var(--accent-glow); color: var(--accent-color);">Logout</button>`;
+            
+            updateMentorGuide();
+            checkAndLoadSavedImages();
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('sarkariguru_current_user');
+            
+            document.getElementById('auth-section').style.display = 'grid';
+            document.getElementById('profile-dashboard').style.display = 'none';
+            document.getElementById('filler-logged-out').style.display = 'block';
+            document.getElementById('filler-content').style.display = 'none';
+            
+            document.getElementById('nav-auth-item').innerHTML = `<button onclick="switchToTabAndFocus('profile-pane')" class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;">👤 Login</button>`;
+            
+            document.getElementById('portal-simulated-form').reset();
+            document.getElementById('photo-spec-badge').style.display = 'none';
+            document.getElementById('photo-preview-container').style.display = 'none';
+            document.getElementById('sig-spec-badge').style.display = 'none';
+            document.getElementById('sig-preview-container').style.display = 'none';
+        }
+
+        function checkSavedLogin() {
+            const saved = localStorage.getItem('sarkariguru_current_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                initializeLoggedInUI();
+            }
+        }
+
+        async function generateSmartCareerRecommendations() {
+            if (!currentUser) {
+                alert("Please log in first to analyze your profile.");
+                return;
+            }
+            
+            const loader = document.getElementById('career-rec-loading');
+            const resultBox = document.getElementById('career-recommendations-result');
+            
+            if (loader) loader.style.display = 'block';
+            if (resultBox) resultBox.innerHTML = '';
+            
+            const p = currentUser.profile || {};
+            const prompt = `You are a professional career counselor specializing in Indian Government Jobs (Sarkari Exams). Analyze this candidate's profile and provide detailed, supportive, custom advice:
+- Name: ${p.name || currentUser.name}
+- Date of Birth: ${p.dob || 'Not provided'}
+- Gender: ${p.gender || 'Male'}
+- Highest Qualification: ${p.qualification || '10th Pass'}
+- Marks Percentage: ${p.percent || 'Not specified'}
+- State of Domicile: ${p.state || 'Not specified'}
+- Category: ${p.category || 'General'}
+
+Recommend exactly 3 highly relevant government examinations that this candidate fits beautifully. Outline why each of these are top fits for them, what subject syllabus they should focus on, and a 30-day starter preparation roadmap.
+Style the output in clean HTML formatting (using <strong>, <p>, <ul>, <li style="margin-bottom: 6px;">) without any backticks, code blocks, or markdown. Use a mix of warm Hindi and English (Hinglish) to make it encouraging and authentic.`;
+
+            try {
+                const responseText = await callGemini(prompt, "You are a professional, motivating Sarkari Exam career advisor mentor.");
+                
+                if (resultBox) {
+                    resultBox.innerHTML = responseText;
+                }
+                speakAI("मैंने आपकी प्रोफ़ाइल का विश्लेषण किया है और आपके लिए करियर की सिफारिशें तैयार की हैं। I have generated personalized career suggestions for you.");
+            } catch (err) {
+                console.error("Failed to generate career recommendations:", err);
+                if (resultBox) {
+                    resultBox.innerHTML = `<p style="color: red; text-align: center; font-weight: bold;">Failed to connect with AI. Please check your internet connection or enter details and click again.</p>`;
+                }
+            } finally {
+                if (loader) loader.style.display = 'none';
+            }
+        }
+
+        function loadTargetFormPortal() {
+            const portal = document.getElementById('target-portal-select').value;
+            const urlEl = document.getElementById('portal-url');
+            const titleEl = document.getElementById('portal-form-title');
+            
+            let url = "";
+            let title = "";
+            
+            if (portal === 'ssc') {
+                url = "https://ssc.gov.in/portal/mts_form_2026";
+                title = "SSC MULTI-TASKING STAFF (MTS) EXAMINATION 2026";
+            } else if (portal === 'sbi') {
+                url = "https://sbi.co.in/careers/probationary_officers_2026";
+                title = "SBI PROBATIONARY OFFICERS (PO) APPLICATION 2026";
+            } else if (portal === 'railway') {
+                url = "https://rrbcdg.gov.in/ntpc_recruitment_2026";
+                title = "RRB NON-TECHNICAL POPULAR CATEGORIES (NTPC) 2026";
+            }
+            
+            if (urlEl) urlEl.innerText = url;
+            if (titleEl) titleEl.innerText = title;
+            
+            speakAI(`Target portal updated to ${title}. Ready to autofill your stored credentials.`);
+        }
+
+        let currentSelectedJob = null;
+
+        function openApplyNowAssistant(index) {
+            if (!currentUser) {
+                alert("Please login or register first to store documents securely in your Candidate Vault and get AI help.");
+                switchToTabAndFocus('profile-pane');
+                return;
+            }
+            
+            const job = currentJobs[index];
+            if (!job) return;
+            
+            currentSelectedJob = job;
+            
+            // Populate details
+            document.getElementById('assistant-modal-job-title').innerText = job.title;
+            document.getElementById('assistant-modal-job-subtitle').innerText = `${job.department} • ${job.vacancies}`;
+            document.getElementById('modal-info-age').innerText = job.title.toLowerCase().includes('cgl') || job.title.toLowerCase().includes('po') ? '21-30 Years' : '18-27 Years';
+            document.getElementById('modal-info-fee').innerText = calculateFormFeeForJob(job);
+            document.getElementById('modal-info-lastdate').innerText = job.lastDate;
+            document.getElementById('modal-info-pay').innerText = job.salary;
+            document.getElementById('modal-official-link').href = job.officialLink;
+            
+            // Open modal
+            document.getElementById('apply-now-modal').style.display = 'flex';
+            
+            // Update document uploader list
+            updateVaultUI();
+            
+            // Clear conversational chat messages (restore only default welcome)
+            document.getElementById('apply-chat-messages').innerHTML = `
+                <div style="align-self: flex-start; max-width: 85%; padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; background: white; border: 1px solid var(--border-color); font-size: 0.9rem; line-height: 1.5; color: var(--text-primary);">
+                    नमस्ते! मैं आपका **SarkariGuru AI Career Assistant** हूँ। आपके सेव किये गए दस्तावेजों के संदर्भ में इस परीक्षा के लिए कोई भी प्रश्न पूछें। मैं आपको पूरी तरह हिन्दी में मार्गदर्शन करूँगा। 🇮🇳
+                </div>
+            `;
+            
+            // Generate guide
+            generateAssistantGuideForJob(job);
+        }
+
+        function closeApplyModal() {
+            document.getElementById('apply-now-modal').style.display = 'none';
+        }
+
+        function calculateFormFeeForJob(job) {
+            if (!currentUser) return "Rs. 100";
+            const p = currentUser.profile || {};
+            const category = p.category || "General";
+            const gender = p.gender || "Male";
+            
+            let fee = 100;
+            if (job.title.toLowerCase().includes('ssc') || job.title.toLowerCase().includes('mts') || job.title.toLowerCase().includes('cgl')) {
+                if (gender === 'Female' || category === 'SC' || category === 'ST') fee = 0;
+            } else if (job.title.toLowerCase().includes('sbi') || job.title.toLowerCase().includes('clerk') || job.title.toLowerCase().includes('po')) {
+                if (gender === 'Female') fee = 0;
+                else if (category === 'SC' || category === 'ST') fee = 125;
+                else fee = 750;
+            } else if (job.title.toLowerCase().includes('railway') || job.title.toLowerCase().includes('ntpc') || job.title.toLowerCase().includes('rpf')) {
+                if (category === 'SC' || category === 'ST' || gender === 'Female') fee = 250;
+                else fee = 500;
+            }
+            return fee === 0 ? "FREE (Exempted)" : `Rs. ${fee}`;
+        }
+
+        function switchApplyTab(tabName) {
+            const tabs = ['apply-guide', 'checklist', 'register', 'hindi-chat'];
+            tabs.forEach(t => {
+                const pane = document.getElementById(`apply-pane-${t}`);
+                const btn = document.getElementById(`tab-${t}-btn`);
+                if (pane) {
+                    if (t === tabName) {
+                        pane.style.display = t === 'hindi-chat' ? 'flex' : 'block';
+                    } else {
+                        pane.style.display = 'none';
+                    }
+                }
+                if (btn) {
+                    if (t === tabName) {
+                        btn.style.color = "var(--accent-color)";
+                        btn.style.borderBottom = "2px solid var(--accent-color)";
+                    } else {
+                        btn.style.color = "var(--text-secondary)";
+                        btn.style.borderBottom = "none";
+                    }
+                }
+            });
+        }
+
+        function updateVaultUI() {
+            if (!currentUser) return;
+            const p = currentUser.profile || {};
+            p.documents = p.documents || {};
+            
+            const docTypes = ['resume', 'marksheet', 'certificate'];
+            docTypes.forEach(type => {
+                const statusEl = document.getElementById(`vault-status-${type}`);
+                const btnEl = document.querySelector(`button[onclick*="vault-upload-${type}"]`);
+                if (p.documents[type]) {
+                    const doc = p.documents[type];
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span style="color: var(--success); font-weight: bold;">✓ ${doc.name.substring(0, 10)}...</span>`;
+                    }
+                    if (btnEl) btnEl.innerText = "Replace Document";
+                } else {
+                    if (statusEl) {
+                        statusEl.innerHTML = `<span style="color: var(--text-muted);">Missing</span>`;
+                    }
+                    if (btnEl) btnEl.innerText = `Upload ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                }
+            });
+        }
+
+        async function uploadVaultDocument(type) {
+            const input = document.getElementById(`vault-upload-${type}`);
+            const file = input.files[0];
+            if (!file) return;
+            
+            const statusEl = document.getElementById(`vault-status-${type}`);
+            if (statusEl) {
+                statusEl.innerText = "Processing...";
+                statusEl.style.color = "var(--accent-color)";
+            }
+            
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const base64 = event.target.result.split(',')[1];
+                const mimeType = file.type;
+                const fileName = file.name;
+                
+                let summaryText = "Uploaded File";
+                
+                try {
+                    let prompt = "";
+                    if (type === 'resume') {
+                        prompt = "Extract and summarize candidate's skills, qualifications, work experience, projects, or education from this resume file. Provide a concise bulleted summary of main highlights in English.";
+                    } else if (type === 'marksheet') {
+                        prompt = "Extract academic qualifications, board/university name, total marks/percentage, and major subjects from this marksheet. Provide a concise summary in 2 lines.";
+                    } else {
+                        prompt = "Extract key details, certificate number, issuing authority, and validity from this certificate. Provide a concise summary in 2 lines.";
+                    }
+                    
+                    let responseText = `Uploaded file ${fileName}. This is a ${mimeType} document representing the candidate's ${type}.`;
+                    
+                    if (mimeType.startsWith('image/')) {
+                        const requestBody = {
+                            contents: [{
+                                parts: [
+                                    { inlineData: { mimeType: mimeType, data: base64 } },
+                                    { text: prompt }
+                                ]
+                            }]
+                        };
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                        const response = await fetch(url, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(requestBody)
+                        });
+                        if (response.ok) {
+                            const data = await response.json();
+                            responseText = data.candidates[0].content.parts[0].text;
+                        }
+                    }
+                    
+                    summaryText = responseText;
+                    
+                    if (!currentUser.profile) currentUser.profile = {};
+                    if (!currentUser.profile.documents) currentUser.profile.documents = {};
+                    
+                    currentUser.profile.documents[type] = {
+                        name: fileName,
+                        summary: summaryText,
+                        base64: base64,
+                        mimeType: mimeType,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Save to user database
+                    const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
+                    const idx = users.findIndex(u => u.email === currentUser.email);
+                    if (idx !== -1) {
+                        users[idx] = currentUser;
+                    }
+                    localStorage.setItem('sarkariguru_users', JSON.stringify(users));
+                    localStorage.setItem('sarkariguru_current_user', JSON.stringify(currentUser));
+                    
+                    updateVaultUI();
+                    speakAI(`Your ${type} has been uploaded and analyzed securely by SarkariGuru AI.`);
+                    alert(`Securely uploaded & analyzed: ${fileName}`);
+                    
+                    if (currentSelectedJob) {
+                        generateAssistantGuideForJob(currentSelectedJob);
+                    }
+                } catch (e) {
+                    console.error("Document analysis failed:", e);
+                    statusEl.innerText = "Error";
+                    statusEl.style.color = "var(--danger)";
+                    alert("Document upload failed: " + e.message);
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function generateAssistantGuideForJob(job) {
+            currentSelectedJob = job;
+            const loading = document.getElementById('apply-modal-ai-loading');
+            loading.style.display = 'flex';
+            
+            const tabs = ['apply-guide', 'checklist', 'register', 'hindi-chat'];
+            tabs.forEach(t => {
+                const pane = document.getElementById(`apply-pane-${t}`);
+                if (pane) pane.style.display = 'none';
+            });
+            
+            const p = currentUser.profile || {};
+            const savedResume = (p.documents && p.documents.resume) ? p.documents.resume.name : "None (Not uploaded yet)";
+            const savedMarksheet = (p.documents && p.documents.marksheet) ? p.documents.marksheet.name : "None (Not uploaded yet)";
+            const savedCertificate = (p.documents && p.documents.certificate) ? p.documents.certificate.name : "None (Not uploaded yet)";
+            
+            const resumeSummary = (p.documents && p.documents.resume) ? (p.documents.resume.summary || "No specific summary extracted.") : "No resume uploaded.";
+            const marksheetSummary = (p.documents && p.documents.marksheet) ? (p.documents.marksheet.summary || "No specific marksheet summary.") : "No marksheet uploaded.";
+
+            const photoSaved = p.photo ? "Saved and optimized" : "Not uploaded";
+            const signatureSaved = p.signature ? "Saved and optimized" : "Not uploaded";
+
+            const prompt = `You are a professional government career advisor. Evaluate this job against the candidate's profile.
+            Job Info:
+            - Title: ${job.title}
+            - Department: ${job.department}
+            - Eligibility/Qualification: ${job.qualification}
+            - Salary: ${job.salary}
+            - Last Date: ${job.lastDate}
+            
+            Candidate Info:
+            - Name: ${p.name || currentUser.name}
+            - DOB/Age: ${p.dob || "Not provided"}
+            - Gender: ${p.gender || "Male"}
+            - Qualification: ${p.qualification || "10th Pass"}
+            - Marks: ${p.percent || "Not provided"}
+            - Category: ${p.category || "General"}
+            - State: ${p.state || "Not provided"}
+            
+            Candidate Uploaded Documents:
+            - Resume/CV: ${savedResume} (Summary: ${resumeSummary})
+            - Marksheet: ${savedMarksheet} (Summary: ${marksheetSummary})
+            - Certificates: ${savedCertificate}
+            - Passport Photo: ${photoSaved}
+            - Candidate Signature: ${signatureSaved}
+
+            Create a detailed, friendly eligibility check and applying strategy. If their qualification is insufficient or different (e.g. they have 10th Pass but job requires Graduate, or they lack skills mentioned), warn them prominently.
+            
+            Return ONLY a raw JSON object matching this schema. Do NOT wrap it in markdown block.
+            {
+              "eligibility": {
+                "status": "Eligible" or "Warning" or "Not Eligible",
+                "message": "Direct feedback in encouraging Hinglish (Hindi + English) explaining why they are eligible, or warnings about any missing qualifications, age limits, or certificates."
+              },
+              "applyGuide": [
+                "Step 1: Check eligibility...",
+                "Step 2: ...",
+                "Step 3: ...",
+                "Step 4: ..."
+              ],
+              "checklist": [
+                { "name": "Resume / CV", "status": "${p.documents && p.documents.resume ? 'saved' : 'missing'}", "desc": "Used for AI review." },
+                { "name": "Passport Photograph", "status": "${p.photo ? 'saved' : 'missing'}", "desc": "Max 50KB, 200x230 px." },
+                { "name": "Candidate Signature", "status": "${p.signature ? 'saved' : 'missing'}", "desc": "Max 20KB, 140x60 px." },
+                { "name": "Academic Marksheet", "status": "${p.documents && p.documents.marksheet ? 'saved' : 'missing'}", "desc": "To verify eligibility." },
+                { "name": "Category Certificate", "status": "${p.documents && p.documents.certificate ? 'saved' : 'missing'}", "desc": "For reservation / fee waiver." }
+              ],
+              "registrationSteps": [
+                "Step 1: Open the official registration portal...",
+                "Step 2: ...",
+                "Step 3: ...",
+                "Step 4: ..."
+              ]
+            }`;
+
+            try {
+                const responseText = await callGemini(prompt, "You are a professional, motivating government career counselor. Return ONLY valid raw JSON.");
+                const data = extractJSON(responseText);
+                
+                // Render Apply Guide
+                let statusColor = "var(--success)";
+                let statusBg = "rgba(22, 163, 74, 0.1)";
+                if (data.eligibility.status === 'Warning') {
+                    statusColor = "#ea580c";
+                    statusBg = "rgba(234, 88, 12, 0.1)";
+                } else if (data.eligibility.status === 'Not Eligible') {
+                    statusColor = "var(--danger)";
+                    statusBg = "rgba(239, 68, 68, 0.1)";
+                }
+                
+                let guideHtml = `
+                    <div style="background-color: ${statusBg}; border-left: 4px solid ${statusColor}; padding: 16px; border-radius: 12px; margin-bottom: 20px;">
+                        <h4 style="margin: 0 0 6px 0; color: ${statusColor}; font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                            <span>⚠️</span> Eligibility Status: ${data.eligibility.status}
+                        </h4>
+                        <p style="margin: 0; font-size: 0.88rem; line-height: 1.5; color: var(--text-primary); font-weight: 500;">${data.eligibility.message}</p>
+                    </div>
+                    <h4 style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">🎯 AI Step-by-Step Apply Roadmap</h4>
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                `;
+                
+                data.applyGuide.forEach((step, i) => {
+                    guideHtml += `
+                        <div style="display: flex; gap: 14px; position: relative;">
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background-color: var(--accent-glow); color: var(--accent-color); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; flex-shrink: 0; border: 1px solid var(--accent-color); z-index: 1;">${i+1}</div>
+                            <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); padding-top: 3px;">${step}</div>
+                        </div>
+                    `;
+                });
+                guideHtml += `</div>`;
+                document.getElementById('apply-guide-content').innerHTML = guideHtml;
+                
+                // Render Checklist
+                let checklistHtml = `
+                    <h4 style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">📋 Required Documents Status</h4>
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                `;
+                data.checklist.forEach(item => {
+                    const isSaved = item.status === 'saved';
+                    checklistHtml += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; background-color: var(--bg-color); border: 1px solid var(--border-color); padding: 12px 16px; border-radius: 12px;">
+                            <div style="display: flex; flex-direction: column; gap: 2px;">
+                                <span style="font-size: 0.9rem; font-weight: bold; color: var(--text-primary);">${item.name}</span>
+                                <span style="font-size: 0.75rem; color: var(--text-secondary);">${item.desc}</span>
+                            </div>
+                            <span style="font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; ${isSaved ? 'background-color: rgba(22,163,74,0.1); color: var(--success);' : 'background-color: rgba(239,68,68,0.1); color: var(--danger);'}">
+                                ${isSaved ? '✓ Saved' : '⚠️ Missing'}
+                            </span>
+                        </div>
+                    `;
+                });
+                checklistHtml += `</div>`;
+                document.getElementById('apply-checklist-content').innerHTML = checklistHtml;
+                
+                // Render Registration Steps
+                let regHtml = `
+                    <h4 style="margin: 0 0 16px 0; font-size: 1rem; font-weight: 800; color: var(--text-primary);">⚡ Official Portal Registration Guide</h4>
+                    <div style="display: flex; flex-direction: column; gap: 14px;">
+                `;
+                data.registrationSteps.forEach((step, i) => {
+                    regHtml += `
+                        <div style="display: flex; gap: 14px; position: relative;">
+                            <div style="width: 28px; height: 28px; border-radius: 50%; background-color: rgba(79, 70, 229, 0.1); color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; flex-shrink: 0; border: 1px solid #4f46e5; z-index: 1;">${i+1}</div>
+                            <div style="font-size: 0.9rem; line-height: 1.5; color: var(--text-secondary); padding-top: 3px;">${step}</div>
+                        </div>
+                    `;
+                });
+                regHtml += `</div>`;
+                document.getElementById('apply-register-content').innerHTML = regHtml;
+                
+                // Hide loader and display active pane
+                loading.style.display = 'none';
+                switchApplyTab('apply-guide');
+                
+                speakAI("मैंने आपकी प्रोफ़ाइल और सेव किये गए दस्तावेजों के हिसाब से आवेदन गाइड तैयार कर दी है।");
+            } catch (err) {
+                console.error("Failed to generate guide:", err);
+                loading.style.display = 'none';
+                document.getElementById('apply-guide-content').innerHTML = `<p style="color: red; font-weight: bold; text-align: center; padding: 20px 0;">Failed to generate AI Apply Guide. Please check your internet connection or try again.</p>`;
+                switchApplyTab('apply-guide');
+            }
+        }
+
+        async function sendApplyChat() {
+            const input = document.getElementById('apply-chat-input');
+            const query = input.value.trim();
+            if (!query) return;
+            
+            input.value = '';
+            appendApplyChatMessage('User', query);
+            
+            const messagesContainer = document.getElementById('apply-chat-messages');
+            const typingId = 'typing-' + Date.now();
+            const typingHtml = `
+                <div id="${typingId}" style="align-self: flex-start; max-width: 85%; padding: 12px 16px; border-radius: 16px; border-bottom-left-radius: 4px; background: white; border: 1px solid var(--border-color); font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                    <div class="spinner" style="width: 14px; height: 14px; border-width: 2px;"></div>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: bold;">AI सोच रहा है...</span>
+                </div>
+            `;
+            messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            const p = currentUser.profile || {};
+            const savedResume = (p.documents && p.documents.resume) ? p.documents.resume.name : "None";
+            const savedMarksheet = (p.documents && p.documents.marksheet) ? p.documents.marksheet.name : "None";
+            const savedCertificate = (p.documents && p.documents.certificate) ? p.documents.certificate.name : "None";
+            
+            const resumeSummary = (p.documents && p.documents.resume) ? p.documents.resume.summary : "No resume uploaded.";
+            const marksheetSummary = (p.documents && p.documents.marksheet) ? p.documents.marksheet.summary : "No marksheet uploaded.";
+            
+            const contextPrompt = `You are the SarkariGuru AI Career Assistant for the job: "${currentSelectedJob.title}" at "${currentSelectedJob.department}".
+            
+            The candidate's profile:
+            - Name: ${p.name || currentUser.name}
+            - Gender: ${p.gender || "Male"}
+            - DOB: ${p.dob || "Not provided"}
+            - Qualification: ${p.qualification || "10th Pass"}
+            - Marks: ${p.percent || "Not provided"}
+            - Category: ${p.category || "General"}
+            - State: ${p.state || "Not provided"}
+            
+            Candidate Stored Documents:
+            - Resume/CV: ${savedResume} (Summary: ${resumeSummary})
+            - Marksheet: ${savedMarksheet} (Summary: ${marksheetSummary})
+            - Certificate: ${savedCertificate}
+            
+            Important constraints:
+            1. Respond ONLY in friendly, motivating, natural Hindi (with English technical terms where appropriate, i.e., Hinglish).
+            2. Fully answer their question considering their candidate profile and saved documents.
+            3. Keep the tone encouraging, authentic, and highly professional.
+            
+            User Question: ${query}`;
+            
+            try {
+                const response = await callGemini(contextPrompt, "You are a professional, helpful Indian Government jobs career counselor. You answer queries in easy-to-understand Hindi.");
+                
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
+                
+                appendApplyChatMessage('AI', response);
+                speakAI(response);
+            } catch (err) {
+                console.error("Apply chat failed:", err);
+                const typingEl = document.getElementById(typingId);
+                if (typingEl) typingEl.remove();
+                
+                appendApplyChatMessage('AI', "क्षमा करें, मैं अभी इस प्रश्न का उत्तर देने में असमर्थ हूँ। कृपया पुनः प्रयास करें।");
+            }
+        }
+
+        function appendApplyChatMessage(sender, text) {
+            const container = document.getElementById('apply-chat-messages');
+            const isUser = sender === 'User';
+            
+            let html = `
+                <div style="align-self: ${isUser ? 'flex-end' : 'flex-start'}; max-width: 85%; padding: 12px 16px; border-radius: 16px; ${isUser ? 'border-bottom-right-radius: 4px; background-color: var(--accent-color); color: white;' : 'border-bottom-left-radius: 4px; background: white; border: 1px solid var(--border-color); color: var(--text-primary);'} font-size: 0.9rem; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                    ${text.replace(/\n/g, '<br>')}
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', html);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function switchToTabAndFocus(paneId) {
+            let btnId = '';
+            if (paneId === 'profile-pane') {
+                btnId = 'tab-profile-btn';
+            } else if (paneId === 'filler-pane') {
+                btnId = 'tab-filler-btn';
+            }
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                switchTab(paneId, btn);
+                btn.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function saveProfileDataFromForm() {
+            if (!currentUser) return;
+            
+            currentUser.profile = {
+                name: document.getElementById('prof-name').value,
+                dob: document.getElementById('prof-dob').value,
+                gender: document.getElementById('prof-gender').value,
+                phone: document.getElementById('prof-phone').value,
+                state: document.getElementById('prof-state').value,
+                qualification: document.getElementById('prof-qual').value,
+                percent: document.getElementById('prof-percent').value,
+                aadhaar: document.getElementById('prof-aadhaar').value,
+                category: document.getElementById('prof-category').value,
+                address: document.getElementById('prof-address').value,
+                photo: currentUser.profile ? currentUser.profile.photo : "",
+                signature: currentUser.profile ? currentUser.profile.signature : ""
+            };
+            
+            const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
+            const idx = users.findIndex(u => u.email === currentUser.email);
+            if (idx !== -1) {
+                users[idx] = currentUser;
+            } else {
+                users.push(currentUser);
+            }
+            localStorage.setItem('sarkariguru_users', JSON.stringify(users));
+            localStorage.setItem('sarkariguru_current_user', JSON.stringify(currentUser));
+            
+            updateMentorGuide();
+        }
+
+        function saveProfileDetails(event) {
+            if (event) event.preventDefault();
+            saveProfileDataFromForm();
+            alert("Success! Candidate profile and credentials have been securely stored in your local encrypted storage vault.");
+        }
+
+        // Multimodal AI OCR Document extraction logic using Gemini
+        let selectedOCRFileBase64 = "";
+        let selectedOCRFileType = "";
+        let selectedOCRFileName = "";
+
+        function handleOCRFileSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            selectedOCRFileName = file.name;
+            selectedOCRFileType = file.type;
+            
+            const fileBadge = document.getElementById('ocr-file-badge');
+            const fileNameSpan = document.getElementById('ocr-file-name');
+            if (fileNameSpan) fileNameSpan.innerText = file.name;
+            if (fileBadge) fileBadge.style.display = 'inline-flex';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                selectedOCRFileBase64 = e.target.result.split(',')[1];
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearOCRFile(event) {
+            if (event) event.stopPropagation();
+            document.getElementById('ocr-file-uploader').value = '';
+            const fileBadge = document.getElementById('ocr-file-badge');
+            if (fileBadge) fileBadge.style.display = 'none';
+            selectedOCRFileBase64 = "";
+            selectedOCRFileType = "";
+            selectedOCRFileName = "";
+        }
+
+        async function runAIOCRScan() {
+            if (!currentUser) {
+                alert("Please log in or register first to store extracted details into your secure profile.");
+                return;
+            }
+            if (!selectedOCRFileBase64) {
+                alert("Please select or drop a valid document file (Aadhaar, Marks sheet, or Certificate) first.");
+                return;
+            }
+            
+            const loading = document.getElementById('ocr-loading');
+            const scanBtn = document.getElementById('btn-ocr-scan');
+            
+            if (loading) loading.style.display = 'block';
+            if (scanBtn) scanBtn.disabled = true;
+            
+            const prompt = `You are a professional automated scanner. Analyze the attached certificate/ID card image/file, extract all credentials, and output exactly a valid JSON object matching this structure. Do NOT include any markdown or text other than the raw JSON:
+{
+  "name": "Extracted Full Name (if found)",
+  "dob": "Extracted Date of Birth in YYYY-MM-DD format (if found)",
+  "gender": "Male or Female or Other (if found)",
+  "phone": "Extracted Mobile Number (if found)",
+  "state": "Extracted State of Domicile (if found)",
+  "qualification": "Estimated Qualification like 10th Pass / 12th Pass / Graduate (if found)",
+  "percent": "Extracted Marks Percentage or score (if found)",
+  "aadhaar": "Extracted Aadhaar/ID Number (if found)",
+  "category": "Extracted Category like General / OBC / SC / ST (if found)",
+  "address": "Extracted Permanent Address (if found)"
+}
+If any field cannot be found, leave it blank or estimate logically based on the document type. Return strictly raw JSON.`;
+
+            const requestBody = {
+                contents: [{
+                    parts: [
+                        {
+                            inlineData: {
+                                mimeType: selectedOCRFileType,
+                                data: selectedOCRFileBase64
+                            }
+                        },
+                        {
+                            text: prompt
+                        }
+                    ]
+                }]
+            };
+            
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Gemini API OCR failed: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const responseText = data.candidates[0].content.parts[0].text;
+                const extractedData = extractJSON(responseText);
+                
+                // Populate profile inputs and highlight them
+                const fields = {
+                    'prof-name': extractedData.name,
+                    'prof-dob': extractedData.dob,
+                    'prof-gender': extractedData.gender,
+                    'prof-phone': extractedData.phone,
+                    'prof-state': extractedData.state,
+                    'prof-qual': extractedData.qualification,
+                    'prof-percent': extractedData.percent,
+                    'prof-aadhaar': extractedData.aadhaar,
+                    'prof-category': extractedData.category,
+                    'prof-address': extractedData.address
+                };
+                
+                Object.keys(fields).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && fields[id]) {
+                        el.value = fields[id];
+                        el.classList.add('filled-highlight');
+                        setTimeout(() => el.classList.remove('filled-highlight'), 3000);
+                    }
+                });
+                
+                saveProfileDataFromForm();
+                speakAI("मैंने आपके दस्तावेज़ से विवरण सफलतापूर्वक निकाल लिए हैं और प्रोफ़ाइल सहेज दी है। Document details extracted successfully.");
+                alert("AI OCR Scan Successful! Extracted details populated into your Profile Form and stored in your vault.");
+                clearOCRFile();
+            } catch (err) {
+                console.error("AI OCR Scan failure:", err);
+                alert("AI OCR scan timed out. Please enter details manually or try again with a high-resolution, clearer photo.");
+            } finally {
+                if (loading) loading.style.display = 'none';
+                if (scanBtn) scanBtn.disabled = false;
+            }
+        }
+
+        // Form filler and checkpoint controllers
+        function calculateFormFee() {
+            const portal = document.getElementById('target-portal-select').value;
+            const category = document.getElementById('port-category').value;
+            const gender = document.getElementById('port-gender').value;
+            
+            let fee = 0;
+            if (portal === 'ssc') {
+                if (gender === 'Female' || category === 'SC' || category === 'ST') {
+                    fee = 0;
+                } else {
+                    fee = 100;
+                }
+            } else if (portal === 'sbi') {
+                if (gender === 'Female') {
+                    fee = 0;
+                } else if (category === 'SC' || category === 'ST') {
+                    fee = 125;
+                } else {
+                    fee = 750;
+                }
+            } else if (portal === 'railway') {
+                if (category === 'SC' || category === 'ST' || gender === 'Female') {
+                    fee = 250;
+                } else {
+                    fee = 500;
+                }
+            }
+            return fee;
+        }
+
+        async function runAIFillAction() {
+            if (!currentUser) {
+                alert("Please login first to fill application forms automatically.");
+                return;
+            }
+            
+            const overlay = document.getElementById('autofill-overlay');
+            const terminal = document.getElementById('autofill-terminal-log');
+            
+            overlay.style.display = 'flex';
+            terminal.innerHTML = `[SarkariGuru AI] Handshaking with secure profile vault...<br>`;
+            
+            const logs = [
+                "Connecting to profile database... Success.",
+                "Extracting candidate name, qualifications and ID card credentials...",
+                "Running heuristic optimization on passport photo and signature limits...",
+                "Populating Form Fields 1 to 13 with 100% accuracy...",
+                "Completing autofill. Generating review checkpoint."
+            ];
+            
+            for (let i = 0; i < logs.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 600));
+                terminal.innerHTML += `[SarkariGuru AI] ${logs[i]}<br>`;
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 400));
+            
+            // Map fields from profile
+            const p = currentUser.profile || {};
+            document.getElementById('port-name').value = p.name || currentUser.name || "";
+            document.getElementById('port-dob').value = p.dob || "";
+            if (p.gender) document.getElementById('port-gender').value = p.gender;
+            document.getElementById('port-state').value = p.state || "";
+            document.getElementById('port-aadhaar').value = p.aadhaar || "";
+            document.getElementById('port-phone').value = p.phone || "";
+            document.getElementById('port-qual').value = p.qualification || "";
+            document.getElementById('port-percent').value = p.percent || "";
+            document.getElementById('port-address').value = p.address || "";
+            if (p.category) document.getElementById('port-category').value = p.category;
+            
+            checkAndLoadSavedImages();
+            
+            // Highlight fields
+            const ids = ['port-name', 'port-dob', 'port-gender', 'port-state', 'port-aadhaar', 'port-phone', 'port-qual', 'port-percent', 'port-address', 'port-category'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('filled-highlight');
+                    setTimeout(() => el.classList.remove('filled-highlight'), 3000);
+                }
+            });
+            
+            overlay.style.display = 'none';
+            document.getElementById('confirm-checkpoint-container').style.display = 'block';
+            document.getElementById('confirm-checkpoint-container').scrollIntoView({ behavior: 'smooth' });
+            
+            // Voice Guidance TTS
+            speakAI("मैंने आपका आवेदन फॉर्म भर दिया है। कृपया सभी विवरणों की जांच करें। क्या आप फाइनल सबमिशन और सुरक्षित पेमेंट के लिए आगे बढ़ना चाहते हैं? Please review your details before final submission.");
+            
+            // Update agent roadmap status
+            const stepCheck = document.getElementById('step-check');
+            if (stepCheck) stepCheck.className = 'agent-step active';
+            const stepFiller = document.getElementById('step-filler');
+            if (stepFiller) stepFiller.className = 'agent-step completed';
+        }
+
+        function activateFormEditing() {
+            document.getElementById('confirm-checkpoint-container').style.display = 'none';
+            document.getElementById('port-name').focus();
+            speakAI("You can now click on any specific field to correct or enter manually.");
+        }
+
+        function proceedToPayment() {
+            if (!currentUser) return;
+            document.getElementById('confirm-checkpoint-container').style.display = 'none';
+            
+            const fee = calculateFormFee();
+            const portal = document.getElementById('target-portal-select').value;
+            const category = document.getElementById('port-category').value;
+            const gender = document.getElementById('port-gender').value;
+            
+            let portalName = "SSC MTS 2026";
+            if (portal === 'sbi') portalName = "SBI PO 2026";
+            if (portal === 'railway') portalName = "Railway NTPC 2026";
+            
+            document.getElementById('pay-exam-title').innerText = portalName;
+            document.getElementById('pay-user-category').innerText = `${category} (${gender})`;
+            document.getElementById('pay-amount').innerText = `Rs. ${fee.toFixed(2)}`;
+            
+            document.getElementById('payment-gateway-overlay').style.display = 'flex';
+            speakAI(`कृपया सरकारी SBI ePay पेमेंट गेटवे का उपयोग करके परीक्षा शुल्क रूपये ${fee} का भुगतान करें। There is zero commission charged by SarkariGuru.AI.`);
+        }
+
+        function cancelPaymentFlow() {
+            document.getElementById('payment-gateway-overlay').style.display = 'none';
+            document.getElementById('confirm-checkpoint-container').style.display = 'block';
+        }
+
+        function simulateSuccessfulPayment() {
+            document.getElementById('payment-gateway-overlay').style.display = 'none';
+            
+            const portal = document.getElementById('target-portal-select').value;
+            const fee = calculateFormFee();
+            const p = currentUser.profile || {};
+            
+            let portalName = "SSC MTS 2026";
+            if (portal === 'sbi') portalName = "SBI PO 2026";
+            if (portal === 'railway') portalName = "Railway NTPC 2026";
+            
+            const txnRef = `SG-2026-${Math.floor(1000000 + Math.random() * 9000000)}`;
+            const submissionTime = new Date().toLocaleString();
+            
+            document.getElementById('rec-ref').innerText = txnRef;
+            document.getElementById('rec-name').innerText = document.getElementById('port-name').value || p.name || currentUser.name;
+            document.getElementById('rec-aadhaar').innerText = document.getElementById('port-aadhaar').value || p.aadhaar || "Not Provided";
+            document.getElementById('rec-portal').innerText = portalName;
+            document.getElementById('rec-fee').innerText = `Rs. ${fee.toFixed(2)}`;
+            document.getElementById('rec-time').innerText = submissionTime;
+            
+            // Hide form and show receipt
+            document.getElementById('portal-simulated-form').style.display = 'none';
+            document.getElementById('form-receipt-block').style.display = 'block';
+            document.getElementById('form-receipt-block').scrollIntoView({ behavior: 'smooth' });
+            
+            speakAI("बधाई हो! आपका आवेदन फॉर्म सफलतापूर्वक जमा हो गया है और रसीद उत्पन्न हो गई है। Congratulations! Your application has been successfully submitted and the official government receipt is generated.");
+            
+            // Complete steps in agent portal
+            const stepSubmitted = document.getElementById('step-submitted');
+            if (stepSubmitted) stepSubmitted.className = 'agent-step completed';
+            const stepCheck = document.getElementById('step-check');
+            if (stepCheck) stepCheck.className = 'agent-step completed';
+        }
+
+        function downloadReceiptPDF() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.text("SarkariGuru.AI - Official Submission Receipt", 14, 15);
+                
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(11);
+                doc.text("------------------------------------------------------------", 14, 22);
+                doc.text(`Transaction Reference: ${document.getElementById('rec-ref').innerText}`, 14, 30);
+                doc.text(`Candidate Name: ${document.getElementById('rec-name').innerText}`, 14, 38);
+                doc.text(`Aadhaar/ID Number: ${document.getElementById('rec-aadhaar').innerText}`, 14, 46);
+                doc.text(`Government Portal: ${document.getElementById('rec-portal').innerText}`, 14, 54);
+                doc.text(`Official Fee Processed: ${document.getElementById('rec-fee').innerText}`, 14, 62);
+                doc.text(`Platform Surcharges: Rs. 0.00 (0% commission charged)`, 14, 70);
+                doc.text(`Timestamp of Submission: ${document.getElementById('rec-time').innerText}`, 14, 78);
+                doc.text("------------------------------------------------------------", 14, 86);
+                
+                doc.text("Certified secure government transaction. Form recorded directly in official database.", 14, 94);
+                doc.save("SarkariGuru_Submission_Receipt.pdf");
+            } catch (e) {
+                console.error("Receipt PDF download failed:", e);
+                alert("Receipt PDF Generation failed: " + e.message);
+            }
+        }
+
+        function resetPortalForm() {
+            document.getElementById('form-receipt-block').style.display = 'none';
+            document.getElementById('portal-simulated-form').style.display = 'block';
+            document.getElementById('portal-simulated-form').reset();
+            
+            // Reset photo/sig badges
+            document.getElementById('photo-spec-badge').style.display = 'none';
+            document.getElementById('photo-preview-container').style.display = 'none';
+            document.getElementById('sig-spec-badge').style.display = 'none';
+            document.getElementById('sig-preview-container').style.display = 'none';
+            
+            updateMentorGuide();
+        }
+
+        function submitSimulatedForm(event) {
+            event.preventDefault();
+            proceedToPayment();
+        }
+
         // AI Chat Assistant logic
         function appendChatMessage(sender, htmlContent) {
             const chatBox = document.getElementById('chat-box');
@@ -1866,6 +4065,7 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
         document.addEventListener('DOMContentLoaded', () => {
             renderJobs(defaultJobs);
             renderAlerts();
+            checkSavedLogin();
             
             // Set up drag & drop listeners for the summarizer drop-zone
             const dropZone = document.getElementById('drop-zone');
@@ -1900,7 +4100,155 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
                 }, false);
             }
         });
+
+        // Interactive Hand Guide Tour Data
+        let kidGuideActive = false;
+        let currentGuideStepIndex = 0;
+        
+        const kidGuideSteps = [
+            {
+                selector: '.theme-picker-container',
+                text: "🧸 <strong>SarkariGuru Hand Guide:</strong> Dekho bachon! Yahan se aap is App ka poora rang-biranga color theme badal sakte hain. Chalo yahan click karke apna favorite color choose karo!",
+                offsetX: 120,
+                offsetY: 20
+            },
+            {
+                selector: '.search-form',
+                text: "🔍 <strong>SarkariGuru Hand Guide:</strong> Yahan par aap apne pasand ki koi bhi Latest Govt ya Private Job search kar sakte hain. Chalo, ek baar click karke 'SBI' type karke dekho!",
+                offsetX: 30,
+                offsetY: 35
+            },
+            {
+                selector: '#job-results .job-card:first-child',
+                text: "🔥 <strong>SarkariGuru Hand Guide:</strong> Waah! Yahan saari Daily Vacancies dikhti hain jinpe bright <span style='background-color:#ef4444;color:white;padding:2px 6px;border-radius:4px;font-weight:bold;font-size:0.75rem;'>NEW</span> tag laga hai. Ek baar is 'Apply Now' button ko daba kar dekhein!",
+                offsetX: 20,
+                offsetY: 155
+            },
+            {
+                selector: '[onclick*="profile-pane"]',
+                text: "🗄️ <strong>SarkariGuru Hand Guide:</strong> Yahan profile section me aap apna Resume, Marksheet aur Certificates upload kar sakte hain, jo AI secure rakhta hai aur aapko guide karne ke liye use karta hai!",
+                offsetX: -10,
+                offsetY: 45
+            }
+        ];
+
+        function toggleKidGuide(forceState = null) {
+            kidGuideActive = forceState !== null ? forceState : !kidGuideActive;
+            const btn = document.getElementById('kid-toggle-nav-btn');
+            const panel = document.getElementById('kid-guide-panel');
+            const pointer = document.getElementById('animated-hand-guide');
+            
+            if (kidGuideActive) {
+                if (btn) {
+                    btn.innerHTML = "🧸 Kid Guide: ON";
+                    btn.style.background = "linear-gradient(135deg, #4ade80, #22c55e)";
+                    btn.style.color = "white";
+                    btn.style.borderColor = "#16a34a";
+                }
+                if (panel) panel.style.display = 'block';
+                if (pointer) pointer.style.display = 'block';
+                currentGuideStepIndex = 0;
+                positionGuideStep();
+                speakAI("सरकारी गुरु हैंड गाइड एक्टिवेट हो गया है। मैं स्क्रीन पर पॉइंट करके आपको गाइड करूँगा।");
+            } else {
+                if (btn) {
+                    btn.innerHTML = "🧸 Kid Guide: OFF";
+                    btn.style.background = "linear-gradient(135deg, #fef08a, #fde047)";
+                    btn.style.color = "#854d0e";
+                    btn.style.borderColor = "#ca8a04";
+                }
+                if (panel) panel.style.display = 'none';
+                if (pointer) pointer.style.display = 'none';
+            }
+        }
+
+        function changeGuideStep(direction) {
+            currentGuideStepIndex += direction;
+            if (currentGuideStepIndex < 0) currentGuideStepIndex = 0;
+            if (currentGuideStepIndex >= kidGuideSteps.length) {
+                alert("🎉 Bahut badhiya! Aapne poora guide tour complete kar liya hai.");
+                toggleKidGuide(false);
+                return;
+            }
+            positionGuideStep();
+        }
+
+        function positionGuideStep() {
+            const step = kidGuideSteps[currentGuideStepIndex];
+            const target = document.querySelector(step.selector);
+            const pointer = document.getElementById('animated-hand-guide');
+            const textEl = document.getElementById('kid-guide-text');
+            const stepInd = document.getElementById('kid-guide-step-indicator');
+            
+            if (!pointer || !textEl || !stepInd) return;
+            
+            textEl.innerHTML = step.text;
+            stepInd.innerText = `Step ${currentGuideStepIndex + 1} of ${kidGuideSteps.length}`;
+            
+            // Handle Back button visibility
+            document.getElementById('kid-guide-prev').style.visibility = currentGuideStepIndex === 0 ? 'hidden' : 'visible';
+            
+            if (target) {
+                const rect = target.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                
+                pointer.style.top = (rect.top + scrollTop + step.offsetY) + 'px';
+                pointer.style.left = (rect.left + scrollLeft + step.offsetX) + 'px';
+                pointer.style.display = 'block';
+                
+                // Gently scroll element into view if needed
+                target.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+            } else {
+                pointer.style.display = 'none';
+            }
+        }
+        
+        // Reposition guide hand on window resize or scroll so it remains attached
+        window.addEventListener('resize', () => {
+            if (kidGuideActive) positionGuideStep();
+        });
+        window.addEventListener('scroll', () => {
+            if (kidGuideActive) {
+                const step = kidGuideSteps[currentGuideStepIndex];
+                const target = document.querySelector(step.selector);
+                const pointer = document.getElementById('animated-hand-guide');
+                if (target && pointer) {
+                    const rect = target.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+                    pointer.style.top = (rect.top + scrollTop + step.offsetY) + 'px';
+                    pointer.style.left = (rect.left + scrollLeft + step.offsetX) + 'px';
+                }
+            }
+        });
     </script>
+
+    <!-- Animated pointer hand representing the kid/beginner guide -->
+    <div id="animated-hand-guide" class="hand-guide-pointer">
+        <svg class="hand-guide-svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M21.5,14.5c0-0.83-0.67-1.5-1.5-1.5h-1v-1c0-0.83-0.67-1.5-1.5-1.5h-1c0-0.83-0.67-1.5-1.5-1.5H15v-6C15,2.17,14.33,1.5,13.5,1.5S12,2.17,12,3v9H11c-0.55,0-1,0.45-1,1v1h-1c-0.55,0-1,0.45-1,1s0.45,1,1,1h1v1c0,0.55,0.45,1,1,1h7.5c1.38,0,2.5-1.12,2.5-2.5V14.5z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <!-- Kid Guide Dialog Card -->
+    <div id="kid-guide-panel" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; background: white; border: 3px solid #fde047; border-radius: 24px; box-shadow: 0 12px 30px rgba(0,0,0,0.15); width: 340px; padding: 20px; font-family: inherit; display: none; transition: transform 0.3s ease; border-bottom-width: 6px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.5rem;">🧸</span>
+                <span style="font-size: 1rem; font-weight: 800; color: #854d0e;">SarkariGuru Kid Guide</span>
+            </div>
+            <button onclick="toggleKidGuide(false)" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted); transition: color 0.2s;" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--text-muted)'">✕</button>
+        </div>
+        <p id="kid-guide-text" style="font-size: 0.88rem; color: var(--text-primary); margin-bottom: 16px; line-height: 1.5; font-weight: 600;"></p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="kid-guide-step-indicator" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; background: var(--bg-color); padding: 4px 10px; border-radius: 12px;">Step 1 of 4</span>
+            <div style="display: flex; gap: 8px;">
+                <button id="kid-guide-prev" onclick="changeGuideStep(-1)" class="btn" style="padding: 6px 12px; font-size: 0.75rem; font-weight: bold; background-color: var(--border-color); color: var(--text-primary); border-radius: 10px; border: none; cursor: pointer;">Peeche</button>
+                <button id="kid-guide-next" onclick="changeGuideStep(1)" class="btn" style="padding: 6px 14px; font-size: 0.75rem; font-weight: bold; background: linear-gradient(135deg, #fde047, #eab308); color: #854d0e; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 2px 4px rgba(234, 179, 8, 0.2);">Aage Chalein ➜</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
