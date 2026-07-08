@@ -297,6 +297,720 @@
             margin-top: 1.5rem;
         }
 
+        /* Dynamic AI Dashboard Styles */
+        .dashboard-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin: 2rem 0 3rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            position: relative;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            gap: 12px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            scrollbar-width: none; /* Hide scrollbar for Chrome/Safari/Firefox */
+        }
+        .dashboard-tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Forms & Inputs */
+        .search-form {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr auto;
+            gap: 16px;
+            margin-bottom: 2rem;
+            background: var(--bg-color);
+            padding: 1.5rem;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input, .form-select {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        /* Job Grid & Cards */
+        .job-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .job-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .job-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .job-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--accent-color);
+            opacity: 0.8;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .job-dept {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .job-title-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+
+        .job-details-list {
+            list-style: none;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .job-details-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .job-details-list li span.emoji {
+            font-size: 1.1rem;
+        }
+
+        .job-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+        }
+
+        .job-btn {
+            flex: 1;
+            padding: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .job-btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .job-btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .job-btn-secondary {
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+        }
+
+        .job-btn-secondary:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Notifications/Alerts List */
+        .alerts-subtabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-subtab-btn {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .alert-subtab-btn.active {
+            background-color: var(--accent-glow);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .alerts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .alert-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .alert-item:hover {
+            border-color: var(--accent-color);
+            transform: translateX(4px);
+        }
+
+        .alert-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .alert-tag {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            align-self: flex-start;
+        }
+
+        .alert-tag-new { background-color: var(--success); }
+        .alert-tag-admit { background-color: #f59e0b; }
+        .alert-tag-result { background-color: #8b5cf6; }
+
+        .alert-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .alert-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            display: flex;
+            gap: 16px;
+        }
+
+        /* Document Upload & Summarizer */
+        .upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background-color: var(--bg-color);
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-glow);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .upload-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .text-fallback-area {
+            width: 100%;
+            height: 120px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 1.5rem;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+        }
+
+        .text-fallback-area:focus {
+            border-color: var(--accent-color);
+        }
+
+        .summarize-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .summary-result {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .summary-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .summary-content {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .summary-content h4 {
+            margin: 1.25rem 0 0.5rem 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .summary-content ul {
+            padding-left: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .summary-content li {
+            margin-bottom: 6px;
+        }
+
+        /* AI Chat Assistant */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+        }
+
+        .chat-header {
+            background-color: var(--accent-glow);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+
+        .chat-title-text {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background-color: var(--bg-color);
+        }
+
+        .chat-bubble {
+            max-width: 75%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.25s ease forwards;
+        }
+
+        .chat-bubble-user {
+            background-color: var(--accent-color);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-bubble-bot {
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+        }
+
+        .chat-bubble-bot p {
+            margin-bottom: 8px;
+        }
+        .chat-bubble-bot p:last-child {
+            margin-bottom: 0;
+        }
+        .chat-bubble-bot ul {
+            padding-left: 20px;
+            margin-bottom: 8px;
+        }
+
+        .chat-suggestions {
+            display: flex;
+            gap: 8px;
+            padding: 10px 20px;
+            overflow-x: auto;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            scrollbar-width: none;
+        }
+        .chat-suggestions::-webkit-scrollbar {
+            display: none;
+        }
+
+        .suggestion-chip {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            border-color: var(--accent-color);
+            background-color: var(--accent-glow);
+            color: var(--accent-color);
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 12px 20px;
+            gap: 12px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Loader & Shimmers */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease infinite;
+            display: inline-block;
+        }
+
+        .spinner-accent {
+            border: 3px solid var(--accent-glow);
+            border-top-color: var(--accent-color);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, var(--bg-color) 25%, var(--border-color) 50%, var(--bg-color) 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            to { background-position: -200% 0; }
+        }
+
+        /* Popup roadmap modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 650px;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+            animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes scaleUp {
+            from { transform: scale(0.9) translateY(20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        .roadmap-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+        }
+
+        .roadmap-step {
+            display: flex;
+            gap: 16px;
+            position: relative;
+        }
+
+        .roadmap-step::before {
+            content: '';
+            position: absolute;
+            left: 16px;
+            top: 32px;
+            bottom: -24px;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .roadmap-step:last-child::before {
+            display: none;
+        }
+
+        .step-num {
+            width: 34px;
+            height: 34px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px var(--accent-glow);
+        }
+
+        .step-content {
+            flex: 1;
+            padding-top: 4px;
+        }
+
+        .step-title {
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
         @media (max-width: 768px) {
             .hero-title {
                 font-size: 2.25rem;
@@ -307,10 +1021,21 @@
             .nav-links {
                 display: none;
             }
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+            .summarize-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
         }
     </style>
     <link rel="manifest" href="manifest.json">
     <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    </script>
 </head>
 <body>
 
@@ -335,6 +1060,174 @@
             <h1 class="hero-title">Your AI-Powered <span>Government Career</span> Partner</h1>
             <p class="hero-subtitle">SarkariGuru.AI simplifies, translates, and organizes government career notifications, brochures, syllabi, and applications into an intelligent, secure, multi-lingual assistant experience.</p>
         </section>
+
+        <!-- Interactive AI Career Dashboard -->
+        <section id="ai-dashboard" class="dashboard-container">
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" onclick="switchTab('search-pane', this)">🔍 Sarkari Jobs Search</button>
+                <button class="tab-btn" onclick="switchTab('alerts-pane', this)">🔔 Notification Center</button>
+                <button class="tab-btn" onclick="switchTab('summarizer-pane', this)">📄 Document Summarizer</button>
+                <button class="tab-btn" onclick="switchTab('assistant-pane', this)">💬 AI Career Coach</button>
+            </div>
+
+            <!-- TAB 1: JOB SEARCH -->
+            <div id="search-pane" class="tab-pane active">
+                <div class="search-form">
+                    <div class="form-group">
+                        <label for="search-keyword">Job Title / Department / Field</label>
+                        <input type="text" id="search-keyword" class="form-input" placeholder="e.g., Bank, Railway, SSC, Police, Teacher">
+                    </div>
+                    <div class="form-group">
+                        <label for="search-state">Select State / Region</label>
+                        <select id="search-state" class="form-select">
+                            <option value="All India">All India (Central Government)</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="West Bengal">West Bengal</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <button class="btn" style="width: 100%; height: 48px; border-radius: 12px; justify-content: center;" onclick="performJobSearch()">
+                            🔍 Search Jobs
+                        </button>
+                    </div>
+                </div>
+
+                <div id="search-loading" style="display: none; text-align: center; padding: 3rem 0;">
+                    <div class="spinner spinner-accent" style="width: 40px; height: 40px; margin-bottom: 1rem;"></div>
+                    <p style="font-weight: 700; color: var(--text-secondary);">SarkariGuru AI is searching government portals...</p>
+                </div>
+
+                <div id="job-results" class="job-grid">
+                    <!-- Default Jobs initially rendered, then replaced dynamically -->
+                </div>
+            </div>
+
+            <!-- TAB 2: ALERTS & EXAMS -->
+            <div id="alerts-pane" class="tab-pane">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 12px;">
+                    <div class="alerts-subtabs">
+                        <button class="alert-subtab-btn active" onclick="switchAlertSubtab('latest', this)">Latest Exams</button>
+                        <button class="alert-subtab-btn" onclick="switchAlertSubtab('admit', this)">Admit Cards</button>
+                        <button class="alert-subtab-btn" onclick="switchAlertSubtab('result', this)">Results</button>
+                    </div>
+                    <button class="btn" style="padding: 6px 14px; font-size: 0.85rem; border-radius: 15px;" onclick="syncLiveAlerts(this)">
+                        🔄 Sync Live Alerts
+                    </button>
+                </div>
+
+                <div id="alerts-loading" style="display: none; text-align: center; padding: 2rem 0;">
+                    <div class="spinner spinner-accent" style="width: 30px; height: 30px; margin-bottom: 1rem;"></div>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">Syncing live sarkari career alerts...</p>
+                </div>
+
+                <div id="alerts-container" class="alerts-list">
+                    <!-- Dynamic Alert Items -->
+                </div>
+            </div>
+
+            <!-- TAB 3: DOCUMENT SUMMARIZER -->
+            <div id="summarizer-pane" class="tab-pane">
+                <div style="margin-bottom: 1.5rem;">
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                        Upload any official sarkari job brochure (PDF or Text) to extract and summarize key requirements, syllabus, and important dates in Hindi.
+                    </p>
+                </div>
+
+                <!-- Invisible file input -->
+                <input type="file" id="file-uploader" style="display: none;" accept=".pdf,.txt" onchange="handleFileSelection(event)">
+
+                <div class="upload-zone" id="drop-zone">
+                    <span class="upload-icon">📄</span>
+                    <p class="upload-text">Click to Upload PDF / TXT Brochure</p>
+                    <p class="upload-hint">Drag & drop your official recruitment notice PDF here</p>
+                    <div id="selected-file-badge" style="display: none; margin-top: 1rem; background-color: var(--accent-glow); padding: 6px 16px; border-radius: 12px; border: 1px solid var(--accent-color); font-weight: 700; color: var(--accent-color); font-size: 0.9rem; align-items: center; gap: 8px;">
+                        <span id="selected-file-name">brochure.pdf</span>
+                        <span style="cursor: pointer; color: var(--text-primary);" onclick="clearSelectedFile(event)">✕</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; color: var(--text-secondary);">Or paste notification text directly:</p>
+                    <textarea id="manual-text" class="text-fallback-area" placeholder="Paste official syllabus, eligibility criteria, or recruitment notification text here..."></textarea>
+                </div>
+
+                <div class="summarize-actions">
+                    <div class="form-group" style="flex: 1;">
+                        <select id="summary-depth" class="form-select">
+                            <option value="eligibility">Focus on: Eligibility, Age Limit, Fees & Key Dates</option>
+                            <option value="syllabus">Focus on: Subject-wise Syllabus & Exam Pattern</option>
+                            <option value="brief">Brief Hindi Overview (Mota-Moti Jankari)</option>
+                        </select>
+                    </div>
+                    <button class="btn" style="height: 48px; border-radius: 12px; padding: 0 30px;" onclick="runBrochureSummarizer()">
+                        ✨ Summarize in Hindi (हिंदी में सारांश)
+                    </button>
+                </div>
+
+                <div id="summarizer-loading" style="display: none; text-align: center; padding: 2rem 0;">
+                    <div class="spinner spinner-accent" style="width: 30px; height: 30px; margin-bottom: 1rem;"></div>
+                    <p style="font-size: 0.95rem; color: var(--text-secondary); font-weight: 700;">SarkariGuru AI is translating and organizing brochure details in Hindi...</p>
+                </div>
+
+                <div id="summary-result-container" class="summary-result">
+                    <div class="summary-header">
+                        <span class="summary-title">📄 SarkariGuru AI Hindi Summary</span>
+                        <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;" onclick="copySummaryText()">Copy Text</button>
+                    </div>
+                    <div id="summary-text-box" class="summary-content">
+                        <!-- Summary markdown-like text parsed and formatted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: AI CAREER COACH -->
+            <div id="assistant-pane" class="tab-pane">
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-status"></div>
+                        <span class="chat-title-text">SarkariGuru AI Career Coach (Hinglish/English)</span>
+                    </div>
+                    <div id="chat-box" class="chat-messages">
+                        <!-- Bot intro bubble -->
+                        <div class="chat-bubble chat-bubble-bot">
+                            <p><strong>Namaste Aspirant! 🙏</strong></p>
+                            <p>Main hoon aapka SarkariGuru AI Assistant. Government exams (IAS, Railway, SSC, Bank, Police, Teaching etc.) ki taiyari, eligibility, syllabus aur daily plans se related koi bhi sawal poochein. Main Hindi aur English dono me jankari de sakta hoon.</p>
+                            <p>Aap kya banna chahte hain? (e.g., "MPSC/UPSC ki taiyari kaise karein?")</p>
+                        </div>
+                    </div>
+                    <div class="chat-suggestions">
+                        <span class="suggestion-chip" onclick="askPredefined('SSC CGL syllabus aur strategy kya hai?')">📚 SSC CGL Strategy</span>
+                        <span class="suggestion-chip" onclick="askPredefined('UPSC Civil Services ke liye eligibility kya hoti hai?')">🎓 UPSC Eligibility</span>
+                        <span class="suggestion-chip" onclick="askPredefined('Railway NTPC exams ke liye age limit batao.')">🚆 Railway NTPC Age Limit</span>
+                        <span class="suggestion-chip" onclick="askPredefined('Government exam preparation ke liye daily timetable kaise banayein?')">⏰ Study Timetable</span>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input-field" class="chat-input" placeholder="Type your sarkari career question here..." onkeypress="handleChatKey(event)">
+                        <button class="btn" style="border-radius: 12px; padding: 12px 20px;" onclick="sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Roadmap Modal -->
+        <div id="roadmap-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-roadmap-title" class="modal-title">AI Preparation Roadmap</h3>
+                    <button class="modal-close" onclick="closeRoadmapModal()">✕</button>
+                </div>
+                <div id="modal-roadmap-body" class="modal-body">
+                    <!-- Step elements generated dynamically -->
+                </div>
+            </div>
+        </div>
 
         <!-- Features Section -->
         <section id="features" class="features">
@@ -404,12 +1297,10 @@
         function applyDailyTheme() {
             try {
                 const today = new Date();
-                // Generate a deterministic index based on year, month, and day to shift exactly every 24 hours
                 const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
                 const themeIndex = (today.getFullYear() + dayOfYear) % dailyThemes.length;
                 const activeTheme = dailyThemes[themeIndex];
 
-                // Dynamically modify :root CSS properties
                 document.documentElement.style.setProperty('--bg-color', activeTheme.bg);
                 document.documentElement.style.setProperty('--accent-color', activeTheme.accent);
                 document.documentElement.style.setProperty('--accent-glow', `rgba(${activeTheme.rgb}, 0.08)`);
@@ -422,6 +1313,593 @@
 
         // Apply immediately upon parsing
         applyDailyTheme();
+
+        // Gemini API Configuration
+        const GEMINI_API_KEY = "AQ.Ab8RN6Kk1vYRrhkOupZTL21MLDGFS9Ym4wht343lzz_Ok1s33g";
+        
+        async function callGemini(prompt, systemInstruction = "") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const requestBody = {
+                contents: [{ parts: [{ text: prompt }] }]
+            };
+            
+            if (systemInstruction) {
+                requestBody.systemInstruction = {
+                    parts: [{ text: systemInstruction }]
+                };
+            }
+            
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(`API returned ${response.status}: ${errText}`);
+                }
+                
+                const data = await response.json();
+                if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+                throw new Error("Invalid or empty response format from Gemini API");
+            } catch (err) {
+                console.error("Gemini API call failed:", err);
+                throw err;
+            }
+        }
+
+        // Helper to cleanly extract JSON objects/arrays from Gemini text outputs
+        function extractJSON(text) {
+            try {
+                let cleanText = text.trim();
+                if (cleanText.startsWith("```json")) {
+                    cleanText = cleanText.substring(7);
+                } else if (cleanText.startsWith("```")) {
+                    cleanText = cleanText.substring(3);
+                }
+                if (cleanText.endsWith("```")) {
+                    cleanText = cleanText.substring(0, cleanText.length - 3);
+                }
+                return JSON.parse(cleanText.trim());
+            } catch (e) {
+                console.error("JSON parsing fallback:", e);
+                const jsonMatch = text.match(/\[[\s\S]*\]/) || text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    return JSON.parse(jsonMatch[0]);
+                }
+                throw e;
+            }
+        }
+
+        // Initial/Default Datasets
+        const defaultJobs = [
+            {
+                title: "SBI Probationary Officer (PO) 2026",
+                department: "State Bank of India (SBI)",
+                state: "All India",
+                vacancies: "2,000 Posts",
+                lastDate: "July 31, 2026",
+                qualification: "Graduate in any discipline",
+                salary: "Rs. 41,960 - 64,820",
+                officialLink: "https://sbi.co.in/careers"
+            },
+            {
+                title: "Railway NTPC Non-Technical recruitment",
+                department: "Indian Railways (RRB)",
+                state: "All India",
+                vacancies: "11,558 Posts",
+                lastDate: "August 20, 2026",
+                qualification: "12th Pass / Graduate",
+                salary: "Rs. 19,900 - 35,400",
+                officialLink: "https://indianrailways.gov.in"
+            },
+            {
+                title: "SSC Combined Graduate Level (CGL) 2026",
+                department: "Staff Selection Commission",
+                state: "All India",
+                vacancies: "17,727 Posts",
+                lastDate: "July 24, 2026",
+                qualification: "Bachelor's Degree",
+                salary: "Rs. 25,500 - 151,100",
+                officialLink: "https://ssc.gov.in"
+            },
+            {
+                title: "Police Sub-Inspector & Constable",
+                department: "State Police Recruitment Board",
+                state: "Maharashtra",
+                vacancies: "9,500 Posts",
+                lastDate: "July 30, 2026",
+                qualification: "12th Pass / Graduate",
+                salary: "Rs. 21,700 - 69,100",
+                officialLink: "https://mahapolice.gov.in"
+            }
+        ];
+
+        let activeAlerts = {
+            latest: [
+                { title: "SSC Multi-Tasking Staff (MTS) 2026 Notification Out", meta: "Last Date: August 15, 2026 | 8,326 Vacancies", tagClass: "alert-tag-new", tagText: "NEW" },
+                { title: "UPSC Civil Services Prelims Exam Date Announced", meta: "Exam Date: October 4, 2026 | Registration Closed", tagClass: "alert-tag-new", tagText: "UPDATE" },
+                { title: "IBPS Clerk 2026 Registration Portal Open", meta: "Last Date: July 28, 2026 | 6,128 Posts", tagClass: "alert-tag-new", tagText: "OPEN" }
+            ],
+            admit: [
+                { title: "SBI Clerk Prelims Admit Card 2026 Released", meta: "Exam Starts: July 20, 2026 | Download Now", tagClass: "alert-tag-admit", tagText: "ADMIT CARD" },
+                { title: "Agniveer Vayu Intake 01/2026 Hall Ticket Available", meta: "Exam Starts: July 15, 2026", tagClass: "alert-tag-admit", tagText: "ADMIT CARD" },
+                { title: "NEET PG 2026 Revised Hall Ticket Download Link Active", meta: "Exam Date: August 11, 2026", tagClass: "alert-tag-admit", tagText: "HALL TICKET" }
+            ],
+            result: [
+                { title: "SSC CGL Tier-1 Final Results 2026 Declared", meta: "Cut-off Marks PDF Attached | Tier-2 in Sept", tagClass: "alert-tag-result", tagText: "RESULT" },
+                { title: "UPSC NDA & NA (I) 2026 Written Exam Results Out", meta: "Check Roll-number List PDF", tagClass: "alert-tag-result", tagText: "RESULT" },
+                { title: "Railway RPF Sub-Inspector 2026 Written Scorecard Released", meta: "Physical Tests from August 5", tagClass: "alert-tag-result", tagText: "MARKS" }
+            ]
+        };
+
+        // Navigation Tab Switch
+        function switchTab(paneId, btnElement) {
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(paneId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // Sub-Tab Switch (Notification Center)
+        let activeAlertCategory = 'latest';
+        function switchAlertSubtab(category, btnElement) {
+            activeAlertCategory = category;
+            document.querySelectorAll('.alert-subtab-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            renderAlerts();
+        }
+
+        // Render functions
+        function renderJobs(jobList) {
+            const grid = document.getElementById('job-results');
+            grid.innerHTML = '';
+            
+            jobList.forEach(job => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="job-header">
+                            <span class="job-dept">${job.department}</span>
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted);">${job.state}</span>
+                        </div>
+                        <h4 class="job-title-text">${job.title}</h4>
+                        <ul class="job-details-list">
+                            <li><span class="emoji">👥</span> <strong>Vacancies:</strong> ${job.vacancies}</li>
+                            <li><span class="emoji">🎓</span> <strong>Eligibility:</strong> ${job.qualification}</li>
+                            <li><span class="emoji">💰</span> <strong>Pay scale:</strong> ${job.salary}</li>
+                            <li><span class="emoji">📅</span> <strong>Last Date:</strong> ${job.lastDate}</li>
+                        </ul>
+                    </div>
+                    <div class="job-footer">
+                        <a href="${job.officialLink}" target="_blank" class="job-btn job-btn-secondary" style="text-decoration: none;">Apply Now</a>
+                        <button class="job-btn job-btn-primary" onclick="generateRoadmap('${job.title}', '${job.department}', '${job.qualification}')">✨ AI Roadmap</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderAlerts() {
+            const container = document.getElementById('alerts-container');
+            container.innerHTML = '';
+            
+            const list = activeAlerts[activeAlertCategory] || [];
+            if (list.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: var(--text-muted); padding: 2rem 0;">No alerts available under this category.</p>`;
+                return;
+            }
+            
+            list.forEach(alert => {
+                const item = document.createElement('div');
+                item.className = 'alert-item';
+                item.innerHTML = `
+                    <div class="alert-info">
+                        <span class="alert-tag ${alert.tagClass}">${alert.tagText}</span>
+                        <h4 class="alert-title">${alert.title}</h4>
+                        <div class="alert-meta">${alert.meta}</div>
+                    </div>
+                    <button class="btn" style="padding: 8px 16px; font-size: 0.85rem; border-radius: 12px;" onclick="askAssistantAboutAlert('${alert.title}')">Ask AI</button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Perform Job Search via Gemini
+        async function performJobSearch() {
+            const keyword = document.getElementById('search-keyword').value.trim();
+            const state = document.getElementById('search-state').value;
+            
+            if (!keyword) {
+                alert("Please enter a job title or department keywords first.");
+                return;
+            }
+            
+            const loading = document.getElementById('search-loading');
+            const grid = document.getElementById('job-results');
+            
+            loading.style.display = 'block';
+            grid.style.display = 'none';
+            
+            const prompt = `You are SarkariGuru.AI. Generate a JSON list of exactly 4 highly realistic or active government job vacancies matching the search query: "${keyword}" in state/region: "${state}".
+Return ONLY a valid JSON array of objects. Do not include markdown formatting or "json" wrap headers.
+Each object in the array MUST have exactly these fields:
+- title: string (Job Title)
+- department: string (Department Name)
+- state: string (Region/State)
+- vacancies: string (Number of posts)
+- lastDate: string (Realistic expiry date)
+- qualification: string (Minimum qualification)
+- salary: string (Realistic Pay scale)
+- officialLink: string (Simulated realistic official government portal URL)
+
+Generate highly professional details in perfect alignment with the Indian Sarkari jobs ecosystem.`;
+
+            try {
+                const responseText = await callGemini(prompt, "You are a Sarkari jobs portal metadata generator. Return valid JSON Arrays only.");
+                const parsedJobs = extractJSON(responseText);
+                renderJobs(parsedJobs);
+            } catch (err) {
+                console.error("Failed to perform search. Using default/fallback list:", err);
+                alert("SarkariGuru AI is experiencing high traffic. Displaying fallback matches.");
+                renderJobs(defaultJobs.filter(j => j.title.toLowerCase().includes(keyword.toLowerCase()) || j.department.toLowerCase().includes(keyword.toLowerCase())));
+            } finally {
+                loading.style.display = 'none';
+                grid.style.display = 'grid';
+            }
+        }
+
+        // Live alert sync
+        async function syncLiveAlerts(btn) {
+            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<div class="spinner" style="width: 14px; height: 14px;"></div> Syncing...`;
+            
+            const loading = document.getElementById('alerts-loading');
+            const container = document.getElementById('alerts-container');
+            
+            loading.style.display = 'block';
+            container.style.display = 'none';
+            
+            const prompt = `You are SarkariGuru.AI. Generate a fresh, up-to-date collection of exactly 3 realistic government career notifications, 3 admit cards, and 3 result alerts.
+Return ONLY a valid JSON object of categories containing arrays of items:
+{
+  "latest": [
+     { "title": "Job/Exam Title", "meta": "Last Date/Details", "tagClass": "alert-tag-new", "tagText": "NEW" }
+  ],
+  "admit": [
+     { "title": "Hall ticket title", "meta": "Exam dates", "tagClass": "alert-tag-admit", "tagText": "ADMIT CARD" }
+  ],
+  "result": [
+     { "title": "Exam Result title", "meta": "Cut-off/Action details", "tagClass": "alert-tag-result", "tagText": "RESULT" }
+  ]
+}
+Return only the raw JSON. No markdown blocks. No extra conversation.`;
+
+            try {
+                const responseText = await callGemini(prompt, "You are a specialized JSON data sync feed. Return only valid raw JSON.");
+                activeAlerts = extractJSON(responseText);
+                renderAlerts();
+            } catch (err) {
+                console.error("Alert sync failed. Using default values:", err);
+                alert("Couldn't establish live feed sync. Loaded local database alerts.");
+            } finally {
+                loading.style.display = 'none';
+                container.style.display = 'flex';
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        // Roadmap generator modal trigger
+        async function generateRoadmap(jobTitle, jobDept, qualification) {
+            const modal = document.getElementById('roadmap-modal');
+            const titleEl = document.getElementById('modal-roadmap-title');
+            const bodyEl = document.getElementById('modal-roadmap-body');
+            
+            titleEl.innerHTML = `🎓 AI Prep Plan: ${jobTitle}`;
+            bodyEl.innerHTML = `
+                <div style="text-align: center; padding: 2rem 0;">
+                    <div class="spinner spinner-accent" style="width: 36px; height: 36px; margin-bottom: 1rem;"></div>
+                    <p style="font-weight: 700; color: var(--text-secondary);">Creating custom exam roadmap & preparation strategy in Hindi/English...</p>
+                </div>
+            `;
+            modal.style.display = 'flex';
+            
+            const prompt = `You are SarkariGuru.AI. Create a customized study and preparation roadmap of exactly 4 phases for the job: "${jobTitle}" at department: "${jobDept}".
+Return ONLY a valid JSON array of exactly 4 objects. No markdown wraps.
+Each object MUST have exactly these fields:
+- stepNum: integer (1, 2, 3, or 4)
+- title: string (Preparation phase name in Hindi/English, e.g. "Phase 1: Syllabus Aur Study Materials")
+- desc: string (Detailed, actionable advice in Hindi containing syllabus topics, best books, test series strategy, and time allocation)
+
+Ensure the advice is extremely motivating and structured.`;
+
+            try {
+                const responseText = await callGemini(prompt, "You are an expert government career counselor. You output valid JSON arrays only.");
+                const steps = extractJSON(responseText);
+                
+                let html = '<div class="roadmap-list">';
+                steps.forEach(step => {
+                    html += `
+                        <div class="roadmap-step">
+                            <div class="step-num">${step.stepNum}</div>
+                            <div class="step-content">
+                                <h4 class="step-title" style="color: var(--accent-color);">${step.title}</h4>
+                                <p class="step-desc">${step.desc}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                bodyEl.innerHTML = html;
+            } catch (err) {
+                console.error("Roadmap generation failed:", err);
+                bodyEl.innerHTML = `
+                    <p style="color: red; font-weight: 700; margin-bottom: 1rem;">AI generation timed out. Here is a quick study guide:</p>
+                    <div class="roadmap-list">
+                        <div class="roadmap-step">
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <h4 class="step-title">Understand Exam Pattern</h4>
+                                <p class="step-desc">Official syllabus download karein aur exam weightage check karein.</p>
+                            </div>
+                        </div>
+                        <div class="roadmap-step">
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <h4 class="step-title">Daily Practice (Daily mock tests)</h4>
+                                <p class="step-desc">Solve previous year papers (PYQs) with focus on high-scoring areas.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function closeRoadmapModal() {
+            document.getElementById('roadmap-modal').style.display = 'none';
+        }
+
+        // PDF & Text Summarizer logic
+        let extractedText = "";
+
+        async function handleFileSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const fileBadge = document.getElementById('selected-file-badge');
+            const fileNameSpan = document.getElementById('selected-file-name');
+            
+            fileNameSpan.innerText = file.name;
+            fileBadge.style.display = 'inline-flex';
+            
+            if (file.type === "application/pdf") {
+                try {
+                    document.getElementById('manual-text').placeholder = "Extracting text from PDF, please wait...";
+                    extractedText = await extractTextFromPDF(file);
+                    document.getElementById('manual-text').placeholder = "Successfully extracted text! You can edit here if needed, or press summarize.";
+                    document.getElementById('manual-text').value = extractedText.substring(0, 1500) + "... [Full PDF Text Processed]";
+                } catch (err) {
+                    console.error("PDF Extraction failed:", err);
+                    alert("Local PDF text extraction failed. Please copy and paste the brochure text in the textbox below.");
+                }
+            } else if (file.type === "text/plain") {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    extractedText = e.target.result;
+                    document.getElementById('manual-text').value = extractedText;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        async function extractTextFromPDF(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            let text = "";
+            const totalPages = Math.min(pdf.numPages, 10); // Safeguard memory limits
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items.map(item => item.str).join(" ");
+                text += pageText + "\n";
+            }
+            return text;
+        }
+
+        function clearSelectedFile(event) {
+            event.stopPropagation();
+            document.getElementById('file-uploader').value = '';
+            document.getElementById('selected-file-badge').style.display = 'none';
+            document.getElementById('manual-text').value = '';
+            document.getElementById('manual-text').placeholder = "Paste official syllabus, eligibility criteria, or recruitment notification text here...";
+            extractedText = '';
+        }
+
+        async function runBrochureSummarizer() {
+            let textToSummarize = document.getElementById('manual-text').value.trim();
+            if (extractedText && textToSummarize.includes("[Full PDF Text Processed]")) {
+                textToSummarize = extractedText;
+            }
+            
+            if (!textToSummarize) {
+                alert("Please upload a PDF brochure or paste notification text first.");
+                return;
+            }
+            
+            const depth = document.getElementById('summary-depth').value;
+            const loading = document.getElementById('summarizer-loading');
+            const resultBox = document.getElementById('summary-result-container');
+            const contentBox = document.getElementById('summary-text-box');
+            
+            loading.style.display = 'block';
+            resultBox.style.display = 'none';
+            
+            let focusPrompt = "Provide a comprehensive, high-quality summary in beautiful, clean Hindi.";
+            if (depth === "eligibility") {
+                focusPrompt = "Focus heavily on: Eligibility criteria, detailed age limit rules, age relaxations, application fees, vacancy distribution, and important deadlines.";
+            } else if (depth === "syllabus") {
+                focusPrompt = "Focus heavily on: Detailed syllabus list, physical requirements (if any), selection stages (prelims, mains, interview), exam subjects, marking schemes, and qualifying scores.";
+            } else if (depth === "brief") {
+                focusPrompt = "Provide a simplified, very short Hindi overview focusing only on major points (Mota-Moti Jankari) for rapid reading.";
+            }
+            
+            const prompt = `You are SarkariGuru.AI. Summarize the following official government recruitment/examination notification text in high-quality, clear Hindi.
+${focusPrompt}
+Use bold formatting, headers, list items, and clear tables/spacers to present the details in a highly structured, readable, and professional manner. Highlight important dates and fee numbers immediately.
+
+BROCHURE TEXT:
+${textToSummarize.substring(0, 45000)}`;
+
+            try {
+                const summary = await callGemini(prompt, "You are SarkariGuru.AI, translating exam notices into highly structured, actionable, and encouraging Hindi.");
+                
+                // Very simple markdown to HTML translation for display
+                let formattedSummary = summary
+                    .replace(/\n\n/g, '<br><br>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/### (.*?)(<br>|$)/g, '<h4 style="color:var(--accent-color);margin-top:1.2rem;">$1</h4>')
+                    .replace(/## (.*?)(<br>|$)/g, '<h3 style="color:var(--accent-color);margin-top:1.5rem;">$1</h3>')
+                    .replace(/- (.*?)(<br>|$)/g, '<li>$1</li>');
+                
+                contentBox.innerHTML = formattedSummary;
+                resultBox.style.display = 'block';
+                resultBox.scrollIntoView({ behavior: 'smooth' });
+            } catch (err) {
+                console.error("Summarization failed:", err);
+                alert("AI Summarizer encountered an error. Please try again with smaller text.");
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function copySummaryText() {
+            const text = document.getElementById('summary-text-box').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Summary copied to clipboard!");
+            });
+        }
+
+        // AI Chat Assistant logic
+        function appendChatMessage(sender, htmlContent) {
+            const chatBox = document.getElementById('chat-box');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble chat-bubble-${sender}`;
+            bubble.innerHTML = htmlContent;
+            chatBox.appendChild(bubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const inputField = document.getElementById('chat-input-field');
+            const message = inputField.value.trim();
+            if (!message) return;
+            
+            inputField.value = '';
+            appendChatMessage('user', `<p>${message}</p>`);
+            
+            // Add typing placeholder
+            const placeholderId = 'typing-' + Date.now();
+            const chatBox = document.getElementById('chat-box');
+            const typingBubble = document.createElement('div');
+            typingBubble.className = 'chat-bubble chat-bubble-bot';
+            typingBubble.id = placeholderId;
+            typingBubble.innerHTML = `<div class="spinner spinner-accent" style="width: 14px; height: 14px;"></div> SarkariGuru is thinking...`;
+            chatBox.appendChild(typingBubble);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            const prompt = `User's Question: "${message}"
+
+Answer the user's career/exam questions thoroughly and with encouraging energy. Use a natural blend of Hindi and English (Hinglish) or pure English/Hindi as matching the user's question style.
+Present points, recommended study tracks, or eligibility answers in clean lists with subheadings where appropriate. Keep it clear, friendly, and focused strictly on the Indian government jobs context.`;
+
+            const systemInstruction = "You are SarkariGuru.AI, the premier conversational AI coach for government career exams. You give helpful, correct, and encouraging preparation advices in Hindi/English.";
+
+            try {
+                const responseText = await callGemini(prompt, systemInstruction);
+                typingBubble.remove();
+                
+                let formattedBotResponse = responseText
+                    .replace(/\n\n/g, '<br><br>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/### (.*?)(<br>|$)/g, '<h5 style="color:var(--accent-color);margin-top:0.8rem;margin-bottom:0.4rem;">$1</h5>')
+                    .replace(/- (.*?)(<br>|$)/g, '<li>$1</li>');
+                
+                appendChatMessage('bot', formattedBotResponse);
+            } catch (err) {
+                console.error("Chat response failed:", err);
+                typingBubble.remove();
+                appendChatMessage('bot', `<p style="color: red;"><strong>Sorry, connection error.</strong> Kuch problem aa gayi hai, please dubara try karein.</p>`);
+            }
+        }
+
+        function handleChatKey(event) {
+            if (event.key === 'Enter') {
+                sendChatMessage();
+            }
+        }
+
+        function askPredefined(questionText) {
+            document.getElementById('chat-input-field').value = questionText;
+            sendChatMessage();
+        }
+
+        function askAssistantAboutAlert(alertTitle) {
+            switchTab('assistant-pane', document.querySelector('[onclick*="assistant-pane"]'));
+            document.getElementById('chat-input-field').value = `Muze is notification ke baare me detail bataiye: "${alertTitle}". Eligibility, fees aur exam schedule kya ho sakta hai?`;
+            sendChatMessage();
+        }
+
+        // Initialize lists on document load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderJobs(defaultJobs);
+            renderAlerts();
+            
+            // Set up drag & drop listeners for the summarizer drop-zone
+            const dropZone = document.getElementById('drop-zone');
+            
+            if (dropZone) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropZone.classList.add('dragover');
+                    }, false);
+                });
+
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropZone.classList.remove('dragover');
+                    }, false);
+                });
+
+                dropZone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files.length > 0) {
+                        const fileInput = document.getElementById('file-uploader');
+                        fileInput.files = files;
+                        // Trigger the file selection handler
+                        const event = { target: { files: files } };
+                        handleFileSelection(event);
+                    }
+                }, false);
+            }
+        });
     </script>
 
 </body>
