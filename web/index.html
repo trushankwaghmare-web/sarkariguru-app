@@ -1204,22 +1204,86 @@
             }
         }
 
+        .desktop-only {
+            display: inline-block;
+        }
+
         @media (max-width: 768px) {
+            .desktop-only {
+                display: none !important;
+            }
             .hero-title {
-                font-size: 2.25rem;
+                font-size: 2.0rem;
             }
             .owner-name {
-                font-size: 1.75rem;
+                font-size: 1.5rem;
+            }
+            .header-content {
+                flex-direction: column;
+                padding: 12px 16px;
+                gap: 12px;
+                height: auto !important;
+                align-items: center;
+                text-align: center;
+            }
+            .badge-verified {
+                margin: 0 auto !important;
             }
             .nav-links {
-                display: none;
+                display: flex !important;
+                flex-direction: row !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 10px !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100%;
+            }
+            .nav-links li {
+                display: inline-block;
+            }
+            .dashboard-container {
+                padding: 1.25rem !important;
+                margin: 1rem 0 !important;
+            }
+            .dashboard-tabs {
+                gap: 8px !important;
+                padding-bottom: 8px !important;
+                margin-bottom: 1.5rem !important;
+            }
+            .tab-btn {
+                padding: 10px 14px !important;
+                font-size: 0.9rem !important;
             }
             .search-form {
                 grid-template-columns: 1fr;
+                padding: 1rem;
             }
             .summarize-actions {
                 flex-direction: column;
                 align-items: stretch;
+            }
+            .theme-picker-container {
+                padding: 10px 12px !important;
+                margin-bottom: 20px !important;
+                gap: 8px !important;
+            }
+            .theme-picker-container span {
+                font-size: 0.75rem !important;
+            }
+            .referral-container {
+                margin: -5px 10px 20px 10px !important;
+                padding: 10px 16px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .job-footer {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .job-btn {
+                width: 100%;
             }
         }
 
@@ -1297,35 +1361,48 @@
             <span class="badge-verified" style="margin-right: auto; margin-left: 12px;">Verified Portal</span>
             <ul class="nav-links" id="navbar-links" style="display: flex; align-items: center; gap: 20px;">
                 <li><button onclick="toggleKidGuide()" class="kid-toggle-btn" id="kid-toggle-nav-btn">🧸 Kid Guide: OFF</button></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#ownership">About Founder</a></li>
+                <li class="desktop-only"><a href="#features">Features</a></li>
+                <li class="desktop-only"><a href="#ownership">About Founder</a></li>
                 <li id="nav-auth-item"><button onclick="switchToTabAndFocus('profile-pane')" class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;">👤 Login</button></li>
             </ul>
         </div>
     </header>
-
+ 
     <main class="container">
-        
+         
         <!-- Hero Section -->
         <section class="hero">
             <h1 class="hero-title">Your AI-Powered <span>Government Career</span> Partner</h1>
             <p class="hero-subtitle">SarkariGuru.AI simplifies, translates, and organizes government career notifications, brochures, syllabi, and applications into an intelligent, secure, multi-lingual assistant experience.</p>
         </section>
 
+        <!-- Elegant Referral Option Card -->
+        <div class="referral-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: -15px; margin-bottom: 25px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(79,70,229,0.06)); border: 1.5px dashed var(--accent-color); padding: 12px 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.05); max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
+            <span style="font-size: 1.25rem;">🎁</span>
+            <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.3px;">Referral Option (₹1000 Reward):</span>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <input type="text" id="top-referral-code" placeholder="Enter referral code" style="padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; width: 180px; outline: none; background-color: white; color: var(--text-primary);">
+                <button onclick="applyTopReferralCode()" class="btn" style="padding: 8px 16px; font-size: 0.8rem; border-radius: 20px; height: 36px; background-color: var(--accent-color); color: white; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px var(--accent-glow);">Apply Code</button>
+            </div>
+            <div id="referral-success-badge" style="display: none; font-size: 0.82rem; font-weight: 800; color: var(--success); width: 100%; margin-top: 8px; line-height: 1.4;">
+                🎉 Code Applied! ₹1000 Virtual Cash Added (रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜)
+            </div>
+        </div>
+
         <!-- Elegant Color Theme Picker Widget -->
-        <div class="theme-picker-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: -15px; margin-bottom: 30px; flex-wrap: wrap; background: rgba(255,255,255,0.4); backdrop-filter: blur(8px); padding: 8px 16px; border-radius: 30px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.01);">
+        <div class="theme-picker-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 0px; margin-bottom: 30px; flex-wrap: wrap; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); padding: 10px 20px; border-radius: 30px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.01);">
             <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">🎨 Select Custom App Theme:</span>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                <button onclick="applyThemeByIndex(0)" title="Slate Blue" style="width: 22px; height: 22px; border-radius: 50%; background-color: #2563eb; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(1)" title="Emerald Green" style="width: 22px; height: 22px; border-radius: 50%; background-color: #16a34a; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(2)" title="Amethyst Purple" style="width: 22px; height: 22px; border-radius: 50%; background-color: #7c3aed; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(3)" title="Solar Amber" style="width: 22px; height: 22px; border-radius: 50%; background-color: #ea580c; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(4)" title="Sky Blue" style="width: 22px; height: 22px; border-radius: 50%; background-color: #0284c7; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(5)" title="Rose Pink" style="width: 22px; height: 22px; border-radius: 50%; background-color: #e11d48; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(6)" title="Ocean Teal" style="width: 22px; height: 22px; border-radius: 50%; background-color: #0d9488; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
-                <button onclick="applyThemeByIndex(7)" title="Golden Sand" style="width: 22px; height: 22px; border-radius: 50%; background-color: #ca8a04; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.25)'" onmouseout="this.style.transform='scale(1)'"></button>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                <button onclick="applyThemeByIndex(0)" title="Slate Blue" style="width: 30px; height: 30px; border-radius: 50%; background-color: #2563eb; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(1)" title="Emerald Green" style="width: 30px; height: 30px; border-radius: 50%; background-color: #16a34a; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(2)" title="Amethyst Purple" style="width: 30px; height: 30px; border-radius: 50%; background-color: #7c3aed; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(3)" title="Solar Amber" style="width: 30px; height: 30px; border-radius: 50%; background-color: #ea580c; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(4)" title="Sky Blue" style="width: 30px; height: 30px; border-radius: 50%; background-color: #0284c7; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(5)" title="Rose Pink" style="width: 30px; height: 30px; border-radius: 50%; background-color: #e11d48; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(6)" title="Ocean Teal" style="width: 30px; height: 30px; border-radius: 50%; background-color: #0d9488; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
+                <button onclick="applyThemeByIndex(7)" title="Golden Sand" style="width: 30px; height: 30px; border-radius: 50%; background-color: #ca8a04; border: 2px solid white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'"></button>
                 <span style="width: 1px; height: 16px; background-color: var(--border-color); margin: 0 4px;"></span>
-                <button onclick="localStorage.removeItem('sarkariguru_selected_theme'); applyDailyTheme();" title="Reset to Daily Auto-Theme" style="font-size: 0.72rem; font-weight: bold; background: white; border: 1px solid var(--border-color); padding: 4px 10px; border-radius: 20px; color: var(--text-secondary); cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='white'">Auto 🔄</button>
+                <button onclick="localStorage.removeItem('sarkariguru_selected_theme'); applyDailyTheme();" title="Reset to Daily Auto-Theme" style="font-size: 0.72rem; font-weight: bold; background: white; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 20px; color: var(--text-secondary); cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; height: 30px;" onmouseover="this.style.background='var(--border-color)'" onmouseout="this.style.background='white'">Auto 🔄</button>
             </div>
         </div>
 
@@ -1486,6 +1563,23 @@
 
             <!-- TAB 5: CANDIDATE PROFILE & OCR -->
             <div id="profile-pane" class="tab-pane">
+                <!-- AI Speaking Guide for Login/Register -->
+                <div class="ai-speaking-card" id="auth-speaking-guide" style="background-color: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                        <div style="width: 48px; height: 48px; background-color: rgba(37, 99, 235, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;" id="auth-speak-avatar">🤖</div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-weight: 800; font-size: 0.85rem; color: var(--accent-color);">AI Voice Guru (बोलने वाला गाइड)</span>
+                                <span style="font-size: 1rem;">👉</span>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-primary); line-height: 1.4; margin-top: 2px;" id="auth-guide-text">
+                                प्यारे बच्चों! अगर आपने पहले से रजिस्ट्रेशन कर लिया है तो अपना फ़ोन नंबर/ईमेल और पासवर्ड भरकर लॉगिन करें। नहीं तो दाएं तरफ नया खाता बनाएं! 👇
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="speakAuthGuide()" class="btn" style="width: 40px; height: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Listen to AI Guide">🔊</button>
+                </div>
+
                 <!-- If Not Logged In, Show Auth Forms -->
                 <div id="auth-section" class="auth-container">
                     <!-- Login Form -->
@@ -1500,6 +1594,9 @@
                             <div class="form-group">
                                 <label for="login-password">Password</label>
                                 <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px; font-weight: bold; font-size: 0.8rem; color: var(--text-secondary); margin: 4px 0;">
+                                <span>👇</span> Click login when ready
                             </div>
                             <button type="submit" class="btn" style="justify-content: center; height: 44px; border-radius: 8px;">🔐 Secure Login</button>
                         </form>
@@ -1523,6 +1620,27 @@
                                 <label for="reg-password">Password</label>
                                 <input type="password" id="reg-password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
                             </div>
+                            
+                            <!-- Pointing Hand 👉 -->
+                            <div style="display: flex; align-items: center; gap: 4px; font-size: 0.8rem; font-weight: 800; color: var(--accent-color); margin-top: 4px;">
+                                <span>👉</span> <span>यहाँ रेफ़रल कोड डालें और ₹1000 बोनस जीतें!</span>
+                            </div>
+
+                            <!-- Referral Code Field (optional) -->
+                            <div class="form-group">
+                                <label for="reg-referral">Referral Code (Optional) / रेफ़रल कोड</label>
+                                <input type="text" id="reg-referral" class="form-input" placeholder="Enter referral code (T&C Apply)">
+                            </div>
+
+                            <!-- Fake Reward Promo Notice -->
+                            <div style="background-color: rgba(22, 163, 74, 0.08); border: 1px solid rgba(22, 163, 74, 0.3); border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 1.5rem;">🎁</span>
+                                <div>
+                                    <div style="font-weight: bold; font-size: 0.75rem; color: var(--success);">SPONSOR REWARD ASSURED!</div>
+                                    <div style="font-size: 0.7rem; color: var(--text-primary); line-height: 1.4;">Enter a valid referral code. Receive ₹1000 instantly in your virtual wallet after registration completion! (Subject to T&C)</div>
+                                </div>
+                            </div>
+
                             <button type="submit" class="btn" style="justify-content: center; height: 44px; border-radius: 8px; background-color: var(--success);">✨ Register Now</button>
                         </form>
                         <div id="register-success" style="color: green; font-size: 0.85rem; font-weight: 700; display: none; margin-top: 8px;"></div>
@@ -1531,6 +1649,23 @@
                 </div>
 
                 <!-- If Logged In, Show Profile Dashboard -->
+                <!-- AI Speaking Guide for Profile -->
+                <div class="ai-speaking-card" id="profile-speaking-guide" style="background-color: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 16px; padding: 16px; margin-top: 15px; margin-bottom: 20px; display: none; align-items: center; justify-content: space-between; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+                    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                        <div style="width: 48px; height: 48px; background-color: rgba(37, 99, 235, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;" id="profile-speak-avatar">🤖</div>
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-weight: 800; font-size: 0.85rem; color: var(--accent-color);">AI Voice Guru (बोलने वाला गाइड)</span>
+                                <span style="font-size: 1rem;">👉</span>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-primary); line-height: 1.4; margin-top: 2px;">
+                                प्यारे बच्चों! यहाँ अपना नाम लिखें, अपनी जन्म तिथि (DOB) और पढ़ाई चुनें। आपके सारे दस्तावेज़ हमारे सुरक्षित AI लॉकर में पूरी तरह सुरक्षित और सेव्ड रहेंगे! 👇
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="speakProfileGuide()" class="btn" style="width: 40px; height: 40px; border-radius: 50%; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" title="Listen to AI Guide">🔊</button>
+                </div>
+
                 <div id="profile-dashboard" class="profile-layout" style="display: none;">
                     <!-- Left: OCR Scanner & Quick recommendation -->
                     <div style="display: flex; flex-direction: column; gap: 20px;">
@@ -2899,23 +3034,70 @@ ${textToSummarize.substring(0, 45000)}`;
             }
         }
 
+        function applyTopReferralCode() {
+            try {
+                const codeInput = document.getElementById('top-referral-code');
+                const code = codeInput ? codeInput.value.trim() : '';
+                if (!code) {
+                    alert("कृपया कोई रेफ़रल कोड दर्ज करें! Please enter a referral code!");
+                    return;
+                }
+                
+                const badge = document.getElementById('referral-success-badge');
+                if (badge) {
+                    badge.innerText = `🎉 Referral Code '${code}' Applied! ₹1000 Virtual Bonus Balance Credited! (रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜)`;
+                    badge.style.display = 'block';
+                }
+                
+                const jokeText = `बधाई हो! आपका रेफ़रल कोड ${code} सफलतापूर्वक लागू हो गया है। आपको एक हज़ार रुपये का विशेष बोनस मिल गया है! लेकिन याद रखना: रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜`;
+                speakAI(jokeText);
+            } catch (e) {
+                console.error("Failed to apply referral code:", e);
+            }
+        }
+
         // Voice TTS Guide using Web Speech API
         function speakAI(text) {
             try {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'hi-IN';
                     const voices = window.speechSynthesis.getVoices();
-                    const preferredVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('en-IN') || v.lang.includes('hi'));
+                    const preferredVoice = voices.find(v => v.lang.includes('hi-IN') || v.lang.includes('hi') || v.lang.includes('en-IN'));
                     if (preferredVoice) {
                         utterance.voice = preferredVoice;
+                        utterance.lang = preferredVoice.lang;
                     }
-                    utterance.rate = 1.0;
+                    utterance.rate = 0.95;
                     utterance.pitch = 1.0;
                     window.speechSynthesis.speak(utterance);
                 }
             } catch (e) {
                 console.error("Speech Synthesis failed:", e);
+            }
+        }
+
+        function speakAuthGuide() {
+            const text = "प्यारे बच्चों! अगर आपने पहले से रजिस्ट्रेशन कर लिया है तो अपना फ़ोन नंबर या ईमेल और पासवर्ड भरकर लॉगिन करें। और अगर रजिस्ट्रेशन नहीं किया है, तो दाएं तरफ रजिस्टर फॉर्म में अपना नाम, ईमेल और पासवर्ड भरकर नया खाता बनाएं। और हाँ, रेफ़रल कोड डालने पर आपको मिलेगा ₹1000 का नकली रिवॉर्ड! पर हाँ, याद रखना: रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं! 😜 और आपके सारे दस्तावेज़ हमारे सुरक्षित एआई लॉकर में हमेशा के लिए पूरी तरह सुरक्षित और सेव्ड रहेंगे! धन्यवाद!";
+            speakAI(text);
+            
+            // Animation effect on avatar
+            const avatar = document.getElementById('auth-speak-avatar');
+            if (avatar) {
+                avatar.innerText = "🗣️";
+                setTimeout(() => { avatar.innerText = "🤖"; }, 10000);
+            }
+        }
+
+        function speakProfileGuide() {
+            const text = "प्यारे बच्चों और दोस्तों! अपनी प्रोफाइल पूरी करने के लिए यहाँ अपना पूरा नाम दर्ज करें, कैलेंडर से अपनी जन्म तिथि चुनें, और अपनी पढ़ाई का स्तर तथा जाति वर्ग सिलेक्ट करें। इस बात का ध्यान रखें कि आपके द्वारा अपलोड किए गए सारे दस्तावेज़ हमारे सुरक्षित एआई लॉकर में हमेशा के लिए पूरी तरह सुरक्षित और सेव्ड रहेंगे! चलिए, फटाफट अपनी जानकारी सुरक्षित करें और सेव डिटेल्स बटन दबाएं!";
+            speakAI(text);
+            
+            const avatar = document.getElementById('profile-speak-avatar');
+            if (avatar) {
+                avatar.innerText = "🗣️";
+                setTimeout(() => { avatar.innerText = "🤖"; }, 10000);
             }
         }
 
@@ -2960,6 +3142,7 @@ ${textToSummarize.substring(0, 45000)}`;
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const password = document.getElementById('reg-password').value;
+            const referral = document.getElementById('reg-referral').value.trim();
             
             const errEl = document.getElementById('register-error');
             const succEl = document.getElementById('register-success');
@@ -2978,6 +3161,7 @@ ${textToSummarize.substring(0, 45000)}`;
                 name,
                 email,
                 password,
+                referralCode: referral,
                 profile: {
                     name: name,
                     dob: "",
@@ -2995,8 +3179,19 @@ ${textToSummarize.substring(0, 45000)}`;
             users.push(newUser);
             localStorage.setItem('sarkariguru_users', JSON.stringify(users));
             
-            succEl.innerText = "Registration successful! You can now sign in.";
+            let successMessage = "Registration successful! You can now sign in.";
+            if (referral) {
+                successMessage = `🎉 Registration Successful with Referral Code '${referral}'! 🎁 REWARD VALIDATED: ₹1000 has been credited to your virtual bonus balance. (रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं! 😜)`;
+            }
+            succEl.innerText = successMessage;
             succEl.style.display = 'block';
+            
+            // Voice announcement
+            if (referral) {
+                speakAI(`बधाई हो ${name}! आपका खाता रेफ़रल कोड ${referral} के साथ सफलतापूर्वक बन गया है। आपका एक हज़ार रुपये का रिवॉर्ड वैलिडेट हो चुका है, लेकिन याद रखना, रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं!`);
+            } else {
+                speakAI(`बधाई हो ${name}! आपका खाता सफलतापूर्वक बन गया है। अब आप लॉगिन कर सकते हैं।`);
+            }
             
             document.getElementById('login-email').value = email;
             document.getElementById('login-password').focus();
@@ -3029,6 +3224,12 @@ ${textToSummarize.substring(0, 45000)}`;
             if (!currentUser) return;
             
             document.getElementById('auth-section').style.display = 'none';
+            const authSpeakingGuide = document.getElementById('auth-speaking-guide');
+            if (authSpeakingGuide) authSpeakingGuide.style.display = 'none';
+            
+            const profileSpeakingGuide = document.getElementById('profile-speaking-guide');
+            if (profileSpeakingGuide) profileSpeakingGuide.style.display = 'flex';
+            
             document.getElementById('profile-dashboard').style.display = 'grid';
             
             const p = currentUser.profile || {};
@@ -3057,6 +3258,12 @@ ${textToSummarize.substring(0, 45000)}`;
             localStorage.removeItem('sarkariguru_current_user');
             
             document.getElementById('auth-section').style.display = 'grid';
+            const authSpeakingGuide = document.getElementById('auth-speaking-guide');
+            if (authSpeakingGuide) authSpeakingGuide.style.display = 'flex';
+            
+            const profileSpeakingGuide = document.getElementById('profile-speaking-guide');
+            if (profileSpeakingGuide) profileSpeakingGuide.style.display = 'none';
+            
             document.getElementById('profile-dashboard').style.display = 'none';
             document.getElementById('filler-logged-out').style.display = 'block';
             document.getElementById('filler-content').style.display = 'none';
