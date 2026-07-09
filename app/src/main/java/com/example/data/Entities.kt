@@ -15,6 +15,7 @@ data class UserProfile(
     val phone: String,
     val dob: String,
     val category: String = "General",
+    val qualification: String = "12th Pass",
     val isRegistered: Boolean = true
 )
 
@@ -38,7 +39,8 @@ data class UserAccount(
     val passwordHash: String,
     val name: String,
     val dob: String = "15/07/2002",
-    val category: String = "General"
+    val category: String = "General",
+    val qualification: String = "12th Pass"
 )
 
 @Entity(tableName = "saved_jobs")

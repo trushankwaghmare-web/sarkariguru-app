@@ -95,6 +95,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     var isPaying = mutableStateOf(false)
     var paymentCompleted = mutableStateOf(false)
     var isUserLoggedIn = mutableStateOf(false) // Forceful login state track on every boot
+    var isProfileSetupCompleted = mutableStateOf(false) // Track if candidate has filled profile details
 
     // Alerts / Dialog displays
     var showSettingsDialog = mutableStateOf(false)
@@ -246,13 +247,16 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     formPhone.value = profile.phone
                     formDob.value = profile.dob
                     formCategory.value = profile.category
+                    formQualification.value = profile.qualification
                     
                     isUserLoggedIn.value = true
+                    isProfileSetupCompleted.value = profile.name.isNotEmpty() && profile.name != "Candidate" && profile.dob.isNotEmpty()
                     
                     // Dynamically collect user's documents and saved jobs!
                     collectUserData(profile.phone)
                 } else {
                     isUserLoggedIn.value = false
+                    isProfileSetupCompleted.value = false
                 }
             }
         }
@@ -274,11 +278,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                         name = account.name,
                         phone = account.phone,
                         dob = account.dob,
-                        category = account.category
+                        category = account.category,
+                        qualification = account.qualification
                     )
                     repository.saveProfile(profile)
                     _userProfile.value = profile
                     isUserLoggedIn.value = true
+                    isProfileSetupCompleted.value = account.name.isNotEmpty() && account.dob.isNotEmpty()
                     prefs.edit().putLong("last_login_timestamp", currentTime).apply()
                 }
             }
@@ -549,7 +555,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     // Save profile to database
     fun saveUserProfile(name: String, phone: String, dob: String, qualification: String, category: String) {
         viewModelScope.launch {
-            val profile = UserProfile(name = name, phone = phone, dob = dob, category = category)
+            val profile = UserProfile(
+                name = name,
+                phone = phone,
+                dob = dob,
+                category = category,
+                qualification = qualification
+            )
             repository.saveProfile(profile)
             _userProfile.value = profile
             formName.value = name
@@ -559,6 +571,20 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             formCategory.value = category
             showSettingsDialog.value = false
             isUserLoggedIn.value = true
+            isProfileSetupCompleted.value = name.isNotEmpty() && dob.isNotEmpty() && dob != "15/07/2002"
+            
+            // Sync with local UserAccount records for future logins
+            val account = repository.getAccountByPhone(phone)
+            if (account != null) {
+                repository.saveAccount(
+                    account.copy(
+                        name = name,
+                        dob = dob,
+                        category = category,
+                        qualification = qualification
+                    )
+                )
+            }
         }
     }
 
@@ -693,11 +719,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 val profile = UserProfile(
                     name = account.name,
                     phone = account.phone,
-                    dob = "15/07/2002",
-                    category = "General"
+                    dob = "",
+                    category = "General",
+                    qualification = "12th Pass"
                 )
                 repository.saveProfile(profile)
                 _userProfile.value = profile
+                isProfileSetupCompleted.value = false
                 
                 if (rememberMeChecked.value) {
                     val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
@@ -711,7 +739,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 isSupabaseConnecting.value = false
                 isOtpVerificationSent.value = false
                 isUserLoggedIn.value = true
-                activeDialogMessage.value = "Secure Registration & Phone OTP Verification Successful!"
+                activeDialogMessage.value = "Secure Registration Successful! Please complete your candidate details."
             } else {
                 supabaseStatusMessage.value = "Retrieving synced profile from Supabase database..."
                 delay(800)
@@ -721,10 +749,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                         name = account.name,
                         phone = account.phone,
                         dob = account.dob,
-                        category = account.category
+                        category = account.category,
+                        qualification = account.qualification
                     )
                     repository.saveProfile(profile)
                     _userProfile.value = profile
+                    isProfileSetupCompleted.value = account.name.isNotEmpty() && account.dob.isNotEmpty() && account.dob != "15/07/2002"
 
                     if (rememberMeChecked.value) {
                         val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
@@ -738,7 +768,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     isSupabaseConnecting.value = false
                     isOtpVerificationSent.value = false
                     isUserLoggedIn.value = true
-                    activeDialogMessage.value = "Secure Login & Phone OTP Verification Successful!"
+                    activeDialogMessage.value = "Secure Login Successful!"
                 } else {
                     isSupabaseConnecting.value = false
                     activeDialogMessage.value = "Error loading account from database."

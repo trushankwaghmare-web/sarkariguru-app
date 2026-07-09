@@ -48,6 +48,8 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Phone
@@ -153,6 +155,8 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
 
     if (!isUserLoggedIn) {
         LoginRegistrationScreen(viewModel = viewModel)
+    } else if (!viewModel.isProfileSetupCompleted.value) {
+        ProfileSetupScreen(viewModel = viewModel)
     } else {
         Scaffold(
             modifier = Modifier.fillMaxSize().testTag("main_scaffold"),
@@ -3189,6 +3193,11 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
             ActiveSectorBanner(activeSector = activeSectorState)
         }
 
+        // Beautiful Visual Shortcuts for New Vacancies, Last Dates, and Admit Cards
+        item {
+            InteractiveGurujiDashboardShortcuts(viewModel = viewModel)
+        }
+
         // Category Selector Sub-Tab Row (Latest Jobs, Admit Cards, Results)
         item {
             val categories = listOf(
@@ -4569,6 +4578,455 @@ fun VoiceAssistantDialog(viewModel: DashboardViewModel) {
                             fontSize = 13.sp
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProfileSetupScreen(viewModel: DashboardViewModel) {
+    val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
+    
+    // Internal state variables for form fields
+    var name by remember { mutableStateOf(viewModel.formName.value) }
+    var phone by remember { mutableStateOf(viewModel.formPhone.value) }
+    var dob by remember { mutableStateOf(viewModel.formDob.value) }
+    var qualification by remember { mutableStateOf(viewModel.formQualification.value) }
+    var category by remember { mutableStateOf(viewModel.formCategory.value) }
+
+    // Synchronize state when DOB changes via Date Picker Dialog overlay
+    LaunchedEffect(viewModel.formDob.value) {
+        if (viewModel.formDob.value.isNotEmpty()) {
+            dob = viewModel.formDob.value
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DailyTheme.Background)
+            .imePadding()
+            .navigationBarsPadding(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // App Logo and Icon section
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .background(dailyAccent.copy(alpha = 0.12f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                    tint = dailyAccent,
+                    modifier = Modifier.size(56.dp)
+                )
+            }
+
+            Text(
+                text = if (isKid) "प्यारे बच्चे, अपनी जानकारी भरें! 😊" else "COMPLETE CANDIDATE PROFILE",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = DailyTheme.TextPrimary,
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = if (isKid) "कृपया अपना सही नाम और पढ़ाई चुनें ताकि गुरुजी आपके लिए बढ़िया सरकारी नौकरियां और प्रवेश पत्र ढूंढ सकें!" 
+                       else "Please set up your authentic profile details to filter appropriate vacancies, deadlines, and hall tickets.",
+                fontSize = 13.sp,
+                color = DailyTheme.TextSecondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 12.dp)
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                border = BorderStroke(1.dp, DailyTheme.CardBorder)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Name Field
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text(if (isKid) "आपका पूरा नाम (Full Name)" else "Candidate Full Name") },
+                        leadingIcon = { Icon(Icons.Default.Person, contentDescription = null, tint = dailyAccent) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = DailyTheme.TextPrimary,
+                            unfocusedTextColor = DailyTheme.TextPrimary,
+                            focusedBorderColor = dailyAccent,
+                            unfocusedBorderColor = DailyTheme.CardBorder
+                        ),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth().testTag("setup_name_input")
+                    )
+
+                    // Phone Field (Pre-filled and Disabled/Read-only)
+                    OutlinedTextField(
+                        value = phone,
+                        onValueChange = {},
+                        enabled = false,
+                        label = { Text("Verified Mobile Number") },
+                        prefix = { Text("+91 ", color = DailyTheme.TextPrimary, fontWeight = FontWeight.Bold) },
+                        leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = Color.Gray) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            disabledTextColor = DailyTheme.TextPrimary.copy(alpha = 0.6f),
+                            disabledBorderColor = DailyTheme.CardBorder,
+                            disabledLabelColor = DailyTheme.TextSecondary
+                        ),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    // Date of Birth Field with Calendar Selector
+                    OutlinedTextField(
+                        value = dob,
+                        onValueChange = { dob = it },
+                        readOnly = true,
+                        label = { Text(if (isKid) "जन्म तिथि (Date of Birth)" else "Date of Birth (DD/MM/YYYY)") },
+                        leadingIcon = { Icon(Icons.Default.DateRange, contentDescription = null, tint = dailyAccent) },
+                        trailingIcon = {
+                            IconButton(onClick = { viewModel.showCalendarDialog.value = true }) {
+                                Icon(Icons.Default.CalendarToday, contentDescription = "Select Date", tint = dailyAccent)
+                            }
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = DailyTheme.TextPrimary,
+                            unfocusedTextColor = DailyTheme.TextPrimary,
+                            focusedBorderColor = dailyAccent,
+                            unfocusedBorderColor = DailyTheme.CardBorder
+                        ),
+                        singleLine = true,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { viewModel.showCalendarDialog.value = true }
+                            .testTag("setup_dob_input")
+                    )
+
+                    // Qualification Selection
+                    Text(
+                        text = if (isKid) "आपकी पढ़ाई (Educational Level)" else "Highest Educational Qualification:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DailyTheme.TextSecondary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("10th Pass", "12th Pass", "Graduate").forEach { qual ->
+                            val isSelected = qualification == qual
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(if (isSelected) dailyAccent else dailyAccent.copy(alpha = 0.08f))
+                                    .border(1.dp, if (isSelected) dailyAccent else DailyTheme.CardBorder, RoundedCornerShape(10.dp))
+                                    .clickable { qualification = qual }
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = qual,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isSelected) Color.White else DailyTheme.TextPrimary
+                                )
+                            }
+                        }
+                    }
+
+                    // Category Selection
+                    Text(
+                        text = if (isKid) "आपका जाति वर्ग (Category)" else "Candidate Category:",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = DailyTheme.TextSecondary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("General", "OBC", "SC", "ST").forEach { cat ->
+                            val isSelected = category == cat
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(10.dp))
+                                    .background(if (isSelected) dailyAccent else dailyAccent.copy(alpha = 0.08f))
+                                    .border(1.dp, if (isSelected) dailyAccent else DailyTheme.CardBorder, RoundedCornerShape(10.dp))
+                                    .clickable { category = cat }
+                                    .padding(vertical = 10.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = cat,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isSelected) Color.White else DailyTheme.TextPrimary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Save & Continue Button
+            Button(
+                onClick = {
+                    if (name.trim().isBlank()) {
+                        viewModel.activeDialogMessage.value = "Error: Please enter your Full Name!"
+                    } else if (dob.trim().isBlank()) {
+                        viewModel.activeDialogMessage.value = "Error: Please select your Date of Birth!"
+                    } else {
+                        viewModel.saveUserProfile(
+                            name = name.trim(),
+                            phone = phone.trim(),
+                            dob = dob.trim(),
+                            qualification = qualification,
+                            category = category
+                        )
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = dailyAccent),
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .testTag("save_profile_details_btn")
+            ) {
+                Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (isKid) "विवरण सुरक्षित करें और आगे बढ़ें 🚀" else "Save Details & Continue",
+                    fontWeight = FontWeight.Black,
+                    fontSize = 15.sp,
+                    color = Color.White
+                )
+            }
+
+            // Secondary option: Logout / Back to Login
+            OutlinedButton(
+                onClick = { viewModel.logout() },
+                border = BorderStroke(1.dp, DailyTheme.CardBorder),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+            ) {
+                Text(
+                    text = if (isKid) "लॉग आउट करें (Logout)" else "Logout / Cancel Registration",
+                    color = DailyTheme.TextSecondary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Overlays inside setup screen (such as calendar dialog)
+        if (viewModel.showCalendarDialog.value) {
+            CalendarDialog(
+                onDismiss = { viewModel.showCalendarDialog.value = false },
+                onDateSelected = { selectedDob ->
+                    viewModel.formDob.value = selectedDob
+                    viewModel.showCalendarDialog.value = false
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun InteractiveGurujiDashboardShortcuts(viewModel: DashboardViewModel) {
+    val dailyAccent = DailyTheme.accentColor
+    val isKid = viewModel.isKidModeActive.value
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(DailyTheme.CardBackground, RoundedCornerShape(16.dp))
+            .border(1.dp, DailyTheme.CardBorder, RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = if (isKid) "🎯 गुरुजी हेल्प डेस्क: आपको क्या देखना है?" else "🎯 Candidate Dashboard Navigation Help:",
+            fontSize = if (isKid) 15.sp else 13.sp,
+            fontWeight = FontWeight.Bold,
+            color = DailyTheme.TextPrimary,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Shortcut 1: New Vacancies
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable {
+                        viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.UPDATES
+                    }
+                    .testTag("shortcut_new_vacancies"),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9)), // Soft Green
+                border = BorderStroke(1.2.dp, Color(0xFF81C784))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(Color(0xFF2E7D32), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (isKid) "नयी नौकरियां" else "New Vacancies",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF1B5E20),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = if (isKid) "भर्ती फॉर्म" else "Active Forms",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32).copy(alpha = 0.8f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // Shortcut 2: Last Dates
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable {
+                        viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.TRACKER
+                    }
+                    .testTag("shortcut_last_dates"),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0)), // Soft Orange
+                border = BorderStroke(1.2.dp, Color(0xFFFFB74D))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(Color(0xFFE65100), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (isKid) "अंतिम तिथि" else "Last Dates",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF5D4037),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = if (isKid) "जल्दी भरें!" else "Apply Quickly",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFE65100).copy(alpha = 0.8f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+
+            // Shortcut 3: Admit Cards
+            Card(
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable {
+                        viewModel.selectedBottomTab.value = DashboardViewModel.BottomTab.HALL_TICKET
+                    }
+                    .testTag("shortcut_admit_cards"),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD)), // Soft Blue
+                border = BorderStroke(1.2.dp, Color(0xFF64B5F6))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(Color(0xFF0D47A1), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CheckCircle,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (isKid) "एडमिट कार्ड" else "Hall Tickets",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF0D47A1),
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = if (isKid) "परीक्षा टिकट" else "Admit Cards",
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF0D47A1).copy(alpha = 0.8f),
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
         }
