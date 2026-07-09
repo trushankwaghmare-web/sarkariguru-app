@@ -2361,6 +2361,36 @@ fun SettingsDialog(
 
                 HorizontalDivider(color = DailyTheme.CardBorder)
 
+                // Production Ads Switch
+                val context = LocalContext.current
+                val switchPrefs = remember { context.getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE) }
+                var useProductionAds by remember { mutableStateOf(switchPrefs.getBoolean("use_production_ads", false)) }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Show Real Production Ads", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = DailyTheme.TextPrimary)
+                        Text("Toggle to test your actual AdMob IDs inside the emulator.", fontSize = 10.sp, color = DailyTheme.TextSecondary)
+                    }
+                    androidx.compose.material3.Switch(
+                        checked = useProductionAds,
+                        onCheckedChange = { 
+                            useProductionAds = it
+                            switchPrefs.edit().putBoolean("use_production_ads", it).apply()
+                            com.example.AdManager.clearAndReload(context)
+                        },
+                        colors = androidx.compose.material3.SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = dailyAccent
+                        )
+                    )
+                }
+
+                HorizontalDivider(color = DailyTheme.CardBorder)
+
                 // About & Credits Section (Exclusive Owner: Trushank Waghmare)
                 Card(
                     colors = CardDefaults.cardColors(containerColor = DailyTheme.Background),
@@ -3178,16 +3208,6 @@ fun UpdatesTabContent(viewModel: DashboardViewModel, documents: List<UserDocumen
     ) {
         item { Spacer(modifier = Modifier.height(8.dp)) }
 
-        // Top Header
-        item {
-            HeaderSection(
-                activeSector = activeSectorState,
-                onSettingsClick = { viewModel.showSettingsDialog.value = true },
-                onSectorChange = { viewModel.activeSector.value = it },
-                viewModel = viewModel
-            )
-        }
-
         // Active Sector Feature Banner Graphics
         item {
             ActiveSectorBanner(activeSector = activeSectorState)
@@ -3711,13 +3731,31 @@ fun HallTicketTabContent(viewModel: DashboardViewModel) {
 @Composable
 fun AdMobBannerAd(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val adView = remember {
+    val prefs = remember { context.getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE) }
+    
+    // Read the preference value dynamically
+    var useProdAds by remember { mutableStateOf(prefs.getBoolean("use_production_ads", false)) }
+    
+    // Listen to changes in the SharedPreferences so we recompose instantly
+    DisposableEffect(context) {
+        val listener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == "use_production_ads") {
+                useProdAds = prefs.getBoolean("use_production_ads", false)
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose {
+            prefs.unregisterOnSharedPreferenceChangeListener(listener)
+        }
+    }
+
+    val adView = remember(useProdAds) {
         AdView(context).apply {
             setAdSize(AdSize.BANNER)
-            adUnitId = if (com.example.BuildConfig.DEBUG) {
-                "ca-app-pub-3940256099942544/6300978111"
-            } else {
+            adUnitId = if (!com.example.BuildConfig.DEBUG || useProdAds) {
                 "ca-app-pub-6300818578767625/2796454220"
+            } else {
+                "ca-app-pub-3940256099942544/6300978111"
             }
         }
     }

@@ -14,12 +14,14 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 object AdManager {
     private const val TAG = "AdManager"
     
-    // Uses Google's official safe Interstitial test ID in Debug mode to avoid account suspensions,
-    // and seamlessly switches to your production ID in Release mode.
-    private val AD_UNIT_ID = if (BuildConfig.DEBUG) {
-        "ca-app-pub-3940256099942544/1033173712"
-    } else {
-        "ca-app-pub-6300818578767625/8600656696"
+    private fun getAdUnitId(context: Context): String {
+        val prefs = context.getSharedPreferences("sarkari_guru_prefs", Context.MODE_PRIVATE)
+        val forceProd = prefs.getBoolean("use_production_ads", false)
+        return if (!BuildConfig.DEBUG || forceProd) {
+            "ca-app-pub-6300818578767625/8600656696"
+        } else {
+            "ca-app-pub-3940256099942544/1033173712"
+        }
     }
     
     private var mInterstitialAd: InterstitialAd? = null
@@ -35,7 +37,8 @@ object AdManager {
             return
         }
         isInitializeCalled = true
-        Log.d(TAG, "Initializing MobileAds SDK with Ad Unit ID: $AD_UNIT_ID")
+        val unitId = getAdUnitId(context)
+        Log.d(TAG, "Initializing MobileAds SDK with Ad Unit ID: $unitId")
         
         // MobileAds initialization is safe to run on any thread.
         MobileAds.initialize(context) { initializationStatus ->
@@ -54,12 +57,13 @@ object AdManager {
             return
         }
         isAdLoading = true
-        Log.d(TAG, "Loading Interstitial Ad using ID: $AD_UNIT_ID...")
+        val unitId = getAdUnitId(context)
+        Log.d(TAG, "Loading Interstitial Ad using ID: $unitId...")
         
         val adRequest = AdRequest.Builder().build()
         InterstitialAd.load(
             context.applicationContext,
-            AD_UNIT_ID,
+            unitId,
             adRequest,
             object : InterstitialAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
@@ -75,6 +79,15 @@ object AdManager {
                 }
             }
         )
+    }
+
+    /**
+     * Clears cached ad and forces a reload from AdMob.
+     */
+    fun clearAndReload(context: Context) {
+        mInterstitialAd = null
+        isAdLoading = false
+        loadInterstitialAd(context)
     }
 
     /**

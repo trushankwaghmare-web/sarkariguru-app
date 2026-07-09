@@ -571,7 +571,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             formCategory.value = category
             showSettingsDialog.value = false
             isUserLoggedIn.value = true
-            isProfileSetupCompleted.value = name.isNotEmpty() && dob.isNotEmpty() && dob != "15/07/2002"
+            isProfileSetupCompleted.value = name.isNotEmpty() && dob.isNotEmpty()
             
             // Sync with local UserAccount records for future logins
             val account = repository.getAccountByPhone(phone)
@@ -754,7 +754,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     )
                     repository.saveProfile(profile)
                     _userProfile.value = profile
-                    isProfileSetupCompleted.value = account.name.isNotEmpty() && account.dob.isNotEmpty() && account.dob != "15/07/2002"
+                    isProfileSetupCompleted.value = account.name.isNotEmpty() && account.dob.isNotEmpty()
 
                     if (rememberMeChecked.value) {
                         val prefs = getApplication<Application>().getSharedPreferences("sarkari_guru_prefs", android.content.Context.MODE_PRIVATE)
