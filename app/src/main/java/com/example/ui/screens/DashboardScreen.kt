@@ -128,6 +128,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.UserDocument
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -2755,8 +2759,27 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                 color = DailyTheme.TextSecondary,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 4.dp, bottom = 24.dp)
+                modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
             )
+
+            val guideDefaultText = if (isRegisterMode) {
+                "प्यारे बच्चों! रजिस्ट्रेशन करने के लिए अपना नाम, फ़ोन नंबर और पासवर्ड भरें। रेफ़रल कोड डालने पर मिलेगा ₹1000 का नकली रिवॉर्ड! 😜 आपके सारे दस्तावेज़ हमारे AI लॉकर में पूरी तरह सुरक्षित रहेंगे!"
+            } else {
+                "प्यारे बच्चों! अगर आपने रजिस्ट्रेशन कर लिया है तो मोबाइल नंबर और पासवर्ड से लॉगिन करें। नहीं तो ऊपर 'REGISTER' पर दबाएं। 👇"
+            }
+            val guideSpeechText = if (isRegisterMode) {
+                "प्यारे बच्चों! रजिस्ट्रेशन करने के लिए अपना नाम, ईमेल, मोबाइल नंबर और पासवर्ड भरें। अगर आपके पास कोई रेफ़रल कोड है तो उसे अवश्य भरें, जिससे आपको मिलेगा ₹1000 का नकली रिवॉर्ड! पर हाँ, याद रखना: रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं! 😜 और हाँ, आपके सारे दस्तावेज़ हमारे एआई लॉकर में पूरी तरह सुरक्षित और सेव्ड रहेंगे! चलिए, फॉर्म भरना शुरू करें!"
+            } else {
+                "नमस्ते बच्चों और दोस्तों! अगर आपने पहले से रजिस्ट्रेशन कर लिया है तो अपना फ़ोन नंबर और पासवर्ड भरकर लॉगिन करें। और अगर रजिस्ट्रेशन नहीं किया है, तो ऊपर रजिस्टर बटन दबाकर अपनी नयी आईडी बनायें। धन्यवाद!"
+            }
+
+            AiSpeakingGuideWidget(
+                viewModel = viewModel,
+                defaultText = guideDefaultText,
+                speechText = guideSpeechText
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             if (!isOtpSent) {
                 // Switch Tab between Register and Login
@@ -2999,6 +3022,58 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                                 singleLine = true,
                                 modifier = Modifier.fillMaxWidth().testTag("register_password_input")
                             )
+
+                            // Pointing Hand Sign 👉
+                            PointingHandSign(
+                                emoji = "👉",
+                                text = "यहाँ रेफ़रल कोड डालें और ₹1000 बोनस जीतें!"
+                            )
+
+                            // Referral Code Field (optional)
+                            OutlinedTextField(
+                                value = viewModel.registerReferralCode.value,
+                                onValueChange = { viewModel.registerReferralCode.value = it },
+                                label = { Text("Referral Code (Optional) / रेफ़रल कोड") },
+                                leadingIcon = { Icon(Icons.Default.CardGiftcard, contentDescription = null, tint = dailyAccent) },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedTextColor = DailyTheme.TextPrimary,
+                                    unfocusedTextColor = DailyTheme.TextPrimary,
+                                    focusedBorderColor = dailyAccent,
+                                    unfocusedBorderColor = DailyTheme.CardBorder
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth().testTag("register_referral_input")
+                            )
+
+                            // Fake Reward Promo Notice
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = SuccessGreen.copy(alpha = 0.08f)),
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, SuccessGreen.copy(alpha = 0.3f)),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("🎁", fontSize = 24.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "SPONSOR REWARD ASSURED!",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 11.sp,
+                                            color = SuccessGreen
+                                        )
+                                        Text(
+                                            text = "Enter a valid referral code. Receive ₹1000 instantly in your virtual wallet after registration completion! (Subject to T&C)",
+                                            fontSize = 10.sp,
+                                            color = DailyTheme.TextPrimary,
+                                            lineHeight = 14.sp
+                                        )
+                                    }
+                                }
+                            }
                         } else {
                             // Login Fields: Phone Number
                             OutlinedTextField(
@@ -4692,6 +4767,20 @@ fun ProfileSetupScreen(viewModel: DashboardViewModel) {
                 modifier = Modifier.padding(horizontal = 12.dp)
             )
 
+            val profileGuideDefault = "प्यारे बच्चों! यहाँ अपना नाम लिखें, अपनी जन्म तिथि (DOB) और पढ़ाई चुनें। आपके सारे दस्तावेज़ हमारे सुरक्षित AI लॉकर में पूरी तरह सुरक्षित और सेव्ड रहेंगे! 👇"
+            val profileGuideSpeech = "प्यारे बच्चों और दोस्तों! अपनी प्रोफाइल पूरी करने के लिए यहाँ अपना पूरा नाम दर्ज करें, कैलेंडर से अपनी जन्म तिथि चुनें, और अपनी पढ़ाई का स्तर तथा जाति वर्ग सिलेक्ट करें। इस बात का ध्यान रखें कि आपके द्वारा अपलोड किए गए सारे दस्तावेज़ हमारे सुरक्षित एआई लॉकर में हमेशा के लिए पूरी तरह सुरक्षित और सेव्ड रहेंगे! चलिए, फटाफट अपनी जानकारी सुरक्षित करें और सेव डिटेल्स बटन दबाएं!"
+
+            AiSpeakingGuideWidget(
+                viewModel = viewModel,
+                defaultText = profileGuideDefault,
+                speechText = profileGuideSpeech
+            )
+
+            PointingHandSign(
+                emoji = "👇",
+                text = "यहाँ अपना विवरण भरें (Fill Profile Details Below)"
+            )
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
@@ -5066,6 +5155,123 @@ fun InteractiveGurujiDashboardShortcuts(viewModel: DashboardViewModel) {
                         textAlign = TextAlign.Center
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun PointingHandSign(
+    modifier: Modifier = Modifier,
+    emoji: String = "👇",
+    text: String = ""
+) {
+    val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "HandBounce")
+    val translateY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 8f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+            animation = androidx.compose.animation.core.tween(durationMillis = 600, easing = androidx.compose.animation.core.LinearEasing),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+        ),
+        label = "TranslationY"
+    )
+
+    Row(
+        modifier = modifier
+            .graphicsLayer { translationY = translateY }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Text(text = emoji, fontSize = 24.sp)
+        if (text.isNotEmpty()) {
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = text,
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = DailyTheme.accentColor
+            )
+        }
+    }
+}
+
+@Composable
+fun AiSpeakingGuideWidget(
+    viewModel: DashboardViewModel,
+    defaultText: String,
+    speechText: String
+) {
+    val isTtsLoading = viewModel.isTtsLoading.value
+    val dailyAccent = DailyTheme.accentColor
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = dailyAccent.copy(alpha = 0.08f)),
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, dailyAccent.copy(alpha = 0.3f)),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Talking Bot Graphic with Pointing Finger Emoji
+            Box(
+                modifier = Modifier
+                    .size(54.dp)
+                    .background(dailyAccent.copy(alpha = 0.15f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (isTtsLoading) "🗣️" else "🤖",
+                    fontSize = 28.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "AI Voice Guru (बोलने वाला गाइड)",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = dailyAccent
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("👉", fontSize = 16.sp) // The pointing hand gesture!
+                }
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = defaultText,
+                    fontSize = 12.sp,
+                    color = DailyTheme.TextPrimary,
+                    lineHeight = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Play/Pause Button
+            IconButton(
+                onClick = {
+                    viewModel.playSectionVoiceGuide("ScreenGuide", speechText)
+                },
+                modifier = Modifier
+                    .size(44.dp)
+                    .background(dailyAccent, CircleShape)
+            ) {
+                Icon(
+                    imageVector = if (isTtsLoading) Icons.Default.VolumeOff else Icons.Default.VolumeUp,
+                    contentDescription = "Listen to AI voice guide",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }

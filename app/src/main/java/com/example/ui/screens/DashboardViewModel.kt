@@ -50,6 +50,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     val registerPhone = mutableStateOf("")
     val registerEmail = mutableStateOf("")
     val registerPassword = mutableStateOf("")
+    val registerReferralCode = mutableStateOf("")
     val loginPassword = mutableStateOf("")
     val rememberMeChecked = mutableStateOf(true)
 
@@ -739,7 +740,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 isSupabaseConnecting.value = false
                 isOtpVerificationSent.value = false
                 isUserLoggedIn.value = true
-                activeDialogMessage.value = "Secure Registration Successful! Please complete your candidate details."
+                val referral = registerReferralCode.value.trim()
+                if (referral.isNotEmpty()) {
+                    activeDialogMessage.value = "🎉 Registration Successful with Referral Code '$referral'!\n\n🎁 REWARD OFFER VALIDATED!\nजैसा कि नियमों और शर्तों (T&C) के गुप्त पन्ने पर लिखा है - 'रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं!' 😜 यह केवल एक डेमो रेफ़रल सिस्टम है। आप असली परीक्षाओं की तैयारी के लिए यहाँ हैं।\n\n(No actual money will be given as this is a prototype demo app. Let's study hard!)"
+                } else {
+                    activeDialogMessage.value = "Secure Registration Successful! Please complete your candidate details."
+                }
             } else {
                 supabaseStatusMessage.value = "Retrieving synced profile from Supabase database..."
                 delay(800)
