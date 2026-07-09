@@ -1360,6 +1360,7 @@
             </a>
             <span class="badge-verified" style="margin-right: auto; margin-left: 12px;">Verified Portal</span>
             <ul class="nav-links" id="navbar-links" style="display: flex; align-items: center; gap: 20px;">
+                <li><button onclick="shareApp()" class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px; background-color: #25d366; color: white; display: inline-flex; align-items: center; gap: 6px; border: none; font-weight: bold; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);">📢 Share</button></li>
                 <li><button onclick="toggleKidGuide()" class="kid-toggle-btn" id="kid-toggle-nav-btn">🧸 Kid Guide: OFF</button></li>
                 <li class="desktop-only"><a href="#features">Features</a></li>
                 <li class="desktop-only"><a href="#ownership">About Founder</a></li>
@@ -1377,13 +1378,19 @@
         </section>
 
         <!-- Elegant Referral Option Card -->
-        <div class="referral-container" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: -15px; margin-bottom: 25px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(79,70,229,0.06)); border: 1.5px dashed var(--accent-color); padding: 12px 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.05); max-width: 600px; margin-left: auto; margin-right: auto; text-align: center;">
-            <span style="font-size: 1.25rem;">🎁</span>
-            <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.3px;">Referral Option (₹1000 Reward):</span>
-            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;">
-                <input type="text" id="top-referral-code" placeholder="Enter referral code" style="padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; width: 180px; outline: none; background-color: white; color: var(--text-primary);">
-                <button onclick="applyTopReferralCode()" class="btn" style="padding: 8px 16px; font-size: 0.8rem; border-radius: 20px; height: 36px; background-color: var(--accent-color); color: white; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px var(--accent-glow);">Apply Code</button>
+        <div class="referral-container" style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: -15px; margin-bottom: 25px; flex-wrap: wrap; background: linear-gradient(135deg, rgba(37,99,235,0.06), rgba(79,70,229,0.06)); border: 1.5px dashed var(--accent-color); padding: 16px 24px; border-radius: 20px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.05); max-width: 750px; margin-left: auto; margin-right: auto; text-align: center;">
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                <span style="font-size: 1.25rem;">🎁</span>
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.3px;">Referral Option (₹1000 Reward):</span>
+                <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center;">
+                    <input type="text" id="top-referral-code" placeholder="Enter referral code" style="padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 0.85rem; font-weight: 700; width: 160px; outline: none; background-color: white; color: var(--text-primary);">
+                    <button onclick="applyTopReferralCode()" class="btn" style="padding: 8px 16px; font-size: 0.8rem; border-radius: 20px; height: 36px; background-color: var(--accent-color); color: white; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px var(--accent-glow);">Apply Code</button>
+                </div>
             </div>
+            <span style="width: 1px; height: 24px; background-color: var(--border-color); display: inline-block;" class="desktop-only"></span>
+            <button onclick="shareApp()" class="btn" style="padding: 8px 18px; font-size: 0.85rem; border-radius: 20px; height: 36px; background-color: #25d366; color: white; display: inline-flex; align-items: center; gap: 8px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);">
+                📢 Share SarkariGuru
+            </button>
             <div id="referral-success-badge" style="display: none; font-size: 0.82rem; font-weight: 800; color: var(--success); width: 100%; margin-top: 8px; line-height: 1.4;">
                 🎉 Code Applied! ₹1000 Virtual Cash Added (रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜)
             </div>
@@ -1615,6 +1622,10 @@
                             <div class="form-group">
                                 <label for="reg-email">Email Address</label>
                                 <input type="email" id="reg-email" class="form-input" placeholder="e.g., rahul@example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="reg-phone">Mobile Number / मोबाइल नंबर</label>
+                                <input type="tel" id="reg-phone" class="form-input" placeholder="e.g., 9876543210" required pattern="[0-9]{10}">
                             </div>
                             <div class="form-group">
                                 <label for="reg-password">Password</label>
@@ -3034,6 +3045,34 @@ ${textToSummarize.substring(0, 45000)}`;
             }
         }
 
+        function shareApp() {
+            try {
+                const shareData = {
+                    title: 'SarkariGuru.AI',
+                    text: 'SarkariGuru.AI - Your AI-Powered Government Career Partner! Simplify, translate, and autofill sarkari job portals.',
+                    url: 'https://sarkariguru-app.vercel.app'
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData)
+                        .then(() => console.log('Successfully shared SarkariGuru.AI'))
+                        .catch((error) => console.log('Error sharing:', error));
+                } else {
+                    navigator.clipboard.writeText('https://sarkariguru-app.vercel.app')
+                        .then(() => {
+                            alert("🎉 SarkariGuru.AI App link copied to clipboard! Share it with your friends on WhatsApp! (sarkariguru-app.vercel.app)");
+                        })
+                        .catch((err) => {
+                            console.error('Could not copy link to clipboard: ', err);
+                            alert("Share SarkariGuru.AI with friends! Link: https://sarkariguru-app.vercel.app");
+                        });
+                }
+            } catch (e) {
+                console.error("Share failed:", e);
+                alert("Share Link: https://sarkariguru-app.vercel.app");
+            }
+        }
+
         function applyTopReferralCode() {
             try {
                 const codeInput = document.getElementById('top-referral-code');
@@ -3049,7 +3088,8 @@ ${textToSummarize.substring(0, 45000)}`;
                     badge.style.display = 'block';
                 }
                 
-                const jokeText = `बधाई हो! आपका रेफ़रल कोड ${code} सफलतापूर्वक लागू हो गया है। आपको एक हज़ार रुपये का विशेष बोनस मिल गया है! लेकिन याद रखना: रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜`;
+                // Speak the exact fun audio line
+                const jokeText = `रिवॉर्ड मिलेगा पर मिलेगा नहीं! 😜`;
                 speakAI(jokeText);
             } catch (e) {
                 console.error("Failed to apply referral code:", e);
@@ -3141,6 +3181,7 @@ ${textToSummarize.substring(0, 45000)}`;
             event.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
             const password = document.getElementById('reg-password').value;
             const referral = document.getElementById('reg-referral').value.trim();
             
@@ -3166,7 +3207,7 @@ ${textToSummarize.substring(0, 45000)}`;
                     name: name,
                     dob: "",
                     gender: "Male",
-                    phone: "",
+                    phone: phone,
                     state: "",
                     qualification: "10th Pass",
                     percent: "",
