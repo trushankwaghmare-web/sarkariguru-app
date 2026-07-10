@@ -1343,7 +1343,19 @@
         }
     </style>
     <link rel="manifest" href="manifest.json">
-    <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    // Force checking for updates to sw.js on every reload
+                    registration.update();
+                    console.log('[SarkariGuru] SW registered and update requested:', registration.scope);
+                }).catch(err => {
+                    console.error('[SarkariGuru] SW registration failed:', err);
+                });
+            });
+        }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
