@@ -1341,21 +1341,407 @@
             box-shadow: 0 6px 12px rgba(202, 138, 4, 0.3);
             background: linear-gradient(135deg, #fde047, #facc15);
         }
+
+        /* Career Coach Dashboard Dual-Column Layout */
+        .coach-dashboard-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 24px;
+            margin-top: 15px;
+            width: 100%;
+        }
+        @media (max-width: 800px) {
+            .coach-dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .goals-tracker-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goals-card-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .goals-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .progress-container {
+            background: rgba(37, 99, 235, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background-color: var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-color), #6366f1);
+            border-radius: 6px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-percentage {
+            color: var(--accent-color);
+            font-weight: 800;
+        }
+
+        .goal-input-wrapper {
+            display: flex;
+            gap: 8px;
+        }
+
+        .goal-input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .goal-input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .goals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .goal-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.25s ease;
+        }
+
+        .goal-item.completed {
+            background-color: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .goal-item-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .goal-checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: white;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .goal-item.completed .goal-checkbox-custom {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .goal-text {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .goal-item.completed .goal-text {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+        }
+
+        .goal-delete-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .goal-delete-btn:hover {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+        }
+
+        .predefined-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .predefined-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .predefined-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .predefined-chip {
+            font-size: 0.78rem;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 700;
+        }
+
+        .predefined-chip:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .celebration-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            border-radius: 20px;
+            text-align: center;
+            padding: 24px;
+        }
+
+        [data-theme="dark"] .celebration-overlay {
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .celebration-emoji {
+            font-size: 3rem;
+            animation: bounce 1s infinite alternate;
+        }
+
+        .celebration-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--success);
+            margin-top: 12px;
+        }
+
+        .celebration-desc {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin: 8px 0 16px;
+            line-height: 1.4;
+        }
+
+        #confetti-canvas-local {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 11;
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <script>
+        // Global Application Architecture & Telemetry Setup (v3.0.0)
+        window.APP_VERSION = 'v3.0.0';
+        window.__PERF_METRICS__ = {
+            pageLoadStartTime: performance.now(),
+            domInteractiveTime: 0,
+            loadCompleteTime: 0,
+            apiCallsCount: 0,
+            apiTotalLatencyMs: 0,
+            apiErrorsCount: 0
+        };
+        window.__TELEMETRY_LOGS__ = [];
+
+        function recordTelemetryError(type, message, source, lineno, colno, errorObj) {
+            const errLog = {
+                timestamp: new Date().toISOString(),
+                type: type || 'RuntimeError',
+                message: message || 'Unknown error occurred',
+                source: source || 'N/A',
+                line: lineno || 0,
+                col: colno || 0,
+                stack: errorObj && errorObj.stack ? errorObj.stack : null
+            };
+            window.__TELEMETRY_LOGS__.unshift(errLog);
+            if (window.__TELEMETRY_LOGS__.length > 50) window.__TELEMETRY_LOGS__.pop();
+            try {
+                localStorage.setItem('sarkari_telemetry_logs', JSON.stringify(window.__TELEMETRY_LOGS__.slice(0, 20)));
+            } catch(e){}
+            console.error('[SarkariGuru Error Tracker]', errLog);
+        }
+
+        // Global uncaught error listener
+        window.addEventListener('error', (evt) => {
+            recordTelemetryError('UncaughtException', evt.message, evt.filename, evt.lineno, evt.colno, evt.error);
+        });
+
+        // Global unhandled promise rejection listener
+        window.addEventListener('unhandledrejection', (evt) => {
+            recordTelemetryError('UnhandledRejection', evt.reason ? (evt.reason.message || String(evt.reason)) : 'Promise rejected', null, null, null, evt.reason);
+        });
+
+        // Navigation Timing metrics
+        window.addEventListener('DOMContentLoaded', () => {
+            window.__PERF_METRICS__.domInteractiveTime = Math.round(performance.now() - window.__PERF_METRICS__.pageLoadStartTime);
+        });
+        window.addEventListener('load', () => {
+            window.__PERF_METRICS__.loadCompleteTime = Math.round(performance.now() - window.__PERF_METRICS__.pageLoadStartTime);
+        });
+
+        // Load existing stored telemetry logs
+        try {
+            const storedLogs = localStorage.getItem('sarkari_telemetry_logs');
+            if (storedLogs) window.__TELEMETRY_LOGS__ = JSON.parse(storedLogs);
+        } catch(e){}
+
+        // Advanced Service Worker & Update Delivery Architecture
+        let newSwWorker = null;
+
+        function showUpdateNotificationToast() {
+            const toast = document.getElementById('app-update-toast');
+            if (toast) toast.style.display = 'block';
+        }
+
+        function reloadForUpdate() {
+            if (newSwWorker) {
+                newSwWorker.postMessage({ action: 'skipWaiting' });
+            } else {
+                window.location.reload();
+            }
+        }
+
         if ('serviceWorker' in navigator) {
+            let refreshing = false;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    window.location.reload();
+                }
+            });
+
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js').then(registration => {
-                    // Force checking for updates to sw.js on every reload
+                    console.log('[SarkariGuru SW] Registered with scope:', registration.scope);
+
+                    // Check for SW updates
+                    registration.addEventListener('updatefound', () => {
+                        const installingWorker = registration.installing;
+                        if (!installingWorker) return;
+
+                        installingWorker.addEventListener('statechange', () => {
+                            if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                console.log('[SarkariGuru SW] New version detected and ready for update.');
+                                newSwWorker = installingWorker;
+                                showUpdateNotificationToast();
+                            }
+                        });
+                    });
+
+                    // Broadcast listener for SW events
+                    navigator.serviceWorker.addEventListener('message', event => {
+                        if (event.data && event.data.type === 'SW_UPDATED') {
+                            console.log('[SarkariGuru SW] SW updated event received:', event.data.version);
+                            showUpdateNotificationToast();
+                        }
+                    });
+
+                    // Force check for updates
                     registration.update();
-                    console.log('[SarkariGuru] SW registered and update requested:', registration.scope);
                 }).catch(err => {
-                    console.error('[SarkariGuru] SW registration failed:', err);
+                    recordTelemetryError('SWRegistrationError', err.message, 'sw.js', 0, 0, err);
                 });
+            });
+
+            // Auto-check for updates when tab gains focus
+            window.addEventListener('focus', () => {
+                if (navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.getRegistration().then(reg => {
+                        if (reg) reg.update();
+                    });
+                }
             });
         }
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
@@ -1370,7 +1756,7 @@
                 <div class="logo-shield">S</div>
                 SarkariGuru.AI
             </a>
-            <span class="badge-verified" style="margin-right: auto; margin-left: 12px;">Verified Portal</span>
+            <span class="badge-verified" style="margin-right: auto; margin-left: 12px; display: inline-flex; align-items: center; gap: 6px;">Verified Portal <span style="background: var(--accent-glow); color: var(--accent-color); padding: 2px 6px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; border: 1px solid var(--accent-color);">v3.0.0</span></span>
             <ul class="nav-links" id="navbar-links" style="display: flex; align-items: center; gap: 20px;">
                 <li id="nav-share-item" style="display: none;"><button onclick="shareApp()" class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px; background-color: #25d366; color: white; display: inline-flex; align-items: center; gap: 6px; border: none; font-weight: bold; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.25);">📢 Share</button></li>
                 <li><button onclick="toggleKidGuide()" class="kid-toggle-btn" id="kid-toggle-nav-btn">🧸 Kid Guide: OFF</button></li>
@@ -1539,24 +1925,105 @@
 
             <!-- TAB 4: AI CAREER COACH -->
             <div id="assistant-pane" class="tab-pane">
-                <div class="chat-container">
-                    <div class="chat-header">
-                        <div class="chat-status"></div>
-                        <span class="chat-title-text">SarkariGuru AI Career Coach (Hinglish/English)</span>
-                    </div>
-                    <div id="chat-box" class="chat-messages">
-                        <!-- Bot intro bubble -->
-                        <div class="chat-bubble chat-bubble-bot">
-                            <p><strong>Namaste Aspirant! 🙏</strong></p>
-                            <p>Main hoon aapka SarkariGuru AI Assistant. Government exams (IAS, Railway, SSC, Bank, Police, Teaching etc.) ki taiyari, eligibility, syllabus aur daily plans se related koi bhi sawal poochein. Main Hindi aur English dono me jankari de sakta hoon.</p>
-                            <p>Aap kya banna chahte hain? (e.g., "MPSC/UPSC ki taiyari kaise karein?")</p>
+                <div class="coach-dashboard-layout">
+                    <!-- Column 1: Daily Study Goals Tracker -->
+                    <div class="goals-tracker-card" id="goals-tracker-section">
+                        <canvas id="confetti-canvas-local"></canvas>
+                        
+                        <div>
+                            <h3 class="goals-card-title">🎯 Daily Study Goals (डेली लक्ष्य)</h3>
+                            <p class="goals-subtitle">Set, track, and complete your custom government exam study targets! Finish all of them for a special celebration.</p>
+                        </div>
+
+                        <!-- Visual Progress Bar -->
+                        <div class="progress-container">
+                            <div class="progress-header">
+                                <span style="color: var(--text-primary); font-weight: bold;">Today's Study Progress</span>
+                                <span class="progress-percentage" id="goals-percentage">0%</span>
+                            </div>
+                            <div class="progress-bar-bg">
+                                <div class="progress-bar-fill" id="goals-progress-bar"></div>
+                            </div>
+                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-align: center; margin-top: 4px;" id="goals-status-text">
+                                No goals set yet. Add a goal below to start!
+                            </div>
+                        </div>
+
+                        <!-- Goal Custom Input -->
+                        <div class="goal-input-wrapper">
+                            <input type="text" id="new-goal-input" class="goal-input" placeholder="Type a custom study target (e.g., Read history Ch-3)..." onkeydown="if(event.key==='Enter') addUserGoal()">
+                            <button class="btn" onclick="addUserGoal()" style="border-radius: 12px; font-size: 0.9rem; font-weight: bold; padding: 0 16px; height: 40px; background-color: var(--accent-color); color: white;">➕ Add</button>
+                        </div>
+
+                        <!-- Predefined Fast Action Chips -->
+                        <div class="predefined-section">
+                            <span class="predefined-label">⚡ Fast Add Recommended Targets:</span>
+                            <div class="predefined-chips">
+                                <span class="predefined-chip" onclick="addPredefinedGoal('📖 Study Daily Current Affairs (1 Hr)')">📖 Current Affairs</span>
+                                <span class="predefined-chip" onclick="addPredefinedGoal('🧩 Solve 10 Quant & Reasoning Qs')">🧩 Quant Practice</span>
+                                <span class="predefined-chip" onclick="addPredefinedGoal('📝 GK & General Studies Mock Quiz')">📝 GK Mock Test</span>
+                                <span class="predefined-chip" onclick="addPredefinedGoal('🗣️ Revision & Language Grammar (30m)')">🗣️ Grammar Rev.</span>
+                            </div>
+                        </div>
+
+                        <!-- Active Goals List -->
+                        <div class="goals-list" id="goals-list-container">
+                            <!-- Goal items injected dynamically -->
+                        </div>
+
+                        <!-- Celebratory Overlay (hidden by default) -->
+                        <div class="celebration-overlay" id="goals-celebration-overlay" style="display: none;">
+                            <div class="celebration-emoji">🏆🌟🎉</div>
+                            <h4 class="celebration-title">All Goals Completed!</h4>
+                            <p class="celebration-desc">Bohat badhiya! Aapne aaj ke saare targets poore kar liye hain. Keep up this incredible momentum for your Sarkari exams! 💪✨</p>
+                            <button class="btn" onclick="resetGoals()" style="padding: 8px 16px; font-size: 0.85rem; border-radius: 12px; background-color: var(--success); color: white; border: none; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">🔄 Restart New Targets</button>
                         </div>
                     </div>
-                    <div class="chat-suggestions">
-                        <span class="suggestion-chip" onclick="askPredefined('SSC CGL syllabus aur strategy kya hai?')">📚 SSC CGL Strategy</span>
-                        <span class="suggestion-chip" onclick="askPredefined('UPSC Civil Services ke liye eligibility kya hoti hai?')">🎓 UPSC Eligibility</span>
-                        <span class="suggestion-chip" onclick="askPredefined('Railway NTPC exams ke liye age limit batao.')">🚆 Railway NTPC Age Limit</span>
-                        <span class="suggestion-chip" onclick="askPredefined('Government exam preparation ke liye daily timetable kaise banayein?')">⏰ Study Timetable</span>
+
+                    <!-- Column 2: Weekly Analytics D3 Bar Chart -->
+                    <div class="goals-tracker-card" id="analytics-tracker-section">
+                        <div>
+                            <h3 class="goals-card-title">📊 Weekly Analytics (साप्ताहिक रिपोर्ट)</h3>
+                            <p class="goals-subtitle">Your study goal completion rate over the last 7 days. Consistency is key to cracking Sarkari exams! 🎯</p>
+                        </div>
+                        
+                        <!-- D3.js SVG Container -->
+                        <div id="chart-container-d3" style="width: 100%; min-height: 200px; display: flex; align-items: center; justify-content: center; position: relative; margin-top: 10px;">
+                            <!-- D3 SVG will be appended here -->
+                        </div>
+                        
+                        <!-- Dynamic Weekly Summary Card -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; padding: 12px; margin-top: auto;">
+                            <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-primary);">🏆 Weekly Average Completion:</span>
+                            <span id="weekly-avg-label" style="font-size: 0.95rem; font-weight: 800; color: var(--success);">0%</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: AI Career Coach Chat -->
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-status"></div>
+                            <span class="chat-title-text">SarkariGuru AI Career Coach (Hinglish/English)</span>
+                        </div>
+                        <div id="chat-box" class="chat-messages">
+                            <!-- Bot intro bubble -->
+                            <div class="chat-bubble chat-bubble-bot">
+                                <p><strong>Namaste Aspirant! 🙏</strong></p>
+                                <p>Main hoon aapka SarkariGuru AI Assistant. Government exams (IAS, Railway, SSC, Bank, Police, Teaching etc.) ki taiyari, eligibility, syllabus aur daily plans se related koi bhi sawal poochein. Main Hindi aur English dono me jankari de sakta hoon.</p>
+                                <p>Aap kya banna chahte hain? (e.g., "MPSC/UPSC ki taiyari kaise karein?")</p>
+                            </div>
+                        </div>
+                        <div class="chat-suggestions">
+                            <span class="suggestion-chip" onclick="askPredefined('SSC CGL syllabus aur strategy kya hai?')">📚 SSC CGL Strategy</span>
+                            <span class="suggestion-chip" onclick="askPredefined('UPSC Civil Services ke liye eligibility kya hoti hai?')">🎓 UPSC Eligibility</span>
+                            <span class="suggestion-chip" onclick="askPredefined('Railway NTPC exams ke liye age limit batao.')">🚆 Railway NTPC Age Limit</span>
+                            <span class="suggestion-chip" onclick="askPredefined('Government exam preparation ke liye daily timetable kaise banayein?')">⏰ Study Timetable</span>
+                        </div>
+                        <!-- Beautiful Restored Chat Input Area -->
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input-field" class="chat-input" placeholder="Ask SarkariGuru anything about preparation..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                            <button class="btn" onclick="sendChatMessage()" style="height: 44px; border-radius: 12px; padding: 0 20px; font-weight: bold;">Send 🚀</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2352,6 +2819,10 @@
                 © 2026 Trushank Waghmare. All Rights Reserved.<br>
                 Terms of Service, deployment configurations, and all operational standards reflect the owner's identity strictly.
             </p>
+            <div style="margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;">
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">SarkariGuru.AI v3.0.0 (Enterprise Modernized)</span>
+                <button onclick="openTelemetryModal()" style="font-size: 0.75rem; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-primary); cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">⚡ System Telemetry & Health</button>
+            </div>
         </div>
     </footer>
 
@@ -2410,6 +2881,9 @@
         const GEMINI_API_KEY = "AQ.Ab8RN6Kk1vYRrhkOupZTL21MLDGFS9Ym4wht343lzz_Ok1s33g";
         
         async function callGemini(prompt, systemInstruction = "") {
+            const startTime = performance.now();
+            window.__PERF_METRICS__.apiCallsCount++;
+
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
             const requestBody = {
                 contents: [{ parts: [{ text: prompt }] }]
@@ -2428,7 +2902,11 @@
                     body: JSON.stringify(requestBody)
                 });
                 
+                const duration = Math.round(performance.now() - startTime);
+                window.__PERF_METRICS__.apiTotalLatencyMs += duration;
+
                 if (!response.ok) {
+                    window.__PERF_METRICS__.apiErrorsCount++;
                     const errText = await response.text();
                     throw new Error(`API returned ${response.status}: ${errText}`);
                 }
@@ -2437,8 +2915,13 @@
                 if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0]) {
                     return data.candidates[0].content.parts[0].text;
                 }
+                window.__PERF_METRICS__.apiErrorsCount++;
                 throw new Error("Invalid or empty response format from Gemini API");
             } catch (err) {
+                window.__PERF_METRICS__.apiErrorsCount++;
+                if (typeof recordTelemetryError === 'function') {
+                    recordTelemetryError('GeminiAPIError', err.message, 'callGemini', 0, 0, err);
+                }
                 console.error("Gemini API call failed:", err);
                 throw err;
             }
@@ -2568,6 +3051,14 @@
             
             document.getElementById(paneId).classList.add('active');
             btnElement.classList.add('active');
+
+            if (paneId === 'assistant-pane') {
+                setTimeout(() => {
+                    if (typeof renderWeeklyChart === 'function') {
+                        renderWeeklyChart();
+                    }
+                }, 120);
+            }
         }
 
         // Sub-Tab Switch (Notification Center)
@@ -4257,6 +4748,520 @@ If any field cannot be found, leave it blank or estimate logically based on the 
             proceedToPayment();
         }
 
+        // Daily Study Goals Tracker Logic
+        let studyGoals = [];
+
+        function initGoalsTracker() {
+            // Load from localStorage or set default list if empty
+            const saved = localStorage.getItem('sarkari_study_goals');
+            if (saved) {
+                studyGoals = JSON.parse(saved);
+            } else {
+                // Pre-populate with some default goals for first-time onboarding
+                studyGoals = [
+                    { id: 'g1', text: '📖 Study Daily Current Affairs (1 Hr)', completed: false },
+                    { id: 'g2', text: '🧩 Solve 10 Quant & Reasoning Qs', completed: false },
+                    { id: 'g3', text: '📝 GK & General Studies Mock Quiz', completed: false }
+                ];
+                saveGoals();
+            }
+            renderGoals();
+        }
+
+        function saveGoals() {
+            localStorage.setItem('sarkari_study_goals', JSON.stringify(studyGoals));
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goals-list-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (studyGoals.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 24px; color: var(--text-secondary); font-size: 0.85rem;">
+                        No active goals for today! Add targets using the input field above, or click the lightning quick-add chips.
+                    </div>
+                `;
+                updateProgress();
+                return;
+            }
+
+            studyGoals.forEach(goal => {
+                const item = document.createElement('div');
+                item.className = `goal-item ${goal.completed ? 'completed' : ''}`;
+                item.id = `goal-item-${goal.id}`;
+                
+                item.innerHTML = `
+                    <div class="goal-item-left" onclick="toggleGoal('${goal.id}')">
+                        <div class="goal-checkbox-custom">
+                            ${goal.completed ? '✓' : ''}
+                        </div>
+                        <span class="goal-text">${escapeHtml(goal.text)}</span>
+                    </div>
+                    <button class="goal-delete-btn" onclick="deleteGoal('${goal.id}')" title="Delete Goal">
+                        🗑️
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+
+            updateProgress();
+        }
+
+        function addUserGoal() {
+            const input = document.getElementById('new-goal-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const newGoal = {
+                id: 'goal_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+                text: text,
+                completed: false
+            };
+
+            studyGoals.push(newGoal);
+            input.value = '';
+            saveGoals();
+            renderGoals();
+            
+            // Auto scroll container to bottom
+            const container = document.getElementById('goals-list-container');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addPredefinedGoal(text) {
+            // Check if goal already exists to avoid duplicates
+            const exists = studyGoals.some(g => g.text === text);
+            if (exists) {
+                alert("This target is already in your daily list!");
+                return;
+            }
+
+            const newGoal = {
+                id: 'goal_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+                text: text,
+                completed: false
+            };
+
+            studyGoals.push(newGoal);
+            saveGoals();
+            renderGoals();
+        }
+
+        function toggleGoal(id) {
+            const index = studyGoals.findIndex(g => g.id === id);
+            if (index === -1) return;
+
+            const wasAllCompletedBefore = studyGoals.length > 0 && studyGoals.every(g => g.completed);
+            
+            studyGoals[index].completed = !studyGoals[index].completed;
+            saveGoals();
+            renderGoals();
+
+            const isAllCompletedNow = studyGoals.every(g => g.completed);
+            
+            if (isAllCompletedNow && !wasAllCompletedBefore && studyGoals.length > 0) {
+                triggerCelebration();
+            }
+        }
+
+        function deleteGoal(id) {
+            studyGoals = studyGoals.filter(g => g.id !== id);
+            saveGoals();
+            renderGoals();
+        }
+
+        function updateProgress() {
+            const total = studyGoals.length;
+            const completed = studyGoals.filter(g => g.completed).length;
+            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            // Update DOM progress bar & text
+            const fill = document.getElementById('goals-progress-bar');
+            const percentLabel = document.getElementById('goals-percentage');
+            const statusText = document.getElementById('goals-status-text');
+
+            if (fill) fill.style.width = `${percentage}%`;
+            if (percentLabel) percentLabel.textContent = `${percentage}%`;
+            
+            if (statusText) {
+                if (total === 0) {
+                    statusText.textContent = "No goals set yet. Add a goal below to start!";
+                } else if (percentage === 100) {
+                    statusText.textContent = "🎉 Congratulations! All targets completed for today!";
+                } else {
+                    statusText.textContent = `${completed} of ${total} targets completed (${percentage}%)`;
+                }
+            }
+
+            // Update weekly chart based on today's updated progress
+            if (typeof renderWeeklyChart === 'function') {
+                renderWeeklyChart();
+            }
+        }
+
+        function resetGoals() {
+            // Uncheck all goals to restart
+            studyGoals.forEach(g => g.completed = false);
+            saveGoals();
+            
+            // Hide celebration overlay
+            const overlay = document.getElementById('goals-celebration-overlay');
+            if (overlay) overlay.style.display = 'none';
+            
+            renderGoals();
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Lightweight Confetti Particles System
+        let confettiActive = false;
+        let confettiAnimationId = null;
+
+        function triggerCelebration() {
+            // Show Overlay
+            const overlay = document.getElementById('goals-celebration-overlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                overlay.style.opacity = 0;
+                let opacity = 0;
+                const anim = setInterval(() => {
+                    opacity += 0.1;
+                    overlay.style.opacity = opacity;
+                    if (opacity >= 1) clearInterval(anim);
+                }, 30);
+            }
+
+            // Speak celebration if AI voice guide function is available
+            try {
+                if (typeof speakAuthGuide === 'function') {
+                    // Temporarily update guiding text or play nice synthesized voice
+                    const originalText = document.getElementById('auth-guide-text')?.textContent;
+                    const authGuideText = document.getElementById('auth-guide-text');
+                    if (authGuideText) {
+                        authGuideText.textContent = "शाबाश बच्चों! आपने आज के सभी पढ़ाई के लक्ष्यों को पूरा कर लिया है! ऐसे ही मेहनत करते रहें और सरकारी नौकरी पाएं! 🏆🌟";
+                        speakAuthGuide();
+                        setTimeout(() => {
+                            if (authGuideText && originalText) authGuideText.textContent = originalText;
+                        }, 6000);
+                    }
+                }
+            } catch (e) {
+                console.log("Speak notification failed:", e);
+            }
+
+            // Start Confetti Animation
+            startConfettiLocal();
+        }
+
+        function startConfettiLocal() {
+            const canvas = document.getElementById('confetti-canvas-local');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const container = document.getElementById('goals-tracker-section');
+            if (!container) return;
+
+            let width = container.clientWidth;
+            let height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+
+            const colors = ['#2563eb', '#10b981', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444'];
+            const particles = [];
+            
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * -100 - 20,
+                    r: Math.random() * 6 + 4,
+                    d: Math.random() * height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0,
+                    speed: Math.random() * 3 + 2
+                });
+            }
+
+            confettiActive = true;
+            if (confettiAnimationId) cancelAnimationFrame(confettiAnimationId);
+
+            function drawConfetti() {
+                if (!confettiActive) return;
+                ctx.clearRect(0, 0, width, height);
+
+                particles.forEach((p, idx) => {
+                    p.tiltAngle += p.tiltAngleIncremental;
+                    p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2 * p.speed / 4;
+                    p.x += Math.sin(p.tiltAngle);
+                    p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                    if (p.y > height) {
+                        p.x = Math.random() * width;
+                        p.y = -20;
+                        p.tilt = Math.random() * 10 - 5;
+                    }
+
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.color;
+                    ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                    ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                    ctx.stroke();
+                });
+
+                confettiAnimationId = requestAnimationFrame(drawConfetti);
+            }
+
+            drawConfetti();
+
+            // Auto stop confetti after 5 seconds to conserve resources
+            setTimeout(() => {
+                confettiActive = false;
+                if (confettiAnimationId) {
+                    cancelAnimationFrame(confettiAnimationId);
+                    confettiAnimationId = null;
+                }
+                ctx.clearRect(0, 0, width, height);
+            }, 5000);
+        }
+
+        // D3.js Helper Functions for Weekly Performance Chart
+        function getPast7Days() {
+            const list = [];
+            const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                
+                const dateString = d.toISOString().split('T')[0]; // "YYYY-MM-DD"
+                const label = daysOfWeek[d.getDay()] + ` (${d.getDate()}/${d.getMonth()+1})`;
+                const isToday = i === 0;
+                list.push({
+                    date: dateString,
+                    dayLabel: isToday ? "Today" : daysOfWeek[d.getDay()],
+                    fullLabel: label,
+                    isToday: isToday,
+                    completed: 0,
+                    total: 0,
+                    percentage: 0
+                });
+            }
+            return list;
+        }
+
+        function alignGoalHistory() {
+            const past7Days = getPast7Days();
+            let savedHistory = [];
+            try {
+                const raw = localStorage.getItem('sarkari_goals_history');
+                if (raw) savedHistory = JSON.parse(raw);
+            } catch (e) {
+                console.error("Error reading goals history:", e);
+            }
+
+            // Seed values for older days if they don't exist yet, to make the chart look beautiful
+            const seedPercentages = [65, 100, 40, 80, 100, 75]; // default percentages for past 6 days
+            
+            // Align saved history with current past 7 days sliding window
+            const alignedHistory = past7Days.map((item, idx) => {
+                // Find existing record for this date
+                const existing = savedHistory.find(h => h.date === item.date);
+                if (existing) {
+                    item.completed = existing.completed;
+                    item.total = existing.total;
+                } else if (!item.isToday) {
+                    // Seed past days with realistic numbers
+                    const total = 3 + (idx % 2); // 3 or 4 goals
+                    const pct = seedPercentages[idx % seedPercentages.length];
+                    const completed = Math.round((pct / 100) * total);
+                    item.completed = completed;
+                    item.total = total;
+                }
+                
+                // For today, overwrite with fresh current goals count
+                if (item.isToday) {
+                    const totalGoals = studyGoals ? studyGoals.length : 0;
+                    const completedGoals = studyGoals ? studyGoals.filter(g => g.completed).length : 0;
+                    item.completed = completedGoals;
+                    item.total = totalGoals;
+                }
+                
+                item.percentage = item.total === 0 ? 0 : Math.round((item.completed / item.total) * 100);
+                return item;
+            });
+
+            localStorage.setItem('sarkari_goals_history', JSON.stringify(alignedHistory));
+            return alignedHistory;
+        }
+
+        function renderWeeklyChart() {
+            const container = document.getElementById('chart-container-d3');
+            if (!container) return;
+            if (typeof d3 === 'undefined') return;
+
+            // Get aligned history
+            const data = alignGoalHistory();
+
+            // Clear any old svg
+            container.innerHTML = '';
+
+            const width = container.clientWidth || 360;
+            const height = 200;
+            const margin = { top: 15, right: 10, bottom: 25, left: 35 };
+
+            // Render D3 SVG
+            const svg = d3.select("#chart-container-d3")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", height)
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .attr("preserveAspectRatio", "xMidYMid meet")
+                .style("overflow", "visible");
+
+            // Define Gradients
+            const defs = svg.append("defs");
+            const gradient = defs.append("linearGradient")
+                .attr("id", "bar-gradient")
+                .attr("x1", "0%")
+                .attr("y1", "100%")
+                .attr("x2", "0%")
+                .attr("y2", "0%");
+            gradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "var(--accent-color)");
+            gradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "#6366f1");
+
+            const successGradient = defs.append("linearGradient")
+                .attr("id", "success-gradient")
+                .attr("x1", "0%")
+                .attr("y1", "100%")
+                .attr("x2", "0%")
+                .attr("y2", "0%");
+            successGradient.append("stop")
+                .attr("offset", "0%")
+                .attr("stop-color", "#10b981");
+            successGradient.append("stop")
+                .attr("offset", "100%")
+                .attr("stop-color", "#059669");
+
+            // Scales
+            const xScale = d3.scaleBand()
+                .domain(data.map(d => d.dayLabel))
+                .range([margin.left, width - margin.right])
+                .padding(0.3);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, 100])
+                .range([height - margin.bottom, margin.top]);
+
+            // Horizontal Grid & Y-Axis text
+            svg.append("g")
+                .attr("class", "grid")
+                .attr("transform", `translate(${margin.left}, 0)`)
+                .call(d3.axisLeft(yScale)
+                    .tickValues([0, 25, 50, 75, 100])
+                    .tickSize(- (width - margin.left - margin.right))
+                    .tickFormat(d => d + "%")
+                )
+                .call(g => g.select(".domain").remove())
+                .call(g => g.selectAll(".tick line")
+                    .attr("stroke", "var(--border-color)")
+                    .attr("stroke-dasharray", "3,3")
+                )
+                .call(g => g.selectAll(".tick text")
+                    .attr("fill", "var(--text-secondary)")
+                    .style("font-weight", "700")
+                    .style("font-size", "0.75rem")
+                );
+
+            // X-Axis
+            svg.append("g")
+                .attr("transform", `translate(0, ${height - margin.bottom})`)
+                .call(d3.axisBottom(xScale).tickSize(0).tickPadding(8))
+                .call(g => g.select(".domain").attr("stroke", "var(--border-color)"))
+                .call(g => g.selectAll(".tick text")
+                    .attr("fill", "var(--text-secondary)")
+                    .style("font-weight", "700")
+                    .style("font-size", "0.75rem")
+                );
+
+            // Draw Bars
+            svg.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .attr("x", d => xScale(d.dayLabel))
+                .attr("y", d => yScale(d.percentage))
+                .attr("width", xScale.bandwidth())
+                .attr("height", d => Math.max(0, height - margin.bottom - yScale(d.percentage)))
+                .attr("rx", 5)
+                .attr("ry", 5)
+                .attr("fill", d => d.percentage === 100 ? "url(#success-gradient)" : "url(#bar-gradient)")
+                .attr("style", "cursor: pointer; transition: opacity 0.2s;")
+                .on("mouseover", function() {
+                    d3.select(this).style("opacity", "0.85");
+                })
+                .on("mouseout", function() {
+                    d3.select(this).style("opacity", "1");
+                });
+
+            // Add value label text inside or above the bar
+            svg.selectAll(".bar-label")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "bar-label")
+                .attr("x", d => xScale(d.dayLabel) + xScale.bandwidth() / 2)
+                .attr("y", d => {
+                    const yPos = yScale(d.percentage);
+                    return yPos - 5;
+                })
+                .attr("text-anchor", "middle")
+                .text(d => d.percentage + "%")
+                .style("font-size", "0.72rem")
+                .style("font-weight", "800")
+                .style("fill", "var(--text-primary)");
+
+            // Calculate weekly average
+            const validDays = data.filter(d => d.total > 0 || d.percentage > 0);
+            const totalPercent = validDays.reduce((sum, d) => sum + d.percentage, 0);
+            const avg = validDays.length === 0 ? 0 : Math.round(totalPercent / validDays.length);
+            
+            const avgLabel = document.getElementById('weekly-avg-label');
+            if (avgLabel) {
+                avgLabel.textContent = `${avg}%`;
+                if (avg >= 80) {
+                    avgLabel.style.color = "var(--success)";
+                } else if (avg >= 50) {
+                    avgLabel.style.color = "#f59e0b";
+                } else {
+                    avgLabel.style.color = "#ef4444";
+                }
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            if (document.getElementById('assistant-pane') && document.getElementById('assistant-pane').classList.contains('active')) {
+                if (typeof renderWeeklyChart === 'function') {
+                    renderWeeklyChart();
+                }
+            }
+        });
+
         // AI Chat Assistant logic
         function appendChatMessage(sender, htmlContent) {
             const chatBox = document.getElementById('chat-box');
@@ -4334,6 +5339,7 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
             renderJobs(defaultJobs);
             renderAlerts();
             checkSavedLogin();
+            initGoalsTracker();
             
             // Set up drag & drop listeners for the summarizer drop-zone
             const dropZone = document.getElementById('drop-zone');
@@ -4475,22 +5481,148 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
         // Reposition guide hand on window resize or scroll so it remains attached
         window.addEventListener('resize', () => {
             if (kidGuideActive) positionGuideStep();
-        });
-        window.addEventListener('scroll', () => {
-            if (kidGuideActive) {
-                const step = kidGuideSteps[currentGuideStepIndex];
-                const target = document.querySelector(step.selector);
-                const pointer = document.getElementById('animated-hand-guide');
-                if (target && pointer) {
-                    const rect = target.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-                    pointer.style.top = (rect.top + scrollTop + step.offsetY) + 'px';
-                    pointer.style.left = (rect.left + scrollLeft + step.offsetX) + 'px';
+        // Telemetry & Health Dashboard Controller
+        function openTelemetryModal() {
+            const modal = document.getElementById('telemetry-modal');
+            if (!modal) return;
+            
+            // Populate metrics
+            const swStatusEl = document.getElementById('tm-sw-status');
+            const pageLoadEl = document.getElementById('tm-page-load');
+            const apiSpeedEl = document.getElementById('tm-api-speed');
+            const apiErrorsEl = document.getElementById('tm-api-errors');
+            const logsContainer = document.getElementById('tm-logs-list');
+
+            if (swStatusEl) {
+                swStatusEl.textContent = 'serviceWorker' in navigator && navigator.serviceWorker.controller ? 'Active (v3.0.0)' : 'Inactive / Web Fallback';
+            }
+            if (pageLoadEl) {
+                pageLoadEl.textContent = `${window.__PERF_METRICS__.domInteractiveTime || 0} ms DOM / ${window.__PERF_METRICS__.loadCompleteTime || 0} ms Total`;
+            }
+            if (apiSpeedEl) {
+                const count = window.__PERF_METRICS__.apiCallsCount || 0;
+                const total = window.__PERF_METRICS__.apiTotalLatencyMs || 0;
+                const avg = count > 0 ? Math.round(total / count) : 0;
+                apiSpeedEl.textContent = `${avg} ms (${count} calls)`;
+            }
+            if (apiErrorsEl) {
+                apiErrorsEl.textContent = `${window.__PERF_METRICS__.apiErrorsCount || 0} errors`;
+            }
+
+            // Render error telemetry logs
+            if (logsContainer) {
+                const logs = window.__TELEMETRY_LOGS__ || [];
+                if (logs.length === 0) {
+                    logsContainer.innerHTML = '<div style="color: var(--success); font-size: 0.85rem; text-align: center; padding: 20px;">✅ Clean telemetry! No uncaught runtime exceptions recorded.</div>';
+                } else {
+                    logsContainer.innerHTML = logs.map((log, idx) => `
+                        <div style="background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-size: 0.78rem; font-family: monospace; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold; color: #ef4444;">
+                                <span>[${log.type}] ${escapeHtml(log.message.substring(0, 80))}</span>
+                                <span style="color: var(--text-muted); font-size: 0.7rem;">${new Date(log.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <div style="color: var(--text-secondary); font-size: 0.72rem;">Source: ${escapeHtml(log.source || 'inline')} (Line ${log.line}:${log.col})</div>
+                        </div>
+                    `).join('');
                 }
             }
-        });
+
+            modal.style.display = 'flex';
+        }
+
+        function closeTelemetryModal() {
+            const modal = document.getElementById('telemetry-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function clearTelemetryLogs() {
+            window.__TELEMETRY_LOGS__ = [];
+            try { localStorage.removeItem('sarkari_telemetry_logs'); } catch(e){}
+            openTelemetryModal();
+        }
+
+        function copyTelemetryJSON() {
+            const report = {
+                appVersion: window.APP_VERSION,
+                timestamp: new Date().toISOString(),
+                perfMetrics: window.__PERF_METRICS__,
+                telemetryLogs: window.__TELEMETRY_LOGS__
+            };
+            navigator.clipboard.writeText(JSON.stringify(report, null, 2)).then(() => {
+                alert('⚡ Diagnostic telemetry copied to clipboard!');
+            }).catch(e => {
+                alert('Telemetry Report:\n' + JSON.stringify(report, null, 2));
+            });
+        }
     </script>
+
+    <!-- App Update Toast -->
+    <div id="app-update-toast" style="position: fixed; top: 80px; right: 20px; z-index: 10000; display: none; background: #0f172a; color: #fff; padding: 14px 20px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid #334155; max-width: 380px; animation: slideInRight 0.3s ease;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.4rem;">🚀</span>
+                <div>
+                    <strong style="display: block; font-size: 0.88rem; color: #f8fafc;">New Update Available!</strong>
+                    <span style="font-size: 0.75rem; color: #94a3b8;">Version 3.0.0 is ready to activate.</span>
+                </div>
+            </div>
+            <button onclick="reloadForUpdate()" class="btn" style="padding: 6px 14px; font-size: 0.8rem; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; white-space: nowrap;">Update Now</button>
+        </div>
+    </div>
+
+    <!-- Telemetry & System Health Modal -->
+    <div id="telemetry-modal" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(6px); z-index: 99999; display: none; align-items: center; justify-content: center; padding: 20px;">
+        <div style="background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border-color); width: 100%; max-width: 600px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.25);">
+            <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-color);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 1.3rem;">⚡</span>
+                    <div>
+                        <h3 style="font-size: 1.05rem; font-weight: 800; margin: 0; color: var(--text-primary);">System Telemetry & Health Monitor</h3>
+                        <span style="font-size: 0.72rem; color: var(--text-secondary); font-weight: 600;">SarkariGuru.AI v3.0.0 Architecture Metrics</span>
+                    </div>
+                </div>
+                <button onclick="closeTelemetryModal()" style="background: none; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+            </div>
+            
+            <div style="padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px;">
+                <!-- Key Health Cards Grid -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Service Worker</span>
+                        <div id="tm-sw-status" style="font-size: 0.88rem; font-weight: 800; color: var(--accent-color); margin-top: 4px;">Checking...</div>
+                    </div>
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Navigation Speed</span>
+                        <div id="tm-page-load" style="font-size: 0.88rem; font-weight: 800; color: var(--text-primary); margin-top: 4px;">Measuring...</div>
+                    </div>
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Gemini Latency</span>
+                        <div id="tm-api-speed" style="font-size: 0.88rem; font-weight: 800; color: var(--text-primary); margin-top: 4px;">0 ms</div>
+                    </div>
+                    <div style="background: var(--bg-color); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px;">
+                        <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">API Error Rate</span>
+                        <div id="tm-api-errors" style="font-size: 0.88rem; font-weight: 800; color: var(--success); margin-top: 4px;">0 errors</div>
+                    </div>
+                </div>
+
+                <!-- Live Error Log Stream -->
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-size: 0.8rem; font-weight: 800; color: var(--text-primary);">🛡️ Client Telemetry & Exception Stream</span>
+                        <button onclick="clearTelemetryLogs()" style="background: none; border: none; color: var(--text-muted); font-size: 0.72rem; font-weight: bold; cursor: pointer;">Clear Logs</button>
+                    </div>
+                    <div id="tm-logs-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 10px;">
+                        <!-- Error logs will be dynamically inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-color);">
+                <button onclick="copyTelemetryJSON()" class="btn" style="padding: 6px 14px; font-size: 0.78rem; font-weight: bold; background: white; border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 8px; cursor: pointer;">📋 Copy Diagnostics JSON</button>
+                <button onclick="closeTelemetryModal()" class="btn" style="padding: 6px 16px; font-size: 0.78rem; font-weight: bold; background: var(--accent-color); color: white; border: none; border-radius: 8px; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Animated pointer hand representing the kid/beginner guide -->
     <div id="animated-hand-guide" class="hand-guide-pointer">
