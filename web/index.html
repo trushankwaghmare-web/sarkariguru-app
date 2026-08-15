@@ -1912,9 +1912,10 @@
                 <div id="summary-result-container" class="summary-result">
                     <div class="summary-header">
                         <span class="summary-title">📄 SarkariGuru AI Hindi Summary</span>
-                        <div style="display: flex; gap: 8px;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px; background-color: var(--success);" onclick="downloadSummaryAsPDF()">Download as PDF</button>
                             <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px;" onclick="copySummaryText()">Copy Text</button>
+                            <button class="btn" style="padding: 6px 14px; font-size: 0.8rem; border-radius: 12px; background-color: #25d366; color: white;" onclick="shareGeminiOutput(document.getElementById('summary-text-box').innerText)">📢 Share Output</button>
                         </div>
                     </div>
                     <div id="summary-text-box" class="summary-content">
@@ -2880,11 +2881,11 @@
         // Gemini API Configuration
         const GEMINI_API_KEY = "AQ.Ab8RN6Kk1vYRrhkOupZTL21MLDGFS9Ym4wht343lzz_Ok1s33g";
         
-        async function callGemini(prompt, systemInstruction = "") {
+        async function callGemini(prompt, systemInstruction = "", modelName = "gemini-3.5-flash", useSearchGrounding = false) {
             const startTime = performance.now();
             window.__PERF_METRICS__.apiCallsCount++;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`;
             const requestBody = {
                 contents: [{ parts: [{ text: prompt }] }]
             };
@@ -2893,6 +2894,10 @@
                 requestBody.systemInstruction = {
                     parts: [{ text: systemInstruction }]
                 };
+            }
+
+            if (useSearchGrounding) {
+                requestBody.tools = [{ googleSearch: {} }];
             }
             
             try {
@@ -3550,10 +3555,12 @@ ${textToSummarize.substring(0, 45000)}`;
 
         function shareApp() {
             try {
+                const appLink = 'https://sarkariguru-app.vercel.app';
+                const shareText = `चेक आउट करा हे नवीन ॲप! डाउनलोड करा: ${appLink}\n\nSarkariGuru.AI - Your AI-Powered Government Career Partner! Simplify, translate, and autofill sarkari job portals.`;
                 const shareData = {
                     title: 'SarkariGuru.AI',
-                    text: 'SarkariGuru.AI - Your AI-Powered Government Career Partner! Simplify, translate, and autofill sarkari job portals.',
-                    url: 'https://sarkariguru-app.vercel.app'
+                    text: shareText,
+                    url: appLink
                 };
 
                 if (navigator.share) {
@@ -3561,13 +3568,13 @@ ${textToSummarize.substring(0, 45000)}`;
                         .then(() => console.log('Successfully shared SarkariGuru.AI'))
                         .catch((error) => console.log('Error sharing:', error));
                 } else {
-                    navigator.clipboard.writeText('https://sarkariguru-app.vercel.app')
+                    navigator.clipboard.writeText(shareText)
                         .then(() => {
-                            alert("🎉 SarkariGuru.AI App link copied to clipboard! Share it with your friends on WhatsApp! (sarkariguru-app.vercel.app)");
+                            alert("🎉 SarkariGuru.AI App link copied to clipboard! Share it with your friends on WhatsApp!\n\n" + shareText);
                         })
                         .catch((err) => {
                             console.error('Could not copy link to clipboard: ', err);
-                            alert("Share SarkariGuru.AI with friends! Link: https://sarkariguru-app.vercel.app");
+                            alert("Share SarkariGuru.AI with friends! Link: " + appLink);
                         });
                 }
             } catch (e) {
@@ -4056,7 +4063,7 @@ Style the output in clean HTML formatting (using <strong>, <p>, <ul>, <li style=
                                 ]
                             }]
                         };
-                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+                        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${GEMINI_API_KEY}`;
                         const response = await fetch(url, {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -5262,12 +5269,50 @@ If any field cannot be found, leave it blank or estimate logically based on the 
             }
         });
 
+        // Share Gemini Output Implementation (cross-platform web/mobile share)
+        function shareGeminiOutput(text) {
+            if (text && text.trim().length > 0) {
+                const shareData = {
+                    title: 'SarkariGuru.AI Output',
+                    text: text
+                };
+                if (navigator.share) {
+                    navigator.share(shareData).catch(err => {
+                        console.log('Share canceled or failed:', err);
+                    });
+                } else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        alert('📋 Copied AI Output to clipboard!');
+                    }).catch(() => {
+                        alert(text);
+                    });
+                } else {
+                    alert(text);
+                }
+            } else {
+                console.log("Data is empty");
+                alert("Data is empty");
+            }
+        }
+
         // AI Chat Assistant logic
-        function appendChatMessage(sender, htmlContent) {
+        function appendChatMessage(sender, htmlContent, rawText = '') {
             const chatBox = document.getElementById('chat-box');
             const bubble = document.createElement('div');
             bubble.className = `chat-bubble chat-bubble-${sender}`;
-            bubble.innerHTML = htmlContent;
+            
+            if (sender === 'bot' && rawText) {
+                const encodedText = encodeURIComponent(rawText);
+                bubble.innerHTML = `${htmlContent}
+                    <div style="margin-top: 8px; text-align: right;">
+                        <button onclick="shareGeminiOutput(decodeURIComponent('${encodedText}'))" class="btn" style="padding: 4px 10px; font-size: 0.72rem; border-radius: 8px; background: rgba(0,0,0,0.05); color: var(--text-primary); border: 1px solid var(--border-color); cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                            📢 Share
+                        </button>
+                    </div>`;
+            } else {
+                bubble.innerHTML = htmlContent;
+            }
+
             chatBox.appendChild(bubble);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -5309,7 +5354,7 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
                     .replace(/### (.*?)(<br>|$)/g, '<h5 style="color:var(--accent-color);margin-top:0.8rem;margin-bottom:0.4rem;">$1</h5>')
                     .replace(/- (.*?)(<br>|$)/g, '<li>$1</li>');
                 
-                appendChatMessage('bot', formattedBotResponse);
+                appendChatMessage('bot', formattedBotResponse, responseText);
             } catch (err) {
                 console.error("Chat response failed:", err);
                 typingBubble.remove();

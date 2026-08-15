@@ -17,7 +17,14 @@ import java.util.concurrent.TimeUnit
 
 object GeminiClient {
     private const val TAG = "GeminiClient"
-    private const val BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent"
+    // Standard model endpoints matching Gemini API Guidelines
+    private const val MODEL_GENERAL = "gemini-3.5-flash"
+    private const val MODEL_PRO = "gemini-3.1-pro-preview"
+    private const val MODEL_FAST = "gemini-3.1-flash-lite-preview"
+    
+    private const val BASE_URL_GENERAL = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_GENERAL:generateContent"
+    private const val BASE_URL_PRO = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_PRO:generateContent"
+    private const val BASE_URL_FAST = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_FAST:generateContent"
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)
@@ -25,7 +32,7 @@ object GeminiClient {
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    // Translate spoken Hindi into English text suitable for a specific form field
+    // Translate spoken Hindi into English text suitable for a specific form field (Fast task)
     suspend fun translateHindiVoiceToEnglish(spokenText: String, fieldName: String): String = withContext(Dispatchers.IO) {
         val apiKey = BuildConfig.GEMINI_API_KEY
         if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
@@ -41,7 +48,7 @@ object GeminiClient {
         """.trimIndent()
 
         try {
-            val responseText = makeApiCall(prompt, apiKey)
+            val responseText = makeApiCall(prompt, apiKey, BASE_URL_FAST)
             if (responseText != null) {
                 responseText.trim().removeSurrounding("\"")
             } else {
@@ -82,7 +89,7 @@ object GeminiClient {
         """.trimIndent()
 
         try {
-            val responseText = makeApiCall(prompt, apiKey)
+            val responseText = makeApiCall(prompt, apiKey, BASE_URL_FAST)
             if (responseText != null) {
                 val cleanJson = responseText.trim().removeSurrounding("```json", "```").trim()
                 val json = JSONObject(cleanJson)
@@ -103,7 +110,7 @@ object GeminiClient {
         }
     }
 
-    // OCR Document Details extraction (using simulated base64 or actual)
+    // OCR Document Details extraction (using gemini-3.1-pro-preview for deep image understanding)
     data class OcrResult(
         val nameOnDoc: String,
         val rollNumber: String,
@@ -121,8 +128,8 @@ object GeminiClient {
 
         val prompt = """
             You are an advanced OCR engine for SarkariGuru.AI.
-            Extract details from this $docType document (10th Marksheet, 12th Marksheet, or Aadhaar).
-            Please extract:
+            Analyze this uploaded image of a $docType document (10th Marksheet, 12th Marksheet, or Aadhaar).
+            Please accurately extract:
             1. Full name on document (nameOnDoc)
             2. Roll number/seat number (rollNumber - empty for Aadhaar)
             3. Total marks/percentage (marks - empty for Aadhaar)
@@ -152,7 +159,7 @@ object GeminiClient {
 
             val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
             val request = Request.Builder()
-                .url("$BASE_URL?key=$apiKey")
+                .url("$BASE_URL_PRO?key=$apiKey")
                 .post(requestBody)
                 .build()
 
@@ -186,7 +193,7 @@ object GeminiClient {
         }
     }
 
-    private fun makeApiCall(prompt: String, apiKey: String): String? {
+    private fun makeApiCall(prompt: String, apiKey: String, url: String = BASE_URL_GENERAL): String? {
         val jsonRequest = JSONObject().apply {
             put("contents", JSONArray().apply {
                 put(JSONObject().apply {
@@ -199,7 +206,7 @@ object GeminiClient {
 
         val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
         val request = Request.Builder()
-            .url("$BASE_URL?key=$apiKey")
+            .url("$url?key=$apiKey")
             .post(requestBody)
             .build()
 

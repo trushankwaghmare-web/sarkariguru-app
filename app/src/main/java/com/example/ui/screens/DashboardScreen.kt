@@ -147,6 +147,49 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 
+/**
+ * Native Android implementation of sharing Gemini AI output / generated text.
+ * Mirrors: void shareGeminiOutput(String text)
+ */
+fun shareGeminiOutput(
+    context: android.content.Context,
+    text: String,
+    title: String = "Share SarkariGuru AI Output"
+) {
+    if (text.isNotBlank()) {
+        try {
+            val sendIntent = android.content.Intent().apply {
+                action = android.content.Intent.ACTION_SEND
+                putExtra(android.content.Intent.EXTRA_TEXT, text)
+                type = "text/plain"
+            }
+            val shareIntent = android.content.Intent.createChooser(sendIntent, title)
+            shareIntent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+            context.startActivity(shareIntent)
+        } catch (e: Exception) {
+            android.util.Log.e("ShareOutput", "Error sharing text: ${e.message}", e)
+        }
+    } else {
+        android.widget.Toast.makeText(context, "Data is empty", android.widget.Toast.LENGTH_SHORT).show()
+        println("Data is empty")
+    }
+}
+
+/**
+ * Native Android implementation of sharing the SarkariGuru.AI App.
+ * Mirrors: void shareMyApp()
+ */
+fun shareMyApp(
+    context: android.content.Context,
+    customMessage: String? = null
+) {
+    val appId = context.packageName
+    val appLink = "https://play.google.com/store/apps/details?id=$appId"
+    val defaultMsg = "चेक आउट करा हे नवीन ॲप! डाउनलोड करा: $appLink\n(SarkariGuru.AI - All-in-One Government Exam & AI Career Assistant)"
+    val message = customMessage ?: defaultMsg
+    shareGeminiOutput(context, message, "Share SarkariGuru.AI App")
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(viewModel: DashboardViewModel) {
@@ -2071,7 +2114,13 @@ fun JobItemCard(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.activeDialogMessage.value = "Sharing official recruitment details to WhatsApp!"
+                            val appId = context.packageName
+                            val appLink = "https://play.google.com/store/apps/details?id=$appId"
+                            shareGeminiOutput(
+                                context = context,
+                                text = "📢 *Sarkari Recruitment: ${job.title}*\n🏢 Sector: ${job.sector}\n📍 Location: ${job.location}\n🎓 Eligibility: ${job.eligibility}\n⏰ Last Date: ${job.lastDate}\n🌐 Official Portal: ${job.officialLink}\n\n👉 Apply easily with AI Guide on SarkariGuru.AI App!\nDownload App: $appLink",
+                                title = "Share Job Alert"
+                            )
                         }
                     ) {
                         Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.LightGray)
@@ -2102,7 +2151,7 @@ fun JobDetailsDialog(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Header with Sector Badge
+                // Header with Sector Badge & Action Icons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -2134,8 +2183,25 @@ fun JobDetailsDialog(
                         )
                     }
                     
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(
+                            onClick = {
+                                val appId = context.packageName
+                                val appLink = "https://play.google.com/store/apps/details?id=$appId"
+                                shareGeminiOutput(
+                                    context = context,
+                                    text = "📢 *Sarkari Job Notification: ${job.title}*\n🏢 Sector: ${job.sector}\n📍 Location: ${job.location}\n🎓 Eligibility: ${job.eligibility}\n💰 Salary: ${job.salary}\n⏰ Last Date: ${job.lastDate}\n🌐 Official Portal: ${job.officialLink}\n\n👉 Apply easily with AI Guide on SarkariGuru.AI App!\nDownload App: $appLink",
+                                    title = "Share Job Alert"
+                                )
+                            },
+                            modifier = Modifier.size(28.dp)
+                        ) {
+                            Icon(Icons.Default.Share, contentDescription = "Share Job", tint = SuccessGreen, modifier = Modifier.size(18.dp))
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                        }
                     }
                 }
 
@@ -2242,6 +2308,7 @@ fun SettingsDialog(
     onSave: (String, String, String, String, String) -> Unit,
     onLogout: () -> Unit
 ) {
+    val context = LocalContext.current
     var name by remember { mutableStateOf(profile?.name ?: "") }
     var phone by remember { mutableStateOf(profile?.phone ?: "") }
     var dob by remember { mutableStateOf(profile?.dob ?: "") }
@@ -2464,7 +2531,21 @@ fun SettingsDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                // Share SarkariGuru.AI App button
+                Button(
+                    onClick = {
+                        shareMyApp(context)
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(44.dp)
+                ) {
+                    Icon(Icons.Default.Share, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Share App with Friends (ॲप शेअर करा)", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -3925,8 +4006,30 @@ fun AiApplyGuideDialog(
                             )
                         }
                     }
-                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (!isGenerating && guideText.isNotBlank()) {
+                            IconButton(
+                                onClick = {
+                                    shareGeminiOutput(
+                                        context = context,
+                                        text = "📋 *${job.title}* - AI Application Guide (SarkariGuru.AI):\n\n$guideText\n\nOfficial Portal Link: ${job.officialLink}",
+                                        title = "Share AI Guide"
+                                    )
+                                },
+                                modifier = Modifier.size(32.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Share,
+                                    contentDescription = "Share Guide",
+                                    tint = SuccessGreen,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+                        IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                            Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                        }
                     }
                 }
 
@@ -4460,6 +4563,7 @@ fun RecommendationsTabContent(viewModel: DashboardViewModel) {
 
 @Composable
 fun VoiceAssistantDialog(viewModel: DashboardViewModel) {
+    val context = LocalContext.current
     val messages = viewModel.voiceAssistantMessages
     val isThinking = viewModel.isVoiceAssistantThinking.value
     val isKid = viewModel.isKidModeActive.value
@@ -4589,6 +4693,31 @@ fun VoiceAssistantDialog(viewModel: DashboardViewModel) {
                                                 color = if (isUser) Color.White else DailyTheme.TextPrimary,
                                                 lineHeight = if (isKid) 20.sp else 16.sp
                                             )
+                                            if (!isUser) {
+                                                Spacer(modifier = Modifier.height(6.dp))
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.End
+                                                ) {
+                                                    IconButton(
+                                                        onClick = {
+                                                            shareGeminiOutput(
+                                                                context = context,
+                                                                text = "🤖 *SarkariGuru AI Advice*:\n\n${msg.text}\n\nShared via SarkariGuru.AI App",
+                                                                title = "Share Gemini Output"
+                                                            )
+                                                        },
+                                                        modifier = Modifier.size(24.dp)
+                                                    ) {
+                                                        Icon(
+                                                            Icons.Default.Share,
+                                                            contentDescription = "Share",
+                                                            tint = DailyTheme.TextSecondary,
+                                                            modifier = Modifier.size(14.dp)
+                                                        )
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
