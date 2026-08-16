@@ -663,14 +663,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun handleAuthentication(isRegister: Boolean) {
-        val phoneInput = if (isRegister) registerPhone.value.trim() else loginPhone.value.trim()
-        
-        if (phoneInput.isBlank() || phoneInput.length < 10) {
-            activeDialogMessage.value = "Error: Please enter a valid 10-Digit Mobile Number!"
-            return
-        }
-
         if (isRegister) {
+            val phoneInput = registerPhone.value.trim()
             val nameInput = registerName.value.trim()
             val emailInput = registerEmail.value.trim()
             val passInput = registerPassword.value.trim()
@@ -679,8 +673,12 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 activeDialogMessage.value = "Error: Candidate Full Name is required!"
                 return
             }
-            if (emailInput.isBlank() || !emailInput.contains("@")) {
+            if (emailInput.isBlank() || !emailInput.contains("@") || !emailInput.contains(".")) {
                 activeDialogMessage.value = "Error: Please enter a valid Email Address!"
+                return
+            }
+            if (phoneInput.isBlank() || phoneInput.length < 10) {
+                activeDialogMessage.value = "Error: Please enter a valid 10-Digit Mobile Number!"
                 return
             }
             if (passInput.isBlank() || passInput.length < 4) {
@@ -690,31 +688,43 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
             viewModelScope.launch {
                 isSupabaseConnecting.value = true
-                val existing = repository.getAccountByPhone(phoneInput)
+                val existingByPhone = repository.getAccountByPhone(phoneInput)
+                val existingByEmail = repository.getAccountByEmail(emailInput)
                 isSupabaseConnecting.value = false
-                if (existing != null) {
-                    activeDialogMessage.value = "Account already exists with this number! Please Login."
+
+                if (existingByPhone != null) {
+                    activeDialogMessage.value = "An account with mobile +91 $phoneInput already exists! Please Login."
+                } else if (existingByEmail != null) {
+                    activeDialogMessage.value = "An account with email $emailInput already exists! Please Login."
                 } else {
                     sendSimulatedOtp(phoneInput)
                 }
             }
         } else {
+            val identifierInput = loginPhone.value.trim()
             val passInput = loginPassword.value.trim()
+
+            if (identifierInput.isBlank()) {
+                activeDialogMessage.value = "Error: Please enter your Mobile Number or Email Address!"
+                return
+            }
             if (passInput.isBlank()) {
-                activeDialogMessage.value = "Error: Password is required!"
+                activeDialogMessage.value = "Error: Please enter your Password!"
                 return
             }
 
             viewModelScope.launch {
                 isSupabaseConnecting.value = true
-                val account = repository.getAccountByPhone(phoneInput)
+                val account = repository.getAccountByIdentifier(identifierInput)
                 isSupabaseConnecting.value = false
+
                 if (account == null) {
-                    activeDialogMessage.value = "No registered account found with +91 $phoneInput! Please register."
+                    activeDialogMessage.value = "No registered account found for '$identifierInput'! Please register."
                 } else if (account.passwordHash != passInput) {
-                    activeDialogMessage.value = "Error: Invalid Password entered! Please try again."
+                    activeDialogMessage.value = "Error: Incorrect Password! Please check and try again."
                 } else {
-                    sendSimulatedOtp(phoneInput)
+                    // Update login identifier for OTP step
+                    sendSimulatedOtp(account.phone)
                 }
             }
         }
@@ -723,18 +733,18 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun verifyAndCompleteAuth(isRegister: Boolean) {
         val entered = enteredOtp.value.trim()
         if (entered != sentOtp.value) {
-            activeDialogMessage.value = "Error: Invalid OTP entered! Please check and try again."
+            activeDialogMessage.value = "Error: Invalid OTP entered ($entered). Please check the 6-digit code!"
             return
         }
 
         isSupabaseConnecting.value = true
-        supabaseStatusMessage.value = "Connecting to secure Supabase Cloud Security Server..."
+        supabaseStatusMessage.value = "Authenticating secure session..."
 
         viewModelScope.launch {
-            delay(1000)
+            delay(600)
             if (isRegister) {
-                supabaseStatusMessage.value = "Creating encrypted Supabase database records..."
-                delay(800)
+                supabaseStatusMessage.value = "Creating encrypted account profile..."
+                delay(400)
                 val account = UserAccount(
                     phone = registerPhone.value.trim(),
                     email = registerEmail.value.trim(),
@@ -770,12 +780,13 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 if (referral.isNotEmpty()) {
                     activeDialogMessage.value = "🎉 Registration Successful with Referral Code '$referral'!\n\n🎁 REWARD OFFER VALIDATED!\nजैसा कि नियमों और शर्तों (T&C) के गुप्त पन्ने पर लिखा है - 'रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं!' 😜 यह केवल एक डेमो रेफ़रल सिस्टम है। आप असली परीक्षाओं की तैयारी के लिए यहाँ हैं।\n\n(No actual money will be given as this is a prototype demo app. Let's study hard!)"
                 } else {
-                    activeDialogMessage.value = "Secure Registration Successful! Please complete your candidate details."
+                    activeDialogMessage.value = "Registration Successful! Please complete your candidate profile."
                 }
             } else {
-                supabaseStatusMessage.value = "Retrieving synced profile from Supabase database..."
-                delay(800)
-                val account = repository.getAccountByPhone(loginPhone.value.trim())
+                supabaseStatusMessage.value = "Retrieving candidate profile..."
+                delay(400)
+                val identifierInput = loginPhone.value.trim()
+                val account = repository.getAccountByIdentifier(identifierInput)
                 if (account != null) {
                     val profile = UserProfile(
                         name = account.name,
@@ -800,10 +811,10 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                     isSupabaseConnecting.value = false
                     isOtpVerificationSent.value = false
                     isUserLoggedIn.value = true
-                    activeDialogMessage.value = "Secure Login Successful!"
+                    activeDialogMessage.value = "Welcome back, ${account.name}! Login Successful."
                 } else {
                     isSupabaseConnecting.value = false
-                    activeDialogMessage.value = "Error loading account from database."
+                    activeDialogMessage.value = "Error loading account. Please try again."
                 }
             }
         }

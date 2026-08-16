@@ -35,6 +35,14 @@ class SarkariGuruRepository(private val dao: SarkariGuruDao) {
         return dao.getAccountByPhone(phone)
     }
 
+    suspend fun getAccountByEmail(email: String): UserAccount? {
+        return dao.getAccountByEmail(email)
+    }
+
+    suspend fun getAccountByIdentifier(identifier: String): UserAccount? {
+        return dao.getAccountByIdentifier(identifier)
+    }
+
     suspend fun saveAccount(account: UserAccount) {
         dao.saveAccount(account)
     }

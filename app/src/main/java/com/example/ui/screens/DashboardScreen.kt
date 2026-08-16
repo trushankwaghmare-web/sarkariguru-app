@@ -476,41 +476,41 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                     onDismiss = { viewModel.showRoadmapJob.value = null }
                 )
             }
+        }
+    }
 
-            // Central info message toast-simulation
-            viewModel.activeDialogMessage.value?.let { msg ->
-                Dialog(onDismissRequest = { viewModel.activeDialogMessage.value = null }) {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.padding(16.dp).fillMaxWidth()
+    // Central info message toast-simulation (Visible globally across Login, Profile Setup, and Dashboard)
+    viewModel.activeDialogMessage.value?.let { msg ->
+        Dialog(onDismissRequest = { viewModel.activeDialogMessage.value = null }) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.padding(16.dp).fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Default.CheckCircle,
+                        contentDescription = "Alert / Info",
+                        tint = SuccessGreen,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        msg,
+                        color = Color.White,
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(
+                        onClick = { viewModel.activeDialogMessage.value = null },
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Icon(
-                                Icons.Default.CheckCircle,
-                                contentDescription = "Success",
-                                tint = SuccessGreen,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                msg,
-                                color = Color.White,
-                                textAlign = TextAlign.Center,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Button(
-                                onClick = { viewModel.activeDialogMessage.value = null },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                            ) {
-                                Text("OK")
-                            }
-                        }
+                        Text("OK")
                     }
                 }
             }
@@ -3140,18 +3140,20 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                                 }
                             }
                         } else {
-                            // Login Fields: Phone Number
+                            // Login Fields: Phone Number or Email
                             OutlinedTextField(
                                 value = viewModel.loginPhone.value,
                                 onValueChange = { input ->
-                                    if (input.all { it.isDigit() } && input.length <= 10) {
-                                        viewModel.loginPhone.value = input
-                                    }
+                                    viewModel.loginPhone.value = input
                                 },
-                                label = { Text("10-Digit Mobile Number") },
-                                prefix = { Text("+91 ", color = DailyTheme.TextPrimary, fontWeight = FontWeight.Bold) },
-                                leadingIcon = { Icon(Icons.Default.Phone, contentDescription = null, tint = dailyAccent) },
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                                label = { Text("Email Address or Mobile Number") },
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = if (viewModel.loginPhone.value.contains("@")) Icons.Default.Email else Icons.Default.Phone,
+                                        contentDescription = null,
+                                        tint = dailyAccent
+                                    )
+                                },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedTextColor = DailyTheme.TextPrimary,
                                     unfocusedTextColor = DailyTheme.TextPrimary,
@@ -3166,7 +3168,7 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                             OutlinedTextField(
                                 value = viewModel.loginPassword.value,
                                 onValueChange = { viewModel.loginPassword.value = it },
-                                label = { Text("Password") },
+                                label = { Text("Password (पासवर्ड)") },
                                 leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = dailyAccent) },
                                 colors = OutlinedTextFieldDefaults.colors(
                                     focusedTextColor = DailyTheme.TextPrimary,
@@ -3211,7 +3213,7 @@ fun LoginRegistrationScreen(viewModel: DashboardViewModel) {
                                 modifier = Modifier.fillMaxWidth().height(48.dp).testTag("supabase_login_btn")
                             ) {
                                 Text(
-                                    text = if (isRegisterMode) "Proceed to Verify Phone (OTP)" else "Sign-In with OTP",
+                                    text = if (isRegisterMode) "Proceed to Verify Phone (OTP)" else "Sign-In (लॉगिन करें)",
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
                                 )

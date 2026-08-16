@@ -86,6 +86,12 @@ interface SarkariGuruDao {
     @Query("SELECT * FROM user_accounts WHERE phone = :phone")
     suspend fun getAccountByPhone(phone: String): UserAccount?
 
+    @Query("SELECT * FROM user_accounts WHERE email = :email")
+    suspend fun getAccountByEmail(email: String): UserAccount?
+
+    @Query("SELECT * FROM user_accounts WHERE phone = :identifier OR email = :identifier")
+    suspend fun getAccountByIdentifier(identifier: String): UserAccount?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveAccount(account: UserAccount)
 

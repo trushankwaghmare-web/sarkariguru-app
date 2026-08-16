@@ -2056,8 +2056,8 @@
                         <p style="font-size: 0.9rem; color: var(--text-secondary);">Access your secure SarkariGuru profile, AI autofill vault, and smart mentor recommendations.</p>
                         <form id="login-form" onsubmit="handleLogin(event)" style="display: flex; flex-direction: column; gap: 12px;">
                             <div class="form-group">
-                                <label for="login-email">Email Address</label>
-                                <input type="email" id="login-email" class="form-input" placeholder="e.g., rahul@example.com" required>
+                                <label for="login-email">Email Address or Mobile Number (ईमेल या मोबाइल)</label>
+                                <input type="text" id="login-email" class="form-input" placeholder="e.g., rahul@example.com or 9876543210" required>
                             </div>
                             <div class="form-group">
                                 <label for="login-password">Password</label>
@@ -3680,29 +3680,47 @@ ${textToSummarize.substring(0, 45000)}`;
         let currentUser = null;
 
         function handleRegister(event) {
-            event.preventDefault();
+            if (event) event.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             const email = document.getElementById('reg-email').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const password = document.getElementById('reg-password').value;
-            const referral = document.getElementById('reg-referral').value.trim();
+            const referral = document.getElementById('reg-referral') ? document.getElementById('reg-referral').value.trim() : "";
             
             const errEl = document.getElementById('register-error');
             const succEl = document.getElementById('register-success');
             
-            errEl.style.display = 'none';
-            succEl.style.display = 'none';
+            if (errEl) errEl.style.display = 'none';
+            if (succEl) succEl.style.display = 'none';
             
+            if (!name || !email || !phone || !password) {
+                if (errEl) {
+                    errEl.innerText = "Please fill all required registration fields.";
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
             const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
-            if (users.some(u => u.email === email)) {
-                errEl.innerText = "Email already exists! Please login.";
-                errEl.style.display = 'block';
+            if (users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+                if (errEl) {
+                    errEl.innerText = "An account with this email already exists! Please login.";
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+            if (users.some(u => (u.phone === phone || (u.profile && u.profile.phone === phone)))) {
+                if (errEl) {
+                    errEl.innerText = "An account with this mobile number already exists! Please login.";
+                    errEl.style.display = 'block';
+                }
                 return;
             }
             
             const newUser = {
                 name,
                 email,
+                phone,
                 password,
                 referralCode: referral,
                 profile: {
@@ -3722,38 +3740,60 @@ ${textToSummarize.substring(0, 45000)}`;
             users.push(newUser);
             localStorage.setItem('sarkariguru_users', JSON.stringify(users));
             
-            let successMessage = "Registration successful! You can now sign in.";
+            let successMessage = "🎉 Registration successful! Signing you in...";
             if (referral) {
                 successMessage = `🎉 Registration Successful with Referral Code '${referral}'! 🎁 REWARD VALIDATED: ₹1000 has been credited to your virtual bonus balance. (रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं! 😜)`;
             }
-            succEl.innerText = successMessage;
-            succEl.style.display = 'block';
+            if (succEl) {
+                succEl.innerText = successMessage;
+                succEl.style.display = 'block';
+            }
+            
+            // Auto sign in user immediately for seamless UX
+            currentUser = newUser;
+            localStorage.setItem('sarkariguru_current_user', JSON.stringify(currentUser));
             
             // Voice announcement
             if (referral) {
                 speakAI(`बधाई हो ${name}! आपका खाता रेफ़रल कोड ${referral} के साथ सफलतापूर्वक बन गया है। आपका एक हज़ार रुपये का रिवॉर्ड वैलिडेट हो चुका है, लेकिन याद रखना, रिवॉर्ड मिलेगा पर रिवॉर्ड मिलेगा नहीं!`);
             } else {
-                speakAI(`बधाई हो ${name}! आपका खाता सफलतापूर्वक बन गया है। अब आप लॉगिन कर सकते हैं।`);
+                speakAI(`बधाई हो ${name}! आपका खाता सफलतापूर्वक बन गया है।`);
             }
             
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').focus();
+            setTimeout(() => {
+                initializeLoggedInUI();
+            }, 600);
         }
 
         function handleLogin(event) {
-            event.preventDefault();
-            const email = document.getElementById('login-email').value.trim();
+            if (event) event.preventDefault();
+            const identifier = document.getElementById('login-email').value.trim();
             const password = document.getElementById('login-password').value;
             
             const errEl = document.getElementById('login-error');
-            errEl.style.display = 'none';
+            if (errEl) errEl.style.display = 'none';
+            
+            if (!identifier || !password) {
+                if (errEl) {
+                    errEl.innerText = "Please enter your email or mobile and password.";
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
             
             const users = JSON.parse(localStorage.getItem('sarkariguru_users') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
+            const user = users.find(u => 
+                ((u.email && u.email.toLowerCase() === identifier.toLowerCase()) || 
+                 (u.phone && u.phone === identifier) || 
+                 (u.profile && u.profile.phone === identifier)) && 
+                u.password === password
+            );
             
             if (!user) {
-                errEl.innerText = "Invalid email or password! Please try again.";
-                errEl.style.display = 'block';
+                if (errEl) {
+                    errEl.innerText = "Invalid email/mobile or password! Please check or create a new account.";
+                    errEl.style.display = 'block';
+                }
                 return;
             }
             
@@ -5537,6 +5577,8 @@ Present points, recommended study tracks, or eligibility answers in clean lists 
         // Reposition guide hand on window resize or scroll so it remains attached
         window.addEventListener('resize', () => {
             if (kidGuideActive) positionGuideStep();
+        });
+
         // Telemetry & Health Dashboard Controller
         function openTelemetryModal() {
             const modal = document.getElementById('telemetry-modal');
