@@ -119,6 +119,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     var aiApplyGuideText = mutableStateOf("")
     var isGeneratingApplyGuide = mutableStateOf(false)
 
+    // AI Prep Roadmap state
+    var showRoadmapJob = mutableStateOf<JobNotification?>(null)
+    val roadmapSteps = androidx.compose.runtime.mutableStateListOf<GeminiClient.RoadmapStep>()
+    var isGeneratingRoadmap = mutableStateOf(false)
+
     // 100,000x Stress Testing and Self-Healing Engine States
     var isStressTesting = mutableStateOf(false)
     var stressTestCycles = mutableStateOf(0)
@@ -611,6 +616,27 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
                 aiApplyGuideText.value = "त्रुटि: गाइड जनरेट करने में विफलता हुई।"
             } finally {
                 isGeneratingApplyGuide.value = false
+            }
+        }
+    }
+
+    fun generateRoadmap(job: JobNotification) {
+        showRoadmapJob.value = job
+        isGeneratingRoadmap.value = true
+        roadmapSteps.clear()
+        viewModelScope.launch {
+            try {
+                val steps = GeminiClient.generateJobRoadmap(
+                    jobTitle = job.title,
+                    sector = job.sector,
+                    qualification = job.eligibility
+                )
+                roadmapSteps.addAll(steps)
+                playSectionVoiceGuide("Roadmap", "मैंने ${job.title} के लिए 4 चरणों की तैयारी रणनीति और पुस्तकों की सूची तैयार कर दी है।")
+            } catch (e: Exception) {
+                Log.e("DashboardViewModel", "Error generating roadmap", e)
+            } finally {
+                isGeneratingRoadmap.value = false
             }
         }
     }

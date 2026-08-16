@@ -175,21 +175,6 @@ fun shareGeminiOutput(
     }
 }
 
-/**
- * Native Android implementation of sharing the SarkariGuru.AI App.
- * Mirrors: void shareMyApp()
- */
-fun shareMyApp(
-    context: android.content.Context,
-    customMessage: String? = null
-) {
-    val appId = context.packageName
-    val appLink = "https://play.google.com/store/apps/details?id=$appId"
-    val defaultMsg = "चेक आउट करा हे नवीन ॲप! डाउनलोड करा: $appLink\n(SarkariGuru.AI - All-in-One Government Exam & AI Career Assistant)"
-    val message = customMessage ?: defaultMsg
-    shareGeminiOutput(context, message, "Share SarkariGuru.AI App")
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(viewModel: DashboardViewModel) {
@@ -481,6 +466,14 @@ fun DashboardScreen(viewModel: DashboardViewModel) {
                     job = job,
                     viewModel = viewModel,
                     onDismiss = { viewModel.selectedJobDetails.value = null }
+                )
+            }
+
+            viewModel.showRoadmapJob.value?.let { job ->
+                AiRoadmapDialog(
+                    job = job,
+                    viewModel = viewModel,
+                    onDismiss = { viewModel.showRoadmapJob.value = null }
                 )
             }
 
@@ -2098,6 +2091,18 @@ fun JobItemCard(
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(8.dp))
+                            .background(BrandSecondary.copy(alpha = 0.25f))
+                            .border(1.dp, BrandSecondary.copy(alpha = 0.5f), RoundedCornerShape(8.dp))
+                            .clickable {
+                                viewModel.generateRoadmap(job)
+                            }
+                            .padding(horizontal = 8.dp, vertical = 6.dp)
+                    ) {
+                        Text("✨ Roadmap", color = DailyTheme.TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
                             .background(InfoLightBlue)
                             .clickable {
                                 if (activity != null) {
@@ -2114,13 +2119,7 @@ fun JobItemCard(
                     }
                     IconButton(
                         onClick = {
-                            val appId = context.packageName
-                            val appLink = "https://play.google.com/store/apps/details?id=$appId"
-                            shareGeminiOutput(
-                                context = context,
-                                text = "📢 *Sarkari Recruitment: ${job.title}*\n🏢 Sector: ${job.sector}\n📍 Location: ${job.location}\n🎓 Eligibility: ${job.eligibility}\n⏰ Last Date: ${job.lastDate}\n🌐 Official Portal: ${job.officialLink}\n\n👉 Apply easily with AI Guide on SarkariGuru.AI App!\nDownload App: $appLink",
-                                title = "Share Job Alert"
-                            )
+                            viewModel.activeDialogMessage.value = "Sharing official recruitment details to WhatsApp!"
                         }
                     ) {
                         Icon(Icons.Default.Share, contentDescription = "Share", tint = Color.LightGray)
@@ -2151,7 +2150,7 @@ fun JobDetailsDialog(
                 modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Header with Sector Badge & Action Icons
+                // Header with Sector Badge
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -2183,25 +2182,8 @@ fun JobDetailsDialog(
                         )
                     }
                     
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(
-                            onClick = {
-                                val appId = context.packageName
-                                val appLink = "https://play.google.com/store/apps/details?id=$appId"
-                                shareGeminiOutput(
-                                    context = context,
-                                    text = "📢 *Sarkari Job Notification: ${job.title}*\n🏢 Sector: ${job.sector}\n📍 Location: ${job.location}\n🎓 Eligibility: ${job.eligibility}\n💰 Salary: ${job.salary}\n⏰ Last Date: ${job.lastDate}\n🌐 Official Portal: ${job.officialLink}\n\n👉 Apply easily with AI Guide on SarkariGuru.AI App!\nDownload App: $appLink",
-                                    title = "Share Job Alert"
-                                )
-                            },
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Icon(Icons.Default.Share, contentDescription = "Share Job", tint = SuccessGreen, modifier = Modifier.size(18.dp))
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
-                        IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
-                        }
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
                     }
                 }
 
@@ -2226,6 +2208,23 @@ fun JobDetailsDialog(
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
+
+                // Buttons row
+                Button(
+                    onClick = {
+                        viewModel.generateRoadmap(job)
+                        onDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandSecondary),
+                    modifier = Modifier.fillMaxWidth().height(44.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Star, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("✨ Generate 4-Phase AI Study Roadmap", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
 
                 // Dual buttons side-by-side
                 Row(
@@ -2308,7 +2307,6 @@ fun SettingsDialog(
     onSave: (String, String, String, String, String) -> Unit,
     onLogout: () -> Unit
 ) {
-    val context = LocalContext.current
     var name by remember { mutableStateOf(profile?.name ?: "") }
     var phone by remember { mutableStateOf(profile?.phone ?: "") }
     var dob by remember { mutableStateOf(profile?.dob ?: "") }
@@ -2531,21 +2529,7 @@ fun SettingsDialog(
                     }
                 }
 
-                // Share SarkariGuru.AI App button
-                Button(
-                    onClick = {
-                        shareMyApp(context)
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
-                    shape = RoundedCornerShape(12.dp),
-                    modifier = Modifier.fillMaxWidth().height(44.dp)
-                ) {
-                    Icon(Icons.Default.Share, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Share App with Friends (ॲप शेअर करा)", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -4279,6 +4263,230 @@ fun AiApplyGuideDialog(
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text("वेबसाइट पर जाएं", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 12.sp)
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AiRoadmapDialog(
+    job: JobNotification,
+    viewModel: DashboardViewModel,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val isGenerating = viewModel.isGeneratingRoadmap.value
+    val steps = viewModel.roadmapSteps
+    val dailyAccent = DailyTheme.accentColor
+
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+            border = BorderStroke(1.dp, DailyTheme.CardBorder),
+            modifier = Modifier
+                .padding(vertical = 16.dp)
+                .fillMaxWidth()
+                .fillMaxHeight(0.9f)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(18.dp)
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(dailyAccent.copy(alpha = 0.15f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text("✨", fontSize = 18.sp)
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                "AI परीक्षा तैयारी रणनीति (Roadmap)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = DailyTheme.TextPrimary
+                            )
+                            Text(
+                                job.title,
+                                fontSize = 11.sp,
+                                color = dailyAccent,
+                                maxLines = 1
+                            )
+                        }
+                    }
+                    IconButton(onClick = onDismiss, modifier = Modifier.size(28.dp)) {
+                        Icon(Icons.Default.Close, contentDescription = "Close", tint = DailyTheme.TextSecondary)
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = DailyTheme.CardBorder)
+
+                if (isGenerating) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.padding(24.dp)
+                        ) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                color = dailyAccent,
+                                modifier = Modifier.size(44.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "✨ Gemini AI आपके लिए 4-चरणीय परीक्षा सिलेबस और बुक्स की तैयारी गाइड बना रहा है...",
+                                textAlign = TextAlign.Center,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = DailyTheme.TextPrimary
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Analyzing past cut-offs, syllabus weightage & study schedule...",
+                                textAlign = TextAlign.Center,
+                                fontSize = 11.sp,
+                                color = DailyTheme.TextSecondary
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        item {
+                            Card(
+                                colors = CardDefaults.cardColors(containerColor = dailyAccent.copy(alpha = 0.08f)),
+                                shape = RoundedCornerShape(12.dp),
+                                border = BorderStroke(1.dp, dailyAccent.copy(alpha = 0.2f))
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("🎯", fontSize = 20.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            "कस्टमाइज्ड 4-चरण गाइड",
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = DailyTheme.TextPrimary
+                                        )
+                                        Text(
+                                            "सेक्टर: ${job.sector} | योग्यता: ${job.eligibility}",
+                                            fontSize = 10.sp,
+                                            color = DailyTheme.TextSecondary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        items(steps) { step ->
+                            Card(
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(containerColor = DailyTheme.CardBackground),
+                                border = BorderStroke(1.dp, DailyTheme.CardBorder),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Column(modifier = Modifier.padding(14.dp)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(28.dp)
+                                                .background(dailyAccent, CircleShape),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                "${step.stepNum}",
+                                                color = Color.White,
+                                                fontWeight = FontWeight.Black,
+                                                fontSize = 12.sp
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.width(10.dp))
+                                        Text(
+                                            text = step.title,
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            color = DailyTheme.TextPrimary
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Text(
+                                        text = step.desc,
+                                        fontSize = 12.sp,
+                                        color = DailyTheme.TextSecondary,
+                                        lineHeight = 18.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp), color = DailyTheme.CardBorder)
+
+                // Actions row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            val fullRoadmapText = steps.joinToString("\n\n") { "📌 ${it.title}\n${it.desc}" }
+                            viewModel.playSectionVoiceGuide("Roadmap", fullRoadmapText.ifEmpty { "रोडमैप गाइड तैयार है।" })
+                        },
+                        modifier = Modifier.weight(1f).height(44.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        border = BorderStroke(1.dp, dailyAccent)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("🔊", fontSize = 13.sp)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("सुनें (Listen)", fontSize = 11.sp, color = dailyAccent, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            val shareText = "🚀 *${job.title} - AI Preparation Roadmap (SarkariGuru.AI)*\n\n" +
+                                steps.joinToString("\n\n") { "✅ *${it.title}*\n${it.desc}" } +
+                                "\n\n📲 SarkariGuru.AI ऐप पर मुफ्त देखें!"
+                            val intent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                type = "text/plain"
+                                putExtra(android.content.Intent.EXTRA_TEXT, shareText)
+                            }
+                            context.startActivity(android.content.Intent.createChooser(intent, "Share AI Roadmap via"))
+                        },
+                        modifier = Modifier.weight(1.2f).height(44.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SuccessGreen)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Share, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text("Share Roadmap", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

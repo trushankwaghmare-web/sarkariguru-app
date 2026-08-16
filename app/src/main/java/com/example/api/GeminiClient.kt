@@ -17,14 +17,7 @@ import java.util.concurrent.TimeUnit
 
 object GeminiClient {
     private const val TAG = "GeminiClient"
-    // Standard model endpoints matching Gemini API Guidelines
-    private const val MODEL_GENERAL = "gemini-3.5-flash"
-    private const val MODEL_PRO = "gemini-3.1-pro-preview"
-    private const val MODEL_FAST = "gemini-3.1-flash-lite-preview"
-    
-    private const val BASE_URL_GENERAL = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_GENERAL:generateContent"
-    private const val BASE_URL_PRO = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_PRO:generateContent"
-    private const val BASE_URL_FAST = "https://generativelanguage.googleapis.com/v1beta/models/$MODEL_FAST:generateContent"
+    private val MODELS = listOf("gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash")
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)
@@ -32,7 +25,7 @@ object GeminiClient {
         .writeTimeout(60, TimeUnit.SECONDS)
         .build()
 
-    // Translate spoken Hindi into English text suitable for a specific form field (Fast task)
+    // Translate spoken Hindi into English text suitable for a specific form field
     suspend fun translateHindiVoiceToEnglish(spokenText: String, fieldName: String): String = withContext(Dispatchers.IO) {
         val apiKey = BuildConfig.GEMINI_API_KEY
         if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
@@ -48,7 +41,7 @@ object GeminiClient {
         """.trimIndent()
 
         try {
-            val responseText = makeApiCall(prompt, apiKey, BASE_URL_FAST)
+            val responseText = makeApiCall(prompt, apiKey)
             if (responseText != null) {
                 responseText.trim().removeSurrounding("\"")
             } else {
@@ -89,7 +82,7 @@ object GeminiClient {
         """.trimIndent()
 
         try {
-            val responseText = makeApiCall(prompt, apiKey, BASE_URL_FAST)
+            val responseText = makeApiCall(prompt, apiKey)
             if (responseText != null) {
                 val cleanJson = responseText.trim().removeSurrounding("```json", "```").trim()
                 val json = JSONObject(cleanJson)
@@ -110,7 +103,7 @@ object GeminiClient {
         }
     }
 
-    // OCR Document Details extraction (using gemini-3.1-pro-preview for deep image understanding)
+    // OCR Document Details extraction (using simulated base64 or actual)
     data class OcrResult(
         val nameOnDoc: String,
         val rollNumber: String,
@@ -128,8 +121,8 @@ object GeminiClient {
 
         val prompt = """
             You are an advanced OCR engine for SarkariGuru.AI.
-            Analyze this uploaded image of a $docType document (10th Marksheet, 12th Marksheet, or Aadhaar).
-            Please accurately extract:
+            Extract details from this $docType document (10th Marksheet, 12th Marksheet, or Aadhaar).
+            Please extract:
             1. Full name on document (nameOnDoc)
             2. Roll number/seat number (rollNumber - empty for Aadhaar)
             3. Total marks/percentage (marks - empty for Aadhaar)
@@ -158,22 +151,34 @@ object GeminiClient {
             }
 
             val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
-            val request = Request.Builder()
-                .url("$BASE_URL_PRO?key=$apiKey")
-                .post(requestBody)
-                .build()
+            
+            var textResponse: String? = null
+            for (model in MODELS) {
+                try {
+                    val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+                    val request = Request.Builder()
+                        .url(url)
+                        .post(requestBody)
+                        .build()
 
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                val responseBody = response.body?.string() ?: ""
-                val responseJson = JSONObject(responseBody)
-                val textResponse = responseJson.getJSONArray("candidates")
-                    .getJSONObject(0)
-                    .getJSONObject("content")
-                    .getJSONArray("parts")
-                    .getJSONObject(0)
-                    .getString("text")
+                    val response = client.newCall(request).execute()
+                    if (response.isSuccessful) {
+                        val responseBody = response.body?.string() ?: ""
+                        val responseJson = JSONObject(responseBody)
+                        textResponse = responseJson.getJSONArray("candidates")
+                            .getJSONObject(0)
+                            .getJSONObject("content")
+                            .getJSONArray("parts")
+                            .getJSONObject(0)
+                            .getString("text")
+                        break
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "OCR model fallback for $model: ${e.message}")
+                }
+            }
 
+            if (textResponse != null) {
                 val cleanJson = textResponse.trim().removeSurrounding("```json", "```").trim()
                 val jsonResult = JSONObject(cleanJson)
 
@@ -193,7 +198,7 @@ object GeminiClient {
         }
     }
 
-    private fun makeApiCall(prompt: String, apiKey: String, url: String = BASE_URL_GENERAL): String? {
+    private fun makeApiCall(prompt: String, apiKey: String): String? {
         val jsonRequest = JSONObject().apply {
             put("contents", JSONArray().apply {
                 put(JSONObject().apply {
@@ -205,21 +210,29 @@ object GeminiClient {
         }
 
         val requestBody = jsonRequest.toString().toRequestBody("application/json".toMediaType())
-        val request = Request.Builder()
-            .url("$url?key=$apiKey")
-            .post(requestBody)
-            .build()
 
-        val response = client.newCall(request).execute()
-        if (response.isSuccessful) {
-            val responseBody = response.body?.string() ?: ""
-            val responseJson = JSONObject(responseBody)
-            return responseJson.getJSONArray("candidates")
-                .getJSONObject(0)
-                .getJSONObject("content")
-                .getJSONArray("parts")
-                .getJSONObject(0)
-                .getString("text")
+        for (model in MODELS) {
+            try {
+                val url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$apiKey"
+                val request = Request.Builder()
+                    .url(url)
+                    .post(requestBody)
+                    .build()
+
+                val response = client.newCall(request).execute()
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string() ?: ""
+                    val responseJson = JSONObject(responseBody)
+                    return responseJson.getJSONArray("candidates")
+                        .getJSONObject(0)
+                        .getJSONObject("content")
+                        .getJSONArray("parts")
+                        .getJSONObject(0)
+                        .getString("text")
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "API call fallback for $model: ${e.message}")
+            }
         }
         return null
     }
@@ -444,6 +457,73 @@ ${if (userCategory != "General") "* 📑 **जाति प्रमाण प�
             Log.e(TAG, "Error in chatbot conversation: ${e.message}", e)
             getMockChatResponse(userMessage, userName, isKidMode)
         }
+    }
+
+    data class RoadmapStep(val stepNum: Int, val title: String, val desc: String)
+
+    suspend fun generateJobRoadmap(jobTitle: String, sector: String, qualification: String): List<RoadmapStep> = withContext(Dispatchers.IO) {
+        val apiKey = BuildConfig.GEMINI_API_KEY
+        if (apiKey.isEmpty() || apiKey == "MY_GEMINI_API_KEY") {
+            return@withContext getMockRoadmap(jobTitle)
+        }
+
+        val prompt = """
+            You are SarkariGuru.AI. Create a customized study and preparation roadmap of exactly 4 phases for the job: "$jobTitle" in sector: "$sector" for qualification: "$qualification".
+            Return ONLY a valid JSON array of exactly 4 objects. No markdown wraps.
+            Each object MUST have exactly these fields:
+            - "stepNum": integer (1, 2, 3, or 4)
+            - "title": string (Preparation phase name in Hindi/English, e.g. "Phase 1: Syllabus Aur Study Materials")
+            - "desc": string (Detailed, actionable advice in Hindi containing syllabus topics, best books, test series strategy, and time allocation)
+        """.trimIndent()
+
+        try {
+            val responseText = makeApiCall(prompt, apiKey)
+            if (responseText != null) {
+                val cleanJson = responseText.trim().removeSurrounding("```json", "```").trim()
+                val array = JSONArray(cleanJson)
+                val list = mutableListOf<RoadmapStep>()
+                for (i in 0 until array.length()) {
+                    val obj = array.getJSONObject(i)
+                    list.add(
+                        RoadmapStep(
+                            stepNum = obj.optInt("stepNum", i + 1),
+                            title = obj.optString("title", "Phase ${i + 1}"),
+                            desc = obj.optString("desc", "")
+                        )
+                    )
+                }
+                if (list.isNotEmpty()) return@withContext list
+            }
+            getMockRoadmap(jobTitle)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in roadmap generation: ${e.message}", e)
+            getMockRoadmap(jobTitle)
+        }
+    }
+
+    private fun getMockRoadmap(jobTitle: String): List<RoadmapStep> {
+        return listOf(
+            RoadmapStep(
+                stepNum = 1,
+                title = "Phase 1: सिलेबस और परीक्षा पैटर्न समझें",
+                desc = "आधिकारिक परीक्षा पैटर्न और सिलेबस डाउनलोड करें। पिछले 5 वर्षों के कट-ऑफ अंकों का विश्लेषण करें और महत्वपूर्ण विषयों को चिह्नित करें।"
+            ),
+            RoadmapStep(
+                stepNum = 2,
+                title = "Phase 2: सर्वश्रेष्ठ पुस्तकों से बुनियादी तैयारी",
+                desc = "गणित (RS Aggarwal), रीजनिंग (Arihant) और सामान्य ज्ञान (Lucent's GK) की मानक पुस्तकों से सभी अवधारणाओं को मजबूत करें।"
+            ),
+            RoadmapStep(
+                stepNum = 3,
+                title = "Phase 3: दैनिक मॉक टेस्ट और PYQ अभ्यास",
+                desc = "रोजाना कम से कम 1 फुल-लेंथ ऑनलाइन मॉक टेस्ट दें। गलत हुए प्रश्नों का विश्लेषण करें और अपनी गति एवं सटीकता (Accuracy) बढ़ाएं।"
+            ),
+            RoadmapStep(
+                stepNum = 4,
+                title = "Phase 4: अंतिम पुनरीक्षण और फॉर्मूला रिवीजन",
+                desc = "अंतिम 15 दिनों में नए विषय न पढ़ें। बनाए गए शॉर्ट नोट्स, करंट अफेयर्स और सूत्रों का बार-बार रिवीजन करें तथा आत्मविश्वास बनाए रखें।"
+            )
+        )
     }
 
     private fun getMockChatResponse(userMessage: String, userName: String, isKidMode: Boolean): String {
